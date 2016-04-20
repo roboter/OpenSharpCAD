@@ -1,0 +1,6 @@
+[submodule "submodules/agg-sharp"]
+	path = submodules/agg-sharp
+	url = https://github.com/roboter/agg-sharp.git
+[submodule "submodules/net3dbool"]
+	path = submodules/net3dbool
+	url = https://github.com/roboter/Net3dBool.git
