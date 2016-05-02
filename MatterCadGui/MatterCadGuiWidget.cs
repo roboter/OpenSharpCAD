@@ -43,6 +43,8 @@ using MatterHackers.VectorMath;
 using System;
 using System.IO;
 using MatterHackers.Agg.WindowsFileDialogs;
+using MatterHackers.Csg.Processors;
+using System.Globalization;
 
 namespace MatterHackers.MatterCad
 {
@@ -62,8 +64,8 @@ namespace MatterHackers.MatterCad
 
         public MatterCadGuiWidget()
         {
-            //rootUnion.Add(new Translate(new BoxPrimitive(10, 10, 20), 5, 10, 5));
-            //rootUnion.Add(new Box(8, 20, 10));
+            rootUnion.Add(new Translate(new BoxPrimitive(10, 10, 20), 5, 10, 5));
+            rootUnion.Add(new BoxPrimitive(8, 20, 10));
 
             SuspendLayout();
             verticleSpliter = new Splitter();
@@ -76,18 +78,20 @@ namespace MatterHackers.MatterCad
                     objectEditorList.AddChild(CsgEditorBase.CreateEditorForCsg(rootUnion));
                     objectEditorView.AddChild(objectEditorList);
                     objectEditorView.BackgroundColor = RGBA_Bytes.LightGray;
-                    //matterScriptEditor.LocalBounds = new RectangleDouble(0, 0, 200, 300);
+                    objectEditorView.LocalBounds = new RectangleDouble(0, 0, 200, 300);
+                    textSide.LocalBounds = new RectangleDouble(0, 0, 200, 300);
+                    //objectEditorView.DebugShowBounds = true;
                     textSide.AddChild(objectEditorView);
                     textSide.BoundsChanged += new EventHandler(textSide_BoundsChanged);
 
                     FlowLayoutWidget topButtonBar = new FlowLayoutWidget();
                     {
                         Button loadMatterScript = new Button("Load Matter Script");
-                        //      loadMatterScript.Click += new ButtonBase.ButtonEventHandler(loadMatterScript_Click);
+                        loadMatterScript.Click += loadMatterScript_Click;
                         topButtonBar.AddChild(loadMatterScript);
 
                         outputScad = new Button("Output SCAD");
-                        //    outputScad.Click += new ButtonBase.ButtonEventHandler(outputScad_Click);
+                        outputScad.Click += OutputScad_Click;
                         topButtonBar.AddChild(outputScad);
                     }
                     textSide.AddChild(topButtonBar);
@@ -96,7 +100,6 @@ namespace MatterHackers.MatterCad
                     {
                         Button loadStl = new Button("Load STL");
                         loadStl.Click += LoadStl_Click;
-                        //loadStl.Click += loadStl_Click;
                         bottomButtonBar.AddChild(loadStl);
                     }
                     textSide.AddChild(bottomButtonBar);
@@ -108,23 +111,17 @@ namespace MatterHackers.MatterCad
                 {
                     trackBallWidget = new TrackballTumbleWidget();
                     trackBallWidget.DrawGlContent += new EventHandler(glLightedView_DrawGlContent);
-                    //  renderSide.AddChild(trackBallWidget);
+                    renderSide.AddChild(trackBallWidget);
                 }
                 verticleSpliter.Panel2.AddChild(renderSide);
                 verticleSpliter.Panel1.AddChild(textSide);
             }
             ResumeLayout();
-
             AnchorAll();
-
             verticleSpliter.AnchorAll();
-
             textSide.AnchorAll();
-
             trackBallWidget.AnchorAll();
-
             AddChild(verticleSpliter);
-            //
             BackgroundColor = RGBA_Bytes.White;
         }
 
@@ -138,16 +135,11 @@ namespace MatterHackers.MatterCad
 
         private void LoadStl_Click(object sender, EventArgs e)
         {
-            //    throw new NotImplementedException();
-            //}
-            //void loadStl_Click(object sender, MouseEventArgs mouseEvent)
-            //{
             OpenFileDialogParams opeParams = new OpenFileDialogParams("STL Files|*.stl");
 
             FileDialog.OpenFileDialog(opeParams, (openParams) =>
             {
                 var streamToLoadFrom = File.Open(openParams.FileName, FileMode.Open);
-
 
                 if (streamToLoadFrom != null)
                 {
@@ -209,57 +201,66 @@ namespace MatterHackers.MatterCad
             }
         }
 
-        string loadedFileName;
-        void loadMatterScript_Click(object sender, MouseEventArgs mouseEvent)
-        {
-            // this should save and load json
-            throw new NotImplementedException();
 
-#if false
+        void loadMatterScript_Click(object sender, EventArgs mouseEvent)
+        {
             OpenFileDialogParams openParams = new OpenFileDialogParams("MatterScript Files, c-sharp code|*.part;*.cs");
 
-            Stream streamToLoadFrom = FileDialog.OpenFileDialog(ref openParams);
-            if (streamToLoadFrom != null)
+            FileDialog.OpenFileDialog(openParams, (streamToLoadFrom) =>
             {
-                loadedFileName = openParams.FileName;
-                string extension = System.IO.Path.GetExtension(openParams.FileName).ToUpper(CultureInfo.InvariantCulture);
-                if (extension == ".CS")
+
+                if (streamToLoadFrom != null)
                 {
+                    SuspendLayout();
+                    var loadedFileName = openParams.FileName;
+                    string extension = Path.GetExtension(openParams.FileName).ToUpper(CultureInfo.InvariantCulture);
+                    if (extension == ".CS")
+                    {
+                    }
+                    else if (extension == ".VB")
+                    {
+                    }
+
+                    string text = File.ReadAllText(loadedFileName);
+
+                    StreamReader streamReader = new StreamReader(streamToLoadFrom.FileName);
+                    objectEditorView.Text = streamReader.ReadToEnd();
+                    streamReader.Close();
+
+                    verticleSpliter.SplitterDistance = verticleSpliter.SplitterDistance - 1;
+                    verticleSpliter.SplitterDistance = verticleSpliter.SplitterDistance + 1;
+
+                  
+                    ResumeLayout();
+                    AnchorAll();
+                    verticleSpliter.AnchorAll();
+                    textSide.AnchorAll();
+                    objectEditorView.Invalidate();
+                    textSide.PerformLayout();
+                    trackBallWidget.AnchorAll();
+                    Invalidate();
                 }
-                else if (extension == ".VB")
-                {
-                }
+            });
 
-                //string text = System.IO.File.ReadAllText(loadedFileName);
-
-                StreamReader streamReader = new StreamReader(streamToLoadFrom);
-                objectEditorView.Text = streamReader.ReadToEnd();
-                streamToLoadFrom.Close();
-
-                verticleSpliter.SplitterDistance = verticleSpliter.SplitterDistance - 1;
-                verticleSpliter.SplitterDistance = verticleSpliter.SplitterDistance + 1;
-            }
-#endif
         }
-
-        void outputScad_Click(object sender, MouseEventArgs mouseEvent)
+        private void OutputScad_Click(object sender, EventArgs e)
         {
-            //if (rootUnion != null)
-            //{
-            //    SaveFileDialogParams saveParams = new SaveFileDialogParams("Text files (*.scad)|*.scad");
-            //    Stream streamToSaveTo = FileDialog.SaveFileDialog(ref saveParams);
-
-            //    if (streamToSaveTo != null)
-            //    {
-            //        OpenSCadOutput.Save(Utilities.PutOnPlatformAndCenter(rootUnion), streamToSaveTo);
-            //    }
-            //}
+            if (rootUnion != null)
+            {
+                SaveFileDialogParams saveParams = new SaveFileDialogParams("Text files (*.scad)|*.scad");
+                FileDialog.SaveFileDialog(saveParams, (streamToSaveTo) =>
+                {
+                    if (streamToSaveTo != null)
+                    {
+                        OpenSCadOutput.Save(rootUnion, streamToSaveTo.FileName);//"c:/output.scad")
+                    }
+                });
+            }
         }
 
         public override void OnDraw(Graphics2D graphics2D)
         {
             graphics2D.Clear(RGBA_Bytes.White);
-
             base.OnDraw(graphics2D);
         }
     }

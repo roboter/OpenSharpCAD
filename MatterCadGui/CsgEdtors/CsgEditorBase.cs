@@ -8,6 +8,7 @@ using MatterHackers.Csg.Solids;
 using MatterHackers.Csg.Processors;
 using MatterHackers.Csg.Transform;
 using MatterHackers.Agg.UI;
+using System.Diagnostics;
 
 namespace MatterHackers.MatterCadGui.CsgEditors
 {
@@ -29,7 +30,9 @@ namespace MatterHackers.MatterCadGui.CsgEditors
             }
             else
             {
-                throw new NotImplementedException();
+                Debug.WriteLine(csgObject.GetType());
+                return new CsgEditorBox((BoxPrimitive)csgObject);
+                //   throw new NotImplementedException();
             }
         }
     }
