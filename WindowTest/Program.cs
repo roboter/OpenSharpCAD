@@ -46,12 +46,12 @@ namespace WindowTest
             : base(800, 600)
         {
             BackgroundColor = RGBA_Bytes.YellowGreen;
-            //CsgObject testObject = TrainConnector();
+            CsgObject testObject = TrainConnector();
             //BoxCSG boxObject = new BoxCSG(20, 20, 20, "base box");
-            CsgObject csgObject = new Box(new Vector3(1, 1, 1), "test");
+            CsgObject csgObject = new Box(new Vector3(1, 1, 14), "test");
             if (renderRayTrace)
             {
-                 
+            //    AddChild(csgObject);   
 //                      AddChild(new MyGuiWidget());
               //  matterCadGuiWidget.AnchorAll();
                 AnchorAll();
@@ -61,13 +61,13 @@ namespace WindowTest
         public override void OnDraw(Graphics2D graphics2D)
         {
             RoundedRect roundRect = new RoundedRect(new RectangleDouble(Width / 2 - Width / 3 - 1, Height / 2 - Height / 8, Width / 2 + Width / 3 - 1, Height / 2 + Height / 8), 2);
-            
-            graphics2D.Circle(new Vector2(Width/2, Height/2), Width / 4 + Height / 4, new RGBA_Bytes(0, 0, 0));
-       
-            //    CsgObject csgObject = new Box(new Vector3(1, 1, 1), "test");
+
+            graphics2D.Circle(new Vector2(Width / 2, Height / 2), Width / 4 + Height / 4, new RGBA_Bytes(0, 0, 0));
+
+            var csgObject = new Box(new Vector3(1, 1, 1), "test");
             graphics2D.Render(roundRect, RGBA_Bytes.Pink);
             graphics2D.Line(new Vector2(0, 0), new Vector2(100, 100), new RGBA_Bytes(125, 125, 152));
-            // graphics2D.Render(csgObject, RGBA_Bytes.Magenta);
+
             base.OnDraw(graphics2D);
         }
     }

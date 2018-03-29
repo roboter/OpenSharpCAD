@@ -24,8 +24,10 @@ namespace MatterHackers.MatterCadGui.CsgEditors
 
         private void AddVectorEdit(BoxPrimitive target, int index)
         {
-            NumberEdit editControl = new NumberEdit(target.Size[index], pixelWidth: 35, allowDecimals: true);
-            editControl.TabIndex = index;
+            NumberEdit editControl = new NumberEdit(target.Size[index], pixelWidth: 35, allowDecimals: true)
+            {
+                TabIndex = index
+            };
             editControl.InternalNumberEdit.TextChanged += (sender, e) =>
             {
                 Vector3 newSize = target.Size;

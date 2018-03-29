@@ -142,10 +142,10 @@ namespace MatterHackers.MatterCad
         public MatterCadGui(bool renderRayTrace)
             : base(800, 600)
         {
-            //CsgObject testObject = TrainConnector();
+            CsgObject testObject = TrainConnector();
             // CsgObject testObject = PSEyeCameraHolder();
             //CsgObject testObject = ZenTableParts.ZenTableTestPart();
-            //testObject = Model.Flatten(testObject);
+         //   testObject = Model.Flatten(testObject);
 
             //CsgObject testObject = BuildBot.B
             
@@ -159,7 +159,7 @@ namespace MatterHackers.MatterCad
             //CsgObject testObject = MakerbotZRodMounts();
             //CsgObject testObject = new MotorMount(MotorMount.MotorSize.Nema17, ZenTableUtilities.wallThickness);
 
-           // WedgeCSG wedge = new WedgeCSG(new Vector2(), new Vector2(0, 25), new Vector2(10, 0), 5);
+            //WedgeCSG wedge = new WedgeCSG(new Vector2(), new Vector2(0, 25), new Vector2(10, 0), 5);
 
             //CsgObject testObject = Bevel.GetBevelSubtract(new Vector3(0, 0, 0), new Vector3(0, 0, 20), -Vector3.UnitX, -Vector3.UnitY, 3);
             //CsgObject testObject = Round.GetRound(new Vector3(0, 25, 0), new Vector3(0, 25, 20), -Vector3.UnitX, -Vector3.UnitY, 3);
@@ -174,7 +174,7 @@ namespace MatterHackers.MatterCad
 
     //        OutputNamedCenters.Save(testObject, "Mounting Hole", "throug holes.txt", false);
 
-            //SuspendLayout();
+            SuspendLayout();
             //CalculateIntersectCostsAndSaveToFile(); // you should do this after you optomize and then put the numbers back in.
 
             if (renderRayTrace)
@@ -201,7 +201,7 @@ namespace MatterHackers.MatterCad
 
             MatterCadGui cadWindow = new MatterCadGui(true);
             cadWindow.UseOpenGL = true;
-            cadWindow.Title = "MatterCAD";
+            cadWindow.Title = "MatterCADGui";
 
             cadWindow.ShowAsSystemWindow();
         }
