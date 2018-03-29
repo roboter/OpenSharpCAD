@@ -4,3 +4,6 @@
 [submodule "submodules/net3dbool"]
 	path = submodules/net3dbool
 	url = https://github.com/roboter/Net3dBool.git
+[submodule "submodules/opentk"]
+	path = submodules/opentk
+	url =https://github.com/opentk/opentk.git

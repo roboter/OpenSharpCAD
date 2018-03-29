@@ -143,13 +143,13 @@ namespace MatterHackers.MatterCad
             : base(800, 600)
         {
             //CsgObject testObject = TrainConnector();
-            CsgObject testObject = PSEyeCameraHolder();
+            // CsgObject testObject = PSEyeCameraHolder();
             //CsgObject testObject = ZenTableParts.ZenTableTestPart();
             //testObject = Model.Flatten(testObject);
 
             //CsgObject testObject = BuildBot.B
-
-            //BoxCSG boxObject = new BoxCSG(20, 20, 20, "base box");
+            
+         //   BoxCSG boxObject = new BoxCSG(20, 20, 20, "base box");
             //CsgObject testObject = YBedBeltClamp.CreateYBedBeltClamp();
             //CsgObject testObject = ZenTableParts.YRodMounts();
             //CsgObject testObject = new YRodMount(ZenTableUtilities.zenTableMajorAxisRodHeightAtCenterY);
@@ -159,20 +159,20 @@ namespace MatterHackers.MatterCad
             //CsgObject testObject = MakerbotZRodMounts();
             //CsgObject testObject = new MotorMount(MotorMount.MotorSize.Nema17, ZenTableUtilities.wallThickness);
 
-            //WedgeCSG wedge = new WedgeCSG(new Vector2(), new Vector2(0, 25), new Vector2(10, 0), 5);
+           // WedgeCSG wedge = new WedgeCSG(new Vector2(), new Vector2(0, 25), new Vector2(10, 0), 5);
 
             //CsgObject testObject = Bevel.GetBevelSubtract(new Vector3(0, 0, 0), new Vector3(0, 0, 20), -Vector3.UnitX, -Vector3.UnitY, 3);
             //CsgObject testObject = Round.GetRound(new Vector3(0, 25, 0), new Vector3(0, 25, 20), -Vector3.UnitX, -Vector3.UnitY, 3);
 
             //testObject = new Union(testObject, wedge);
 
-            //CsgObject testObject = MakerGearXCariage();
+//            CsgObject testObject = MakerGearXCariage();
 
-            OpenSCadOutput.Save(testObject, "test.scad", "");//, prepend: "%import_stl(\"mg.stl\", convexity = 5);\n");
+  //          OpenSCadOutput.Save(testObject, "test.scad", "");//, prepend: "%import_stl(\"mg.stl\", convexity = 5);\n");
 
             //OpenSCadOutput.Save(testObject, "test.scad", prepend: (new OutputNamedCenters("Mounting Hole", true)).LookForNamedPartRecursive((dynamic)testObject, Matrix4X4.Identity));
 
-            OutputNamedCenters.Save(testObject, "Mounting Hole", "throug holes.txt", false);
+    //        OutputNamedCenters.Save(testObject, "Mounting Hole", "throug holes.txt", false);
 
             //SuspendLayout();
             //CalculateIntersectCostsAndSaveToFile(); // you should do this after you optomize and then put the numbers back in.

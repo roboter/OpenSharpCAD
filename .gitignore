@@ -3,3 +3,10 @@
 ################################################################################
 
 /MatterCadGui/bin/Debug
+/.vs
+/MatterCadGui/obj
+/Net2dBoolDemo2/bin
+/Net2dBoolDemo2/obj
+/packages
+/WindowTest/bin/Debug
+/WindowTest/obj/Debug
