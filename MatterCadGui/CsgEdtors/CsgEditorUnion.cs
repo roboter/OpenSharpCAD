@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using MatterHackers.Csg;
-using MatterHackers.Csg.Solids;
+﻿using MatterHackers.Csg;
 using MatterHackers.Csg.Operations;
 using MatterHackers.Agg.UI;
 

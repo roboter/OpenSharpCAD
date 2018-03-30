@@ -60,6 +60,8 @@ namespace MatterHackers.MatterCad
         FlowLayoutWidget objectEditorList;
         FlowLayoutWidget textSide;
 
+        TextEditWidget textEdit;
+
         Csg.Operations.Union rootUnion = new Csg.Operations.Union("root");
 
         public MatterCadGuiWidget()
@@ -69,54 +71,64 @@ namespace MatterHackers.MatterCad
 
             SuspendLayout();
             verticleSpliter = new Splitter();
-            {
-                // pannel 1 stuff
-                textSide = new FlowLayoutWidget(FlowDirection.TopToBottom);
-                {
-                    objectEditorView = new GuiWidget(300, 500);
-                    objectEditorList = new FlowLayoutWidget();
-                    objectEditorList.AddChild(CsgEditorBase.CreateEditorForCsg(rootUnion));
-                    objectEditorView.AddChild(objectEditorList);
-                    objectEditorView.BackgroundColor = RGBA_Bytes.LightGray;
-                    objectEditorView.LocalBounds = new RectangleDouble(0, 0, 200, 300);
-                    textSide.LocalBounds = new RectangleDouble(0, 0, 200, 300);
-                    //objectEditorView.DebugShowBounds = true;
-                    textSide.AddChild(objectEditorView);
-                    textSide.BoundsChanged += new EventHandler(textSide_BoundsChanged);
 
-                    FlowLayoutWidget topButtonBar = new FlowLayoutWidget();
-                    {
-                        Button loadMatterScript = new Button("Load Matter Script");
-                        loadMatterScript.Click += loadMatterScript_Click;
-                        topButtonBar.AddChild(loadMatterScript);
+            // pannel 1 stuff
+            textSide = new FlowLayoutWidget(FlowDirection.TopToBottom);
 
-                        outputScad = new Button("Output SCAD");
-                        outputScad.Click += OutputScad_Click;
-                        topButtonBar.AddChild(outputScad);
-                    }
-                    textSide.AddChild(topButtonBar);
+            objectEditorView = new GuiWidget(300, 500);
+            objectEditorList = new FlowLayoutWidget();
 
-                    FlowLayoutWidget bottomButtonBar = new FlowLayoutWidget();
-                    {
-                        Button loadStl = new Button("Load STL");
-                        loadStl.Click += LoadStl_Click;
-                        bottomButtonBar.AddChild(loadStl);
-                    }
-                    textSide.AddChild(bottomButtonBar);
-                }
+            textEdit = new TextEditWidget("test",300,400);
+            textEdit.HAnchor = HAnchor.ParentLeftRight;
+       //     textEdit.MinimumSize = new Vector2(Math.Max(textEdit.MinimumSize.x, pixelWidth), Math.Max(textEdit.MinimumSize.y, pixelHeight));
+            textEdit.VAnchor = VAnchor.ParentBottomTop;
+            textEdit.Multiline = true;
+            textEdit.BackgroundColor = RGBA_Bytes.Yellow;
 
-                //    // pannel 2 stuff
-                FlowLayoutWidget renderSide = new FlowLayoutWidget(FlowDirection.TopToBottom);
-                renderSide.AnchorAll();
-                {
-                    trackBallWidget = new TrackballTumbleWidget();
-                    trackBallWidget.DrawGlContent += new EventHandler(glLightedView_DrawGlContent);
-                    renderSide.AddChild(trackBallWidget);
-                }
-                verticleSpliter.Panel2.AddChild(renderSide);
-                verticleSpliter.Panel1.AddChild(textSide);
-            }
+           // objectEditorList.AddChild(textEdit);//CsgEditorBase.CreateEditorForCsg(rootUnion));
+         //   objectEditorView.AddChild(objectEditorList);
+        //    objectEditorView.BackgroundColor = RGBA_Bytes.Orange;
+       //     objectEditorView.Text = "Hello World!";
+            objectEditorView.LocalBounds = new RectangleDouble(0, 0, 200, 300);
+            textSide.LocalBounds = new RectangleDouble(0, 0, 200, 300);
+      //      objectEditorView.DebugShowBounds = true;
+            textSide.AddChild(textEdit);
+            textSide.BoundsChanged += new EventHandler(textSide_BoundsChanged);
+
+            FlowLayoutWidget topButtonBar = new FlowLayoutWidget();
+
+            Button loadMatterScript = new Button("Load Matter Script");
+            loadMatterScript.Click += loadMatterScript_Click;
+            topButtonBar.AddChild(loadMatterScript);
+
+            outputScad = new Button("Output SCAD");
+            outputScad.Click += OutputScad_Click;
+            topButtonBar.AddChild(outputScad);
+
+            textSide.AddChild(topButtonBar);
+
+            FlowLayoutWidget bottomButtonBar = new FlowLayoutWidget();
+
+            Button loadStl = new Button("Load STL");
+            loadStl.Click += LoadStl_Click;
+            bottomButtonBar.AddChild(loadStl);
+
+            textSide.AddChild(bottomButtonBar);
+
+            //    // pannel 2 stuff
+            FlowLayoutWidget renderSide = new FlowLayoutWidget(FlowDirection.TopToBottom);
+            renderSide.AnchorAll();
+
+            trackBallWidget = new TrackballTumbleWidget();
+            trackBallWidget.DrawGlContent += new EventHandler(glLightedView_DrawGlContent);
+            renderSide.AddChild(trackBallWidget);
+
+            verticleSpliter.Panel2.AddChild(renderSide);
+            verticleSpliter.Panel1.AddChild(textSide);
+
+
             ResumeLayout();
+            objectEditorView.AnchorAll();// .Invalidate();
             AnchorAll();
             verticleSpliter.AnchorAll();
             textSide.AnchorAll();
@@ -214,23 +226,22 @@ namespace MatterHackers.MatterCad
                     SuspendLayout();
                     var loadedFileName = openParams.FileName;
                     string extension = Path.GetExtension(openParams.FileName).ToUpper(CultureInfo.InvariantCulture);
-                    if (extension == ".CS")
-                    {
-                    }
-                    else if (extension == ".VB")
-                    {
-                    }
+                    //if (extension == ".CS")
+                    //{
+                    //}
+                    //else if (extension == ".VB")
+                    //{
+                    //}
 
                     string text = File.ReadAllText(loadedFileName);
 
                     StreamReader streamReader = new StreamReader(streamToLoadFrom.FileName);
-                    objectEditorView.Text = streamReader.ReadToEnd();
+                    textEdit.Text = streamReader.ReadToEnd();
                     streamReader.Close();
 
                     verticleSpliter.SplitterDistance = verticleSpliter.SplitterDistance - 1;
                     verticleSpliter.SplitterDistance = verticleSpliter.SplitterDistance + 1;
 
-                  
                     ResumeLayout();
                     AnchorAll();
                     verticleSpliter.AnchorAll();
