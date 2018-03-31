@@ -45,6 +45,9 @@ using System.IO;
 using MatterHackers.Agg.WindowsFileDialogs;
 using MatterHackers.Csg.Processors;
 using System.Globalization;
+using MatterHackers.Csg.Operations;
+using MatterHackers.Csg;
+using MatterHackers.MatterCadGui;
 
 namespace MatterHackers.MatterCad
 {
@@ -64,11 +67,17 @@ namespace MatterHackers.MatterCad
 
         Csg.Operations.Union rootUnion = new Csg.Operations.Union("root");
 
+        
+
         public MatterCadGuiWidget()
         {
-            rootUnion.Add(new Translate(new BoxPrimitive(10, 10, 20), 5, 10, 5));
-            rootUnion.Add(new BoxPrimitive(8, 20, 10));
+            //rootUnion.Add(DemoProjects.PowerSupply()); //works but cutout is not working
+            rootUnion.Add(SimplePartTester.Assembly());
+            //rootUnion.Add(new BoxPrimitive(8, 20, 10));
 
+            //rootUnion.Add(new LinearExtrude(new double[] { 1.1, 2.2, 3.3, 6.3 }, 7));
+            //rootUnion.Add(
+            //    new Difference (new Translate(new Cylinder(10, 40), 5, 10, 5), new Translate(new BoxPrimitive(10, 10, 20,"test",true), 5, 20, 5)));
             SuspendLayout();
             verticleSpliter = new Splitter();
 
