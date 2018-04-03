@@ -195,11 +195,11 @@ namespace MatterHackers.MatterCad
                     OrthographicZProjection.DrawTo(plateGraphics, meshToRender, lowerLeftInMM + offsetInMM, pixelsPerMm);
                     plateGraphics.DrawString(Path.GetFileName(openParams.FileName), (offsetInMM.x + centerInMM.x) * pixelsPerMm, (offsetInMM.y - 10) * pixelsPerMm, 50, Agg.Font.Justification.Center);
 
-                    ImageBuffer logoImage = new ImageBuffer();
-                    ImageIO.LoadImageData("Logo.png", logoImage);
-                    plateGraphics.Render(logoImage, (plateInventory.Width - logoImage.Width) / 2, plateInventory.Height - logoImage.Height - 10 * pixelsPerMm);
+                    //ImageBuffer logoImage = new ImageBuffer();
+                    //ImageIO.LoadImageData("Logo.png", logoImage);
+                    //plateGraphics.Render(logoImage, (plateInventory.Width - logoImage.Width) / 2, plateInventory.Height - logoImage.Height - 10 * pixelsPerMm);
 
-                    ImageIO.SaveImageData("plate Inventory.jpeg", plateInventory);
+                    //ImageIO.SaveImageData("plate Inventory.jpeg", plateInventory);
                 }
             });
         }

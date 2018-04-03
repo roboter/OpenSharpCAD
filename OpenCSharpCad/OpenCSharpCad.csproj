@@ -47,7 +47,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppStart.cs" />
     <Compile Include="MainWindow.cs" />
+    <Compile Include="OrthographicZProjection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shapes.cs" />
   </ItemGroup>
@@ -94,6 +96,10 @@
     <ProjectReference Include="..\Submodules\agg-sharp\VectorMath\VectorMath.csproj">
       <Project>{d3e41b4e-bfbb-44ca-94c8-95c00f754fdd}</Project>
       <Name>VectorMath</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Submodules\agg-sharp\WindowsFileDialogs\WindowsFileDialogs.csproj">
+      <Project>{a526dc5d-65f3-461b-805f-d3ac9665f5c9}</Project>
+      <Name>WindowsFileDialogs</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
