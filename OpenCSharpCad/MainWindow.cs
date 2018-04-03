@@ -2,26 +2,24 @@
 using MatterHackers.Agg;
 using MatterHackers.Agg.OpenGlGui;
 using MatterHackers.Agg.UI;
-using MatterHackers.Csg.Operations;
 using MatterHackers.VectorMath;
 
 using System.CodeDom.Compiler;
 using System.Text;
-using MatterHackers.Csg.Solids;
 using System.Diagnostics;
 using System.IO;
 using System.Globalization;
-using MatterHackers.Csg.Processors;
 using MatterHackers.PolygonMesh.Processors;
 using MatterHackers.Agg.Image;
 using MatterHackers.Agg.VertexSource;
+using System.Dynamic;
+using System.Collections.Generic;
 
-namespace OpenCSharpCad
+namespace OpenSharpCAD
 {
     public class MainWindow : SystemWindow
     {
-        private MatterHackers.PolygonMesh.Mesh meshToRender = null;
-
+        // private MatterHackers.PolygonMesh.Mesh meshToRender = null;
         private TrackballTumbleWidget trackBallWidget;
         private Button outputScad;
         private Splitter verticleSpliter;
@@ -33,8 +31,8 @@ namespace OpenCSharpCad
         //private Union rootUnion = new Union("root");
         dynamic classRef;
 
-        public MainWindow(bool renderRayTrace) : base(800, 600)
-        {
+        public MainWindow(bool renderRayTrace) : base(1000, 1000)
+        {   
             //new BoxPrimitive(8, 20, 10);
             //rootUnion.Add(new Translate(new BoxPrimitive(10, 10, 20), 5, 10, 5));
             //rootUnion.Add(new Box(8, 20, 10));
@@ -47,11 +45,12 @@ namespace OpenCSharpCad
 
             SuspendLayout();
             verticleSpliter = new Splitter();
-
+            verticleSpliter.SplitterDistance = 700;
             // panel 1 stuff
             #region TextSide
             textSide = new FlowLayoutWidget(FlowDirection.TopToBottom);
-
+            
+            
             objectEditorView = new GuiWidget();
             objectEditorList = new FlowLayoutWidget();
             //  objectEditorList.AddChild(new TextEditWidget("Text in box"));
@@ -98,7 +97,7 @@ namespace OpenCSharpCad
             load.Click += loadMatterScript_Click;
             topButtonBar.AddChild(load);
             Button save = new Button("Save OpenSharpCad Script");
-            save.Click += saveMatterScript_Click;
+            save.Click += SaveMatterScript_Click;
             topButtonBar.AddChild(save);
 
             outputScad = new Button("Output SCAD");
@@ -124,6 +123,10 @@ namespace OpenCSharpCad
 
             trackBallWidget = new TrackballTumbleWidget();
             trackBallWidget.DrawGlContent += glLightedView_DrawGlContent;
+
+
+            trackBallWidget.TrackBallController.Scale = 0.05;
+       //     trackBallWidget.TrackBallController.Reset();
             
             renderSide.AddChild(trackBallWidget);
 
@@ -146,14 +149,12 @@ namespace OpenCSharpCad
             Compile();
         }
 
-        private void saveMatterScript_Click(object sender, EventArgs e)
+        private void SaveMatterScript_Click(object sender, EventArgs e)
         {
             FileDialog.SaveFileDialog(new SaveFileDialogParams("CS files (*.cs)|*.cs"), (saveParams) =>
             {
-
                 if (saveParams != null)
                 {
-                    //string extension = Path.GetExtension(saveParams.FileName).ToUpper(CultureInfo.InvariantCulture);
                     File.WriteAllText(saveParams.FileName, textEdit.Text);
                 }
             });
@@ -199,7 +200,7 @@ namespace OpenCSharpCad
             sb.AppendLine("using MatterHackers.Csg.Transform;");
 
             //     sb.AppendLine();
-            sb.AppendLine("namespace Test");
+            sb.AppendLine("namespace OpenSharpCadSnippet");
             sb.AppendLine("{");
 
             sb.AppendLine("      public class RenderTest");
@@ -231,11 +232,11 @@ namespace OpenCSharpCad
             // Dont need any extra assemblies            
             try
             {
-                // / txtErrors.Clear();
+                //txtErrors.Clear();
 
                 //------------
                 // Pass the class code, the namespace of the class and the list of extra assemblies needed
-                classRef = DynCode.CodeHelper.HelperFunction(classCode, "Test.RenderTest", new object[] { });
+                classRef = DynCode.CodeHelper.HelperFunction(classCode, "OpenSharpCadSnippet.RenderTest", new object[] { });
 
                 //-------------------
                 // If the compilation process returned an error, then show to the user all errors
@@ -264,13 +265,27 @@ namespace OpenCSharpCad
         }
         private void glLightedView_DrawGlContent(object sender, EventArgs e)
         {
-            //try
-            //{
-            classRef.Render();
-            //}
-            //catch (Exception) { }
+            try
+            {
+                var exists = IsPropertyExist(classRef, "HasErrors");
+              
+                if (!exists)
+                {
+                    classRef.Render();
+                }
+            }
+            catch (Exception) { }
 
         }
+        public static bool IsPropertyExist(dynamic settings, string name)
+        {
+            if (settings is ExpandoObject)
+            {
+                return ((IDictionary<string, object>)settings).ContainsKey(name);
+            }
+            return settings.GetType().GetProperty(name) != null;
+        }
+
 
         void textSide_BoundsChanged(object sender, EventArgs e)
         {
@@ -312,54 +327,54 @@ namespace OpenCSharpCad
 
         }
 
-        private void LoadStl_Click(object sender, EventArgs e)
-        {
-            OpenFileDialogParams opeParams = new OpenFileDialogParams("STL Files|*.stl");
+        //private void LoadStl_Click(object sender, EventArgs e)
+        //{
+        //    OpenFileDialogParams opeParams = new OpenFileDialogParams("STL Files|*.stl");
 
-            FileDialog.OpenFileDialog(opeParams, (openParams) =>
-            {
-                var streamToLoadFrom = File.Open(openParams.FileName, FileMode.Open);
+        //    FileDialog.OpenFileDialog(opeParams, (openParams) =>
+        //    {
+        //        var streamToLoadFrom = File.Open(openParams.FileName, FileMode.Open);
 
-                if (streamToLoadFrom != null)
-                {
-                    var loadedFileName = openParams.FileName;
+        //        if (streamToLoadFrom != null)
+        //        {
+        //            var loadedFileName = openParams.FileName;
 
-                    meshToRender = StlProcessing.Load(streamToLoadFrom);
+        //            meshToRender = StlProcessing.Load(streamToLoadFrom);
 
-                    ImageBuffer plateInventory = new ImageBuffer((int)(300 * 8.5), 300 * 11, 32, new BlenderBGRA());
-                    Graphics2D plateGraphics = plateInventory.NewGraphics2D();
-                    plateGraphics.Clear(RGBA_Bytes.White);
+        //            ImageBuffer plateInventory = new ImageBuffer((int)(300 * 8.5), 300 * 11, 32, new BlenderBGRA());
+        //            Graphics2D plateGraphics = plateInventory.NewGraphics2D();
+        //            plateGraphics.Clear(RGBA_Bytes.White);
 
-                    double inchesPerMm = 0.0393701;
-                    double pixelsPerInch = 300;
-                    double pixelsPerMm = inchesPerMm * pixelsPerInch;
-                    AxisAlignedBoundingBox aabb = meshToRender.GetAxisAlignedBoundingBox();
-                    Vector2 lowerLeftInMM = new Vector2(-aabb.minXYZ.x, -aabb.minXYZ.y);
-                    Vector3 centerInMM = (aabb.maxXYZ - aabb.minXYZ) / 2;
-                    Vector2 offsetInMM = new Vector2(20, 30);
-
-
-                    RectangleDouble bounds = new RectangleDouble(offsetInMM.x * pixelsPerMm,
-                        offsetInMM.y * pixelsPerMm,
-                        (offsetInMM.x + aabb.maxXYZ.x - aabb.minXYZ.x) * pixelsPerMm,
-                        (offsetInMM.y + aabb.maxXYZ.y - aabb.minXYZ.y) * pixelsPerMm);
-                    bounds.Inflate(3 * pixelsPerMm);
-                    RoundedRect rect = new RoundedRect(bounds, 3 * pixelsPerMm);
-                    plateGraphics.Render(rect, RGBA_Bytes.LightGray);
-                    Stroke rectOutline = new Stroke(rect, .5 * pixelsPerMm);
-                    plateGraphics.Render(rectOutline, RGBA_Bytes.DarkGray);
+        //            double inchesPerMm = 0.0393701;
+        //            double pixelsPerInch = 300;
+        //            double pixelsPerMm = inchesPerMm * pixelsPerInch;
+        //            AxisAlignedBoundingBox aabb = meshToRender.GetAxisAlignedBoundingBox();
+        //            Vector2 lowerLeftInMM = new Vector2(-aabb.minXYZ.x, -aabb.minXYZ.y);
+        //            Vector3 centerInMM = (aabb.maxXYZ - aabb.minXYZ) / 2;
+        //            Vector2 offsetInMM = new Vector2(20, 30);
 
 
-                    OrthographicZProjection.DrawTo(plateGraphics, meshToRender, lowerLeftInMM + offsetInMM, pixelsPerMm);
-                    plateGraphics.DrawString(Path.GetFileName(openParams.FileName), (offsetInMM.x + centerInMM.x) * pixelsPerMm, (offsetInMM.y - 10) * pixelsPerMm, 50, MatterHackers.Agg.Font.Justification.Center);
+        //            RectangleDouble bounds = new RectangleDouble(offsetInMM.x * pixelsPerMm,
+        //                offsetInMM.y * pixelsPerMm,
+        //                (offsetInMM.x + aabb.maxXYZ.x - aabb.minXYZ.x) * pixelsPerMm,
+        //                (offsetInMM.y + aabb.maxXYZ.y - aabb.minXYZ.y) * pixelsPerMm);
+        //            bounds.Inflate(3 * pixelsPerMm);
+        //            RoundedRect rect = new RoundedRect(bounds, 3 * pixelsPerMm);
+        //            plateGraphics.Render(rect, RGBA_Bytes.LightGray);
+        //            Stroke rectOutline = new Stroke(rect, .5 * pixelsPerMm);
+        //            plateGraphics.Render(rectOutline, RGBA_Bytes.DarkGray);
 
-                    //ImageBuffer logoImage = new ImageBuffer();
-                    //ImageIO.LoadImageData("Logo.png", logoImage);
-                    //plateGraphics.Render(logoImage, (plateInventory.Width - logoImage.Width) / 2, plateInventory.Height - logoImage.Height - 10 * pixelsPerMm);
 
-                    //ImageIO.SaveImageData("plate Inventory.jpeg", plateInventory);
-                }
-            });
-        }
+        //            OrthographicZProjection.DrawTo(plateGraphics, meshToRender, lowerLeftInMM + offsetInMM, pixelsPerMm);
+        //            plateGraphics.DrawString(Path.GetFileName(openParams.FileName), (offsetInMM.x + centerInMM.x) * pixelsPerMm, (offsetInMM.y - 10) * pixelsPerMm, 50, MatterHackers.Agg.Font.Justification.Center);
+
+        //            //ImageBuffer logoImage = new ImageBuffer();
+        //            //ImageIO.LoadImageData("Logo.png", logoImage);
+        //            //plateGraphics.Render(logoImage, (plateInventory.Width - logoImage.Width) / 2, plateInventory.Height - logoImage.Height - 10 * pixelsPerMm);
+
+        //            //ImageIO.SaveImageData("plate Inventory.jpeg", plateInventory);
+        //        }
+        //    });
+        //}
     }
 }

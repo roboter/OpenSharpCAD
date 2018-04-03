@@ -7,8 +7,8 @@
     <ProjectGuid>{CDBC3B97-D243-4733-8C70-EEA82F7881B0}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OpenCSharpCad</RootNamespace>
-    <AssemblyName>OpenCSharpCad</AssemblyName>
+    <RootNamespace>OpenSharpCad</RootNamespace>
+    <AssemblyName>OpenSharpCad</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

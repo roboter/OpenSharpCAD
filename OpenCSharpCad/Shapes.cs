@@ -5,7 +5,7 @@ using MatterHackers.Csg.Solids;
 using MatterHackers.RenderOpenGl;
 using MatterHackers.Agg;
 
-namespace OpenCSharpCad
+namespace OpenSharpCAD
 {
     public static class CadShapes
     {

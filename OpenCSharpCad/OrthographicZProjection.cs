@@ -3,7 +3,7 @@ using MatterHackers.VectorMath;
 using MatterHackers.PolygonMesh;
 using MatterHackers.Agg.VertexSource;
 
-namespace OpenCSharpCad
+namespace OpenSharpCAD
 {
     public static class OrthographicZProjection
     {
