@@ -22,7 +22,7 @@ namespace OpenSharpCAD
         // private MatterHackers.PolygonMesh.Mesh meshToRender = null;
         private TrackballTumbleWidget trackBallWidget;
         private Button outputScad;
-        private Splitter verticleSpliter;
+        private Splitter varticalSplitter;
 
         private GuiWidget objectEditorView;
         private FlowLayoutWidget objectEditorList;
@@ -31,8 +31,8 @@ namespace OpenSharpCAD
         //private Union rootUnion = new Union("root");
         dynamic classRef;
 
-        public MainWindow(bool renderRayTrace) : base(1000, 1000)
-        {   
+        public MainWindow() : base(1000, 1000)
+        {
             //new BoxPrimitive(8, 20, 10);
             //rootUnion.Add(new Translate(new BoxPrimitive(10, 10, 20), 5, 10, 5));
             //rootUnion.Add(new Box(8, 20, 10));
@@ -44,13 +44,13 @@ namespace OpenSharpCAD
             //rootUnion.Box(8, 20, 40);
 
             SuspendLayout();
-            verticleSpliter = new Splitter();
-            verticleSpliter.SplitterDistance = 700;
+            varticalSplitter = new Splitter();
+            varticalSplitter.SplitterDistance = 700;
             // panel 1 stuff
             #region TextSide
             textSide = new FlowLayoutWidget(FlowDirection.TopToBottom);
-            
-            
+
+
             objectEditorView = new GuiWidget();
             objectEditorList = new FlowLayoutWidget();
             //  objectEditorList.AddChild(new TextEditWidget("Text in box"));
@@ -124,26 +124,24 @@ namespace OpenSharpCAD
             trackBallWidget = new TrackballTumbleWidget();
             trackBallWidget.DrawGlContent += glLightedView_DrawGlContent;
 
-
             trackBallWidget.TrackBallController.Scale = 0.05;
-       //     trackBallWidget.TrackBallController.Reset();
-            
+
             renderSide.AddChild(trackBallWidget);
 
-            verticleSpliter.Panel2.AddChild(renderSide);
-            verticleSpliter.Panel1.AddChild(textSide);
+            varticalSplitter.Panel2.AddChild(renderSide);
+            varticalSplitter.Panel1.AddChild(textSide);
 
             ResumeLayout();
 
             AnchorAll();
 
-            verticleSpliter.AnchorAll();
+            varticalSplitter.AnchorAll();
 
             textSide.AnchorAll();
 
             trackBallWidget.AnchorAll();
 
-            AddChild(verticleSpliter);
+            AddChild(varticalSplitter);
 
             BackgroundColor = RGBA_Bytes.White;
             Compile();
@@ -229,7 +227,7 @@ namespace OpenSharpCAD
             string classCode = sb.ToString();
 
             //-----------------
-            // Dont need any extra assemblies            
+            // Dont need any extra assemblies
             try
             {
                 //txtErrors.Clear();
@@ -268,15 +266,15 @@ namespace OpenSharpCAD
             try
             {
                 var exists = IsPropertyExist(classRef, "HasErrors");
-              
+
                 if (!exists)
                 {
                     classRef.Render();
                 }
             }
             catch (Exception) { }
-
         }
+
         public static bool IsPropertyExist(dynamic settings, string name)
         {
             if (settings is ExpandoObject)
@@ -311,12 +309,12 @@ namespace OpenSharpCAD
                     textEdit.Text = streamReader.ReadToEnd();
                     streamReader.Close();
 
-                    verticleSpliter.SplitterDistance = verticleSpliter.SplitterDistance - 1;
-                    verticleSpliter.SplitterDistance = verticleSpliter.SplitterDistance + 1;
+                    varticalSplitter.SplitterDistance = varticalSplitter.SplitterDistance - 1;
+                    varticalSplitter.SplitterDistance = varticalSplitter.SplitterDistance + 1;
 
                     ResumeLayout();
                     AnchorAll();
-                    verticleSpliter.AnchorAll();
+                    varticalSplitter.AnchorAll();
                     textSide.AnchorAll();
                     objectEditorView.Invalidate();
                     textSide.PerformLayout();

@@ -47,10 +47,6 @@
       <Project>{a20459ad-3006-402c-952c-f4a9d9969a87}</Project>
       <Name>MatterCadGui</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Net2dBoolDemo2\Net2dBoolDemo2.csproj">
-      <Project>{d21d9d1c-8556-4036-a976-69a508645642}</Project>
-      <Name>Net2dBoolDemo2</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Submodules\agg-sharp\agg\Agg.csproj">
       <Project>{657DBC6D-C3EA-4398-A3FA-DDB73C14F71B}</Project>
       <Name>Agg</Name>

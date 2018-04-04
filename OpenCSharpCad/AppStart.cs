@@ -1,15 +1,14 @@
-﻿using System;
-
-namespace OpenSharpCAD
+﻿namespace OpenSharpCAD
 {
+    using System;
+
     public class AppStart
     {
         [STAThread]
         public static void Main(string[] args)
         {
-            
-            new MainWindow(true)
-            {
+            new MainWindow
+                {
                 UseOpenGL = true,
                 Title = "OpenSharpCAD",
                 Maximized = true
