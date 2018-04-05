@@ -1,6 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using MatterHackers.Csg;
+﻿using MatterHackers.Csg;
 using MatterHackers.Csg.Solids;
 using MatterHackers.Csg.Transform;
 using MatterHackers.Csg.Processors;

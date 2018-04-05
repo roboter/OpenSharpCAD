@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 using MatterHackers.Csg;
+using MatterHackers.Csg.Processors;
+using MatterHackers.Csg.Solids;
+using MatterHackers.Csg.Transform;
 using MatterHackers.VectorMath;
 
 namespace SimplePartScripting
