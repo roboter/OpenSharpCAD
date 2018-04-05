@@ -14,6 +14,9 @@ using MatterHackers.Agg.Image;
 using MatterHackers.Agg.VertexSource;
 using System.Dynamic;
 using System.Collections.Generic;
+using MatterHackers.Csg;
+using MatterHackers.Csg.Processors;
+using MatterHackers.RenderOpenGl;
 
 namespace OpenSharpCAD
 {
@@ -30,7 +33,7 @@ namespace OpenSharpCAD
         private TextEditWidget textEdit;
         //private Union rootUnion = new Union("root");
         dynamic classRef;
-
+        private CsgObject previousRender;
         public MainWindow() : base(1000, 1000)
         {
             //new BoxPrimitive(8, 20, 10);
@@ -64,7 +67,7 @@ namespace OpenSharpCAD
             //code.AppendLine("rootUnion.Add(new LinearExtrude(new double[] { 1.1, 2.2, 3.3, 6.3 }, 7));");
             code.AppendLine("rootUnion.Add(new Translate(new Cylinder(10, 40), 5, 10, 5));");
             code.AppendLine("rootUnion.Add(new BoxPrimitive(8, 20, 10));");
-            code.AppendLine("RenderCsgToGl.Render(rootUnion);");
+            code.AppendLine("return rootUnion;");
             //code.AppendLine("MatterHackers.PolygonMesh.Mesh mesh = new MatterHackers.PolygonMesh.Mesh();");
             //code.AppendLine("var v0 = mesh.CreateVertex(new Vector3(1, 0, 1));  // V0");
             //code.AppendLine("var v1 = mesh.CreateVertex(new Vector3(1, 0, -1)); // V1");
@@ -93,15 +96,15 @@ namespace OpenSharpCAD
             #region Buttons
             FlowLayoutWidget topButtonBar = new FlowLayoutWidget();
 
-            Button load = new Button("Load OpenSharpCad Script");
+            Button load = new Button("Load OpenSharpCAD Script");
             load.Click += loadMatterScript_Click;
             topButtonBar.AddChild(load);
-            Button save = new Button("Save OpenSharpCad Script");
+            Button save = new Button("Save OpenSharpCAD Script");
             save.Click += SaveMatterScript_Click;
             topButtonBar.AddChild(save);
 
             outputScad = new Button("Output SCAD");
-            //   outputScad.Click += outputScad_Click;
+            outputScad.Click += outputScad_Click;
             topButtonBar.AddChild(outputScad);
 
             textSide.AddChild(topButtonBar);
@@ -158,20 +161,20 @@ namespace OpenSharpCAD
             });
         }
 
-        //private void outputScad_Click(object sender, EventArgs e)
-        //{
-        //    if (rootUnion != null)
-        //    {
-        //        SaveFileDialogParams saveParams = new SaveFileDialogParams("Text files (*.scad)|*.scad");
-        //        FileDialog.SaveFileDialog(saveParams, (streamToSaveTo) =>
-        //        {
-        //            if (streamToSaveTo != null)
-        //            {
-        //                OpenSCadOutput.Save(rootUnion, streamToSaveTo.FileName);//"c:/output.scad")
-        //            }
-        //        });
-        //    }
-        //}
+        private void outputScad_Click(object sender, EventArgs e)
+        {
+            if (previousRender != null)
+            {
+                SaveFileDialogParams saveParams = new SaveFileDialogParams("Text files (*.scad)|*.scad");
+                FileDialog.SaveFileDialog(saveParams, (streamToSaveTo) =>
+                {
+                    if (streamToSaveTo != null)
+                    {
+                        OpenSCadOutput.Save(previousRender, streamToSaveTo.FileName);
+                    }
+                });
+            }
+        }
 
         private void Hello_TextChanged(object sender, EventArgs e)
         {
@@ -205,7 +208,7 @@ namespace OpenSharpCAD
             sb.AppendLine("      {");
 
             // My pre-defined class named FilterCountries that receive the sourceListBox
-            sb.AppendLine("            public void Render()");
+            sb.AppendLine("            public CsgObject Render()");
             sb.AppendLine("            {");
 
             sb.AppendLine(textEdit.Text);
@@ -269,7 +272,17 @@ namespace OpenSharpCAD
 
                 if (!exists)
                 {
-                    classRef.Render();
+                    CsgObject ren = classRef.Render();
+                    RenderCsgToGl.Render(ren);
+                    previousRender = ren;
+                    //OpenSCadOutput.Save(ren, "Ren.scad");
+                }
+                else
+                {
+                    if (previousRender != null)
+                    {
+                        RenderCsgToGl.Render(previousRender);
+                    }
                 }
             }
             catch (Exception) { }
