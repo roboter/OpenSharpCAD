@@ -4,48 +4,48 @@ using MatterHackers.Csg.Transform;
 using MatterHackers.Csg.Processors;
 using MatterHackers.VectorMath;
 
-namespace SimplePartScripting
+namespace OpenSharpCadSnippet
 {
-    static class SimplePartTester
+    static class RenderTest
     {
-        static void BedLevelTestCode()
-        {
-            Vector3 x20y20 = new Vector3(20, 20, 21.56);
-            Vector3 x120y20 = new Vector3(120, 20, 18.44);
-            Vector3 x20y120 = new Vector3(20, 120, 21.03);
+        //static void Render()
+        //{
+        //    Vector3 x20y20 = new Vector3(20, 20, 21.56);
+        //    Vector3 x120y20 = new Vector3(120, 20, 18.44);
+        //    Vector3 x20y120 = new Vector3(20, 120, 21.03);
 
-            Vector3 xPositive = (x120y20 - x20y20).GetNormal();
-            Vector3 yPositive = (x20y120 - x20y20).GetNormal();
-            Vector3 planNormal = Vector3.Cross(yPositive, xPositive);
+        //    Vector3 xPositive = (x120y20 - x20y20).GetNormal();
+        //    Vector3 yPositive = (x20y120 - x20y20).GetNormal();
+        //    Vector3 planNormal = Vector3.Cross(yPositive, xPositive);
 
-            Matrix4X4 bedLevel = Matrix4X4.LookAt(Vector3.Zero, planNormal, yPositive);
+        //    Matrix4X4 bedLevel = Matrix4X4.LookAt(Vector3.Zero, planNormal, yPositive);
 
-            Vector3 fixedX20Y20 = Vector3.Transform(x20y20, bedLevel);
-            Vector3 fixedX120Y20 = Vector3.Transform(x120y20, bedLevel);
-            Vector3 fixedX20Y120 = Vector3.Transform(x20y120, bedLevel);
-            double zAtX0Y0 = fixedX120Y20.z;
+        //    Vector3 fixedX20Y20 = Vector3.Transform(x20y20, bedLevel);
+        //    Vector3 fixedX120Y20 = Vector3.Transform(x120y20, bedLevel);
+        //    Vector3 fixedX20Y120 = Vector3.Transform(x20y120, bedLevel);
+        //    double zAtX0Y0 = fixedX120Y20.z;
 
-            Matrix4X4 inverseBedLevel = Matrix4X4.Invert(bedLevel);
+        //    Matrix4X4 inverseBedLevel = Matrix4X4.Invert(bedLevel);
 
-            bedLevel = Matrix4X4.Identity;
-            Matrix4X4 A = bedLevel;
-            Matrix4X4 result = new Matrix4X4();
-            double determinant = +A[0, 0] * (A[1, 1] * A[2, 2] - A[2, 1] * A[1, 2])
-                        - A[0, 1] * (A[1, 0] * A[2, 2] - A[1, 2] * A[2, 0])
-                        + A[0, 2] * (A[1, 0] * A[2, 1] - A[1, 1] * A[2, 0]);
-            double invdet = 1 / determinant;
-            result[0, 0] = (A[1, 1] * A[2, 2] - A[2, 1] * A[1, 2]) * invdet;
-            result[0, 1] = -(A[0, 1] * A[2, 2] - A[0, 2] * A[2, 1]) * invdet;
-            result[0, 2] = (A[0, 1] * A[1, 2] - A[0, 2] * A[1, 1]) * invdet;
-            result[1, 0] = -(A[1, 0] * A[2, 2] - A[1, 2] * A[2, 0]) * invdet;
-            result[1, 1] = (A[0, 0] * A[2, 2] - A[0, 2] * A[2, 0]) * invdet;
-            result[1, 2] = -(A[0, 0] * A[1, 2] - A[1, 0] * A[0, 2]) * invdet;
-            result[2, 0] = (A[1, 0] * A[2, 1] - A[2, 0] * A[1, 1]) * invdet;
-            result[2, 1] = -(A[0, 0] * A[2, 1] - A[2, 0] * A[0, 1]) * invdet;
-            result[2, 2] = (A[0, 0] * A[1, 1] - A[1, 0] * A[0, 1]) * invdet;
+        //    bedLevel = Matrix4X4.Identity;
+        //    Matrix4X4 A = bedLevel;
+        //    Matrix4X4 result = new Matrix4X4();
+        //    double determinant = +A[0, 0] * (A[1, 1] * A[2, 2] - A[2, 1] * A[1, 2])
+        //                - A[0, 1] * (A[1, 0] * A[2, 2] - A[1, 2] * A[2, 0])
+        //                + A[0, 2] * (A[1, 0] * A[2, 1] - A[1, 1] * A[2, 0]);
+        //    double invdet = 1 / determinant;
+        //    result[0, 0] = (A[1, 1] * A[2, 2] - A[2, 1] * A[1, 2]) * invdet;
+        //    result[0, 1] = -(A[0, 1] * A[2, 2] - A[0, 2] * A[2, 1]) * invdet;
+        //    result[0, 2] = (A[0, 1] * A[1, 2] - A[0, 2] * A[1, 1]) * invdet;
+        //    result[1, 0] = -(A[1, 0] * A[2, 2] - A[1, 2] * A[2, 0]) * invdet;
+        //    result[1, 1] = (A[0, 0] * A[2, 2] - A[0, 2] * A[2, 0]) * invdet;
+        //    result[1, 2] = -(A[0, 0] * A[1, 2] - A[1, 0] * A[0, 2]) * invdet;
+        //    result[2, 0] = (A[1, 0] * A[2, 1] - A[2, 0] * A[1, 1]) * invdet;
+        //    result[2, 1] = -(A[0, 0] * A[2, 1] - A[2, 0] * A[0, 1]) * invdet;
+        //    result[2, 2] = (A[0, 0] * A[1, 1] - A[1, 0] * A[0, 1]) * invdet;
 
-            Vector3 stepPositionX20Y20 = Vector3.Transform(fixedX20Y20, inverseBedLevel);
-        }
+        //    Vector3 stepPositionX20Y20 = Vector3.Transform(fixedX20Y20, inverseBedLevel);
+        //}
 
         static double wallWidth = 4;
         static double switchHoleSeparation = 10;
@@ -147,7 +147,7 @@ namespace SimplePartScripting
             return total;
         }
 
-        static CsgObject BedLevelMount()
+        static CsgObject Render()
         {
             // CSG object is a Constructive Solid Geometry Object (a basic part in our system for doing boolean operations).
             CsgObject totalMount;  // the csg object we will use as the master part.
@@ -204,7 +204,8 @@ namespace SimplePartScripting
 
         static void Main()
         {
-            CsgObject bedLevelMount = BedLevelMount();
+
+            CsgObject bedLevelMount = Render();
             OpenSCadOutput.Save(bedLevelMount, "z-probe-mount.scad");
 
             CsgObject onOffArm = OnOffArm();
