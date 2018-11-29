@@ -65,7 +65,7 @@ namespace MatterHackers.MatterCad
 
         TextEditWidget textEdit;
 
-        Csg.Operations.Union rootUnion = new Csg.Operations.Union("root");
+        Union rootUnion = new Union("root");
 
         
 
@@ -137,7 +137,7 @@ namespace MatterHackers.MatterCad
 
 
             ResumeLayout();
-            objectEditorView.AnchorAll();// .Invalidate();
+            objectEditorView.AnchorAll();
             AnchorAll();
             verticleSpliter.AnchorAll();
             textSide.AnchorAll();
@@ -145,8 +145,6 @@ namespace MatterHackers.MatterCad
             AddChild(verticleSpliter);
             BackgroundColor = RGBA_Bytes.White;
         }
-
-
 
         public override void OnParentChanged(EventArgs e)
         {

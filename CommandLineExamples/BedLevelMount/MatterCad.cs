@@ -8,7 +8,7 @@ namespace OpenSharpCadSnippet
 {
     static class RenderTest
     {
-        //static void Render()
+        //static void BedLevelTestCode()
         //{
         //    Vector3 x20y20 = new Vector3(20, 20, 21.56);
         //    Vector3 x120y20 = new Vector3(120, 20, 18.44);
