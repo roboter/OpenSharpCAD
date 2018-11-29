@@ -1,22 +1,17 @@
-﻿using System;
-using MatterHackers.Agg;
+﻿using MatterHackers.Agg;
 using MatterHackers.Agg.OpenGlGui;
 using MatterHackers.Agg.UI;
-using MatterHackers.VectorMath;
-
-using System.CodeDom.Compiler;
-using System.Text;
-using System.Diagnostics;
-using System.IO;
-using System.Globalization;
-using MatterHackers.PolygonMesh.Processors;
-using MatterHackers.Agg.Image;
-using MatterHackers.Agg.VertexSource;
-using System.Dynamic;
-using System.Collections.Generic;
 using MatterHackers.Csg;
 using MatterHackers.Csg.Processors;
 using MatterHackers.RenderOpenGl;
+using System;
+using System.CodeDom.Compiler;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Dynamic;
+using System.Globalization;
+using System.IO;
+using System.Text;
 
 namespace OpenSharpCAD
 {
@@ -31,6 +26,7 @@ namespace OpenSharpCAD
         private FlowLayoutWidget objectEditorList;
         private FlowLayoutWidget textSide;
         private TextEditWidget textEdit;
+        private TextEditWidget outputEdit;
         //private Union rootUnion = new Union("root");
         dynamic classRef;
         private CsgObject previousRender;
@@ -53,21 +49,27 @@ namespace OpenSharpCAD
             #region TextSide
             textSide = new FlowLayoutWidget(FlowDirection.TopToBottom);
 
-
             objectEditorView = new GuiWidget();
             objectEditorList = new FlowLayoutWidget();
-            //  objectEditorList.AddChild(new TextEditWidget("Text in box"));
+            objectEditorList.AddChild(new TextEditWidget("Text in box"));
 
-            //   objectEditorView.AddChild(objectEditorList);
+            objectEditorView.AddChild(objectEditorList);
             objectEditorView.BackgroundColor = RGBA_Bytes.LightGray;
-            //   matterScriptEditor.LocalBounds = new RectangleDouble(0, 0, 200, 300);
-            //    textSide.AddChild(objectEditorView);
+            //matterScriptEditor.LocalBounds = new RectangleDouble(0, 0, 200, 300);
+            textSide.AddChild(objectEditorView);
             var code = new StringBuilder();
             code.AppendLine("var rootUnion = new MatterHackers.Csg.Operations.Union(\"root\");");
-            //code.AppendLine("rootUnion.Add(new LinearExtrude(new double[] { 1.1, 2.2, 3.3, 6.3 }, 7));");
+            code.AppendLine("//rootUnion.Add(new LinearExtrude(new double[] { 1.1, 2.2, 3.3, 6.3 }, 7));");
             code.AppendLine("rootUnion.Add(new Translate(new Cylinder(10, 40), 5, 10, 5));");
             code.AppendLine("rootUnion.Add(new BoxPrimitive(8, 20, 10));");
+
+            code.AppendLine("for (int i = 0; i != 10; i++)");
+            code.AppendLine("{");
+            code.AppendLine("   rootUnion.Add(new Translate(new BoxPrimitive(18, i, 14), 10 * i, 10+i, 10+i*i));");
+            code.AppendLine("}");
+
             code.AppendLine("return rootUnion;");
+
             //code.AppendLine("MatterHackers.PolygonMesh.Mesh mesh = new MatterHackers.PolygonMesh.Mesh();");
             //code.AppendLine("var v0 = mesh.CreateVertex(new Vector3(1, 0, 1));  // V0");
             //code.AppendLine("var v1 = mesh.CreateVertex(new Vector3(1, 0, -1)); // V1");
@@ -88,6 +90,13 @@ namespace OpenSharpCAD
             textEdit.Multiline = true;
             //     hello.Text = code.ToString();
             textSide.AddChild(textEdit);
+
+            outputEdit = new TextEditWidget("Hello world!")
+            {
+                Multiline = true
+            };
+            outputEdit.AnchorAll();
+            textSide.AddChild(outputEdit);
             textSide.AnchorAll();
             textEdit.AnchorAll();
             objectEditorList.AnchorAll();
@@ -188,16 +197,18 @@ namespace OpenSharpCAD
 
             //-----------------
             // Create the class as usual
-            sb.AppendLine("using System;");
-            sb.AppendLine("using System.Windows.Forms;");
-            sb.AppendLine("using System.Collections.Generic;");
-            sb.AppendLine("using MatterHackers.PolygonMesh;");
+            //sb.AppendLine("using System;");
+            //sb.AppendLine("using System.Windows.Forms;");
+            //sb.AppendLine("using System.Collections.Generic;");
+            //sb.AppendLine("using MatterHackers.PolygonMesh;");
             sb.AppendLine("using MatterHackers.VectorMath; ");
-            sb.AppendLine("using MatterHackers.Csg.Operations; ");
-            sb.AppendLine("using MatterHackers.Csg; ");
-            sb.AppendLine("using MatterHackers.Csg.Solids; ");
-            sb.AppendLine("using MatterHackers.RenderOpenGl; ");
-            sb.AppendLine("using MatterHackers.Agg;");
+
+            //sb.AppendLine("using MatterHackers.Csg.Operations;");
+            sb.AppendLine("using MatterHackers.Csg;");
+            sb.AppendLine("using MatterHackers.Csg.Solids;");
+            ////sb.AppendLine("using .Alignment;");
+            //sb.AppendLine("using MatterHackers.RenderOpenGl;");
+            //sb.AppendLine("using MatterHackers.Agg;");
             sb.AppendLine("using MatterHackers.Csg.Transform;");
 
             //     sb.AppendLine();
@@ -216,15 +227,6 @@ namespace OpenSharpCAD
             sb.AppendLine("      }");
             sb.AppendLine("}");
 
-            //if (rootUnion != null)
-            //{
-            //    RenderCsgToGl.Render(rootUnion);
-            //}
-            ////if (meshToRender != null)
-            ////{
-            ////    RenderMeshToGl.Render(meshToRender, RGBA_Bytes.Gray);
-            ////}
-
             //-----------------
             // The finished code
             string classCode = sb.ToString();
@@ -233,8 +235,7 @@ namespace OpenSharpCAD
             // Dont need any extra assemblies
             try
             {
-                //txtErrors.Clear();
-
+                outputEdit.Text = string.Empty;
                 //------------
                 // Pass the class code, the namespace of the class and the list of extra assemblies needed
                 classRef = DynCode.CodeHelper.HelperFunction(classCode, "OpenSharpCadSnippet.RenderTest", new object[] { });
@@ -247,22 +248,21 @@ namespace OpenSharpCAD
 
                     foreach (CompilerError error in (CompilerErrorCollection)classRef)
                     {
-                        sberror.AppendLine(string.Format("{0}:{1} {2} {3}", error.Line, error.Column, error.ErrorNumber, error.ErrorText));
-                        Debug.WriteLine("{0}:{1} {2} {3}", error.Line, error.Column, error.ErrorNumber, error.ErrorText);
+                        var err = string.Format("{0}:{1} {2} {3}", error.Line, error.Column, error.ErrorNumber, error.ErrorText);
+                        sberror.AppendLine(err);
+                        Debug.WriteLine(err);
+                        outputEdit.Text += err + "\n";
                     }
-
-                    //  txtErrors.Text = sberror.ToString();
-
                     return;
                 }
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
-                // If something very bad happened then throw it
-                //   MessageBox.Show(ex.Message);
+                outputEdit.Text += ex.Message + "\n";
                 throw;
             }
+
         }
         private void glLightedView_DrawGlContent(object sender, EventArgs e)
         {
@@ -275,7 +275,6 @@ namespace OpenSharpCAD
                     CsgObject ren = classRef.Render();
                     RenderCsgToGl.Render(ren);
                     previousRender = ren;
-                    //OpenSCadOutput.Save(ren, "Ren.scad");
                 }
                 else
                 {
@@ -285,7 +284,11 @@ namespace OpenSharpCAD
                     }
                 }
             }
-            catch (Exception) { }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                outputEdit.Text = ex.Message + "\n";
+            }
         }
 
         public static bool IsPropertyExist(dynamic settings, string name)
