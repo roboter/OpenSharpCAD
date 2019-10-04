@@ -1,6 +1,3 @@
-[submodule "submodules/agg-sharp"]
-	path = submodules/agg-sharp
-	url = https://github.com/roboter/agg-sharp.git
-[submodule "submodules/opentk"]
-	path = submodules/opentk
-	url =https://github.com/opentk/opentk.git
+[submodule "Submodules/agg-sharp"]
+	path = Submodules/agg-sharp
+	url = https://github.com/MatterHackers/agg-sharp.git
