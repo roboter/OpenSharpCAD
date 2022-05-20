@@ -24,7 +24,7 @@
     </UpgradeBackupLocation>
     <OldToolsVersion>2.0</OldToolsVersion>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <TargetFrameworkProfile />
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
@@ -124,14 +124,6 @@
       <Project>{74f6bb6c-9d02-4512-a59a-21940e35c532}</Project>
       <Name>Gui</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Submodules\agg-sharp\OpenGlGui\OpenGlGui.csproj">
-      <Project>{c958f745-156e-4bdc-a24a-3721c7be7b8a}</Project>
-      <Name>OpenGlGui</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Submodules\agg-sharp\PlatformAbstract\PlatformAbstract.csproj">
-      <Project>{3e4aaba8-d85f-4922-88c6-5c1b2d2308fb}</Project>
-      <Name>PlatformAbstract</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Submodules\agg-sharp\PlatformWin32\PlatformWin32.csproj">
       <Project>{670bddff-927b-425d-9dd1-22acb14356eb}</Project>
       <Name>PlatformWin32</Name>
@@ -151,14 +143,6 @@
     <ProjectReference Include="..\Submodules\agg-sharp\VectorMath\VectorMath.csproj">
       <Project>{d3e41b4e-bfbb-44ca-94c8-95c00f754fdd}</Project>
       <Name>VectorMath</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Submodules\agg-sharp\WindowsFileDialogs\WindowsFileDialogs.csproj">
-      <Project>{a526dc5d-65f3-461b-805f-d3ac9665f5c9}</Project>
-      <Name>WindowsFileDialogs</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Submodules\net3dbool\src\Net3dBool\Net3dBool.csproj">
-      <Project>{7ee4636d-8a92-4015-9562-7fcd6add0645}</Project>
-      <Name>Net3dBool</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

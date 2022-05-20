@@ -48,6 +48,7 @@ using System.Globalization;
 using MatterHackers.Csg.Operations;
 using MatterHackers.Csg;
 using MatterHackers.MatterCadGui;
+using MatterHackers.Agg.Platform;
 
 namespace MatterHackers.MatterCad
 {

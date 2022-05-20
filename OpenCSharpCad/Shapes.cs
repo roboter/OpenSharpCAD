@@ -4,8 +4,9 @@ using MatterHackers.Csg.Operations;
 using MatterHackers.Csg.Solids;
 using MatterHackers.RenderOpenGl;
 using MatterHackers.Agg;
+using Net3dBool;
 
-namespace OpenSharpCAD
+namespace OpenCSharpCad
 {
     public static class CadShapes
     {
@@ -24,7 +25,7 @@ namespace OpenSharpCAD
             mesh.CreateFace(new Vertex[] { v1, v2, v4 });
             mesh.CreateFace(new Vertex[] { v2, v3, v4 });
 
-            RenderMeshToGl.Render(mesh, new RGBA_Floats(.3, .8, 7));
+            RenderMeshToGl.Render(mesh, new Color(.3, .8, 7));
         }
 
         public static void Box(this Union rootUnion, double sizeX, double sizeY, double sizeZ)

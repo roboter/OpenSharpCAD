@@ -8,9 +8,10 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>ApiTest</RootNamespace>
     <AssemblyName>ApiTest</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -61,14 +62,6 @@
       <Project>{7E61A5BD-E78F-4B80-88C9-3821B4FA062E}</Project>
       <Name>Csg</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Submodules\agg-sharp\OpenGlGui\OpenGlGui.csproj">
-      <Project>{c958f745-156e-4bdc-a24a-3721c7be7b8a}</Project>
-      <Name>OpenGlGui</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Submodules\agg-sharp\PlatformAbstract\PlatformAbstract.csproj">
-      <Project>{3e4aaba8-d85f-4922-88c6-5c1b2d2308fb}</Project>
-      <Name>PlatformAbstract</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Submodules\agg-sharp\PlatformWin32\PlatformWin32.csproj">
       <Project>{670bddff-927b-425d-9dd1-22acb14356eb}</Project>
       <Name>PlatformWin32</Name>
@@ -88,10 +81,6 @@
     <ProjectReference Include="..\Submodules\agg-sharp\VectorMath\VectorMath.csproj">
       <Project>{D3E41B4E-BFBB-44CA-94C8-95C00F754FDD}</Project>
       <Name>VectorMath</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Submodules\net3dbool\src\Net3dBool\Net3dBool.csproj">
-      <Project>{7EE4636D-8A92-4015-9562-7FCD6ADD0645}</Project>
-      <Name>Net3dBool</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
