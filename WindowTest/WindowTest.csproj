@@ -44,10 +44,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MatterCadGui\MatterCadGui.csproj">
-      <Project>{a20459ad-3006-402c-952c-f4a9d9969a87}</Project>
-      <Name>MatterCadGui</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Submodules\agg-sharp\agg\Agg.csproj">
       <Project>{657DBC6D-C3EA-4398-A3FA-DDB73C14F71B}</Project>
       <Name>Agg</Name>
