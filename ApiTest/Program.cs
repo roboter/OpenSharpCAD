@@ -1,11 +1,7 @@
 ﻿using MatterHackers.Csg;
 using MatterHackers.Csg.Processors;
-using MatterHackers.VectorMath;
-using MatterHackers.PolygonMesh;
-using MatterHackers.RenderOpenGl;
-using MatterHackers.Agg;
-using MatterHackers.Csg.Operations;
 using MatterHackers.Csg.Solids;
+using MatterHackers.VectorMath;
 
 namespace ApiTest
 {
@@ -22,11 +18,10 @@ namespace ApiTest
             //return tor;
 
             Round round = new Round(100, 100, 100);
-            round.RoundFace(MatterHackers.Csg.Face.Front, 10);
+            round.RoundFace(Face.Front, 10);
             // return box-round;
 
-            return new LinearExtrude(new[] {
-                new Vector2(0, 0), new Vector2(0,10), new Vector2(10,10) }, 10);
+            return new LinearExtrude(new[] { new Vector2(0, 0), new Vector2(0,10), new Vector2(10,10) }, 10);
         }
 
         static void Main()

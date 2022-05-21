@@ -21,9 +21,9 @@ namespace SimplePartScripting
         {
             CsgObject totalMount;  // the csg object we will use as the master part.
 
-            CsgObject pivotHole = new Cylinder(pivotHoleRadius / 2, pivotHeight + .1);
+            CsgObject pivotHole = new Cylinder(pivotHoleRadius / 2, pivotHeight + .1 ,2);
 
-            CsgObject pivotMount = new Cylinder(pivotRingRadius / 2, pivotHeight);
+            CsgObject pivotMount = new Cylinder(pivotRingRadius / 2, pivotHeight, 2);
             pivotMount = new Align(pivotMount, Face.Bottom, pivotHole, Face.Bottom, offsetZ: .02);
             totalMount = pivotMount;
 

@@ -68,10 +68,10 @@ namespace OpenSharpCadSnippet
             CsgObject mainBar = new Box(wallWidth * 1.5, 37, 2.5);
             total = mainBar;
 
-            CsgObject magnetAttractorHole = new Cylinder(magnetAttractorHoleRadius / 2, mainBar.ZSize + .1, Alignment.z);
+            CsgObject magnetAttractorHole = new Cylinder(magnetAttractorHoleRadius / 2, mainBar.ZSize + .1, 2);
             magnetAttractorHole = new SetCenter(magnetAttractorHole, mainBar.GetCenter() + new Vector3(0, -magnetAttractorHoleRadius, 0));
 
-            CsgObject magnetAttractorHole2 = new Cylinder(magnetAttractorHoleRadius / 2, mainBar.ZSize + .1, Alignment.z);
+            CsgObject magnetAttractorHole2 = new Cylinder(magnetAttractorHoleRadius / 2, mainBar.ZSize + .1, 2);
             magnetAttractorHole2 = new SetCenter(magnetAttractorHole2, mainBar.GetCenter() + new Vector3(0, magnetAttractorHoleRadius, 0));
 
             CsgObject bothHoles = magnetAttractorHole + magnetAttractorHole2;
@@ -79,7 +79,7 @@ namespace OpenSharpCadSnippet
 
             total -= bothHoles;
 
-            CsgObject sideSupportBar = new Box(3, mainBar.YSize, mainBar.ZSize*2);
+            CsgObject sideSupportBar = new Box(3, mainBar.YSize, mainBar.ZSize * 2);
             sideSupportBar = new Align(sideSupportBar, Face.Left | Face.Bottom, mainBar, Face.Right | Face.Bottom, -.02);
             total += sideSupportBar;
 
@@ -107,12 +107,12 @@ namespace OpenSharpCadSnippet
             CsgObject fakeXCarriage = new Translate(baseBox, 0.5);
             total = fakeXCarriage;
 
-            double pivotRingYOffset = -pivotHeight / 2 - wallWidth/2 - .5;
-            CsgObject pivotRingFront = new Cylinder(pivotRingRadius / 2, wallWidth, Alignment.y);
+            double pivotRingYOffset = -pivotHeight / 2 - wallWidth / 2 - .5;
+            CsgObject pivotRingFront = new Cylinder(pivotRingRadius / 2, wallWidth, 2);
             CsgObject pivotFrontWall = new Box(pivotRingRadius, wallWidth, mountPivotHeight);
             pivotFrontWall = new Translate(pivotFrontWall, 0, 0, -mountPivotHeight / 2);
             CsgObject pivotSupportFront = pivotRingFront + pivotFrontWall;
-            CsgObject pivotHole = new Cylinder(pivotHoleRadius / 2, pivotRingFront.YSize + .1, Alignment.y);
+            CsgObject pivotHole = new Cylinder(pivotHoleRadius / 2, pivotRingFront.YSize + .1, 2);
             pivotHole = new SetCenter(pivotHole, pivotRingFront.GetCenter());
             pivotSupportFront -= pivotHole;
             pivotSupportFront = new Translate(pivotSupportFront, 0, pivotRingYOffset, mountPivotHeight);
@@ -123,9 +123,9 @@ namespace OpenSharpCadSnippet
             CsgObject pivotSupportBack = pivotSupportFront.NewMirrorAccrossY();
             total += pivotSupportBack;
 
-            CsgObject backMagnetHolder = new Box(wallWidth * 2, magnetSize.x + wallWidth, backMagnetHeight);
+            CsgObject backMagnetHolder = new Box(wallWidth * 2, magnetSize.X + wallWidth, backMagnetHeight);
             backMagnetHolder = new Align(backMagnetHolder, Face.Bottom | Face.Right, fakeXCarriage, Face.Top | Face.Right, 0, 0, -.1);
-            CsgObject backMagnetHole = new Box(magnetSize.z, magnetSize.x, magnetSize.y);
+            CsgObject backMagnetHole = new Box(magnetSize.Z, magnetSize.X, magnetSize.Y);
             backMagnetHole = new SetCenter(backMagnetHole, backMagnetHolder.GetCenter());
             backMagnetHole = new Align(backMagnetHole, Face.Left | Face.Top, backMagnetHolder, Face.Left | Face.Top, -.1, 0, -wallWidth / 2);
 
@@ -136,9 +136,9 @@ namespace OpenSharpCadSnippet
             backMagnetHolder -= backMagnetHole;
             total += backMagnetHolder;
 
-            CsgObject baseMagnetHolder = new Box(wallWidth * 2, magnetSize.x + wallWidth, baseMagnetHeight);
+            CsgObject baseMagnetHolder = new Box(wallWidth * 2, magnetSize.X + wallWidth, baseMagnetHeight);
             baseMagnetHolder = new Align(baseMagnetHolder, Face.Bottom, fakeXCarriage, Face.Top, -14, 0, -.1);
-            CsgObject baseMagnetHole = new Box(magnetSize.y, magnetSize.x, magnetSize.z);
+            CsgObject baseMagnetHole = new Box(magnetSize.Y, magnetSize.X, magnetSize.Z);
             baseMagnetHole = new SetCenter(baseMagnetHole, baseMagnetHolder.GetCenter());
             baseMagnetHole = new Align(baseMagnetHole, Face.Top, baseMagnetHolder, Face.Top, 0, 0, .1);
             baseMagnetHolder -= baseMagnetHole;
@@ -152,19 +152,19 @@ namespace OpenSharpCadSnippet
             // CSG object is a Constructive Solid Geometry Object (a basic part in our system for doing boolean operations).
             CsgObject totalMount;  // the csg object we will use as the master part.
 
-            CsgObject pivotHole = new Cylinder(pivotHoleRadius / 2, pivotHeight + .1);
+            CsgObject pivotHole = new Cylinder(pivotHoleRadius / 2, pivotHeight + .1, 2);
 
-            CsgObject pivotMount = new Cylinder(pivotRingRadius / 2, pivotHeight);
+            CsgObject pivotMount = new Cylinder(pivotRingRadius / 2, pivotHeight, 2);
             pivotMount = new Align(pivotMount, Face.Bottom, pivotHole, Face.Bottom, offsetZ: .02);
             totalMount = pivotMount;
 
             CsgObject holdArm = new Box(armLength, wallWidth * 2, wallWidth);
-            holdArm = new Align(holdArm, Face.Left | Face.Front | Face.Bottom, pivotMount, Face.Left | Face.Front | Face.Bottom, offsetX: pivotRingRadius/2);
+            holdArm = new Align(holdArm, Face.Left | Face.Front | Face.Bottom, pivotMount, Face.Left | Face.Front | Face.Bottom, offsetX: pivotRingRadius / 2);
             totalMount += holdArm;
 
             CsgObject switchMount = new Box(switchHeight, switchWidth, wallWidth);
-            switchMount -= new Translate(new Cylinder(switchHoleDiameter / 2, switchMount.ZSize + .1), new Vector3(0, switchHoleSeparation / 2, 0));
-            switchMount -= new Translate(new Cylinder(switchHoleDiameter / 2, switchMount.ZSize + .1), new Vector3(0, -switchHoleSeparation / 2, 0));
+            switchMount -= new Translate(new Cylinder(switchHoleDiameter / 2, switchMount.ZSize + .1 , 2), new Vector3(0, switchHoleSeparation / 2, 0));
+            switchMount -= new Translate(new Cylinder(switchHoleDiameter / 2, switchMount.ZSize + .1, 2), new Vector3(0, -switchHoleSeparation / 2, 0));
             switchMount = new Align(switchMount, Face.Left | Face.Front | Face.Bottom, holdArm, Face.Right | Face.Front | Face.Bottom, offsetX: -.02, offsetY: -5);
             totalMount += switchMount;
 
@@ -191,11 +191,11 @@ namespace OpenSharpCadSnippet
 
             totalMount -= pivotHole;
 
-            CsgObject magnetAttractorHole = new Cylinder(magnetAttractorHoleRadius / 2, magnetAttractor.YSize + .1, Alignment.y);
+            CsgObject magnetAttractorHole = new Cylinder(magnetAttractorHoleRadius / 2, magnetAttractor.YSize + .1, 2);
             magnetAttractorHole = new SetCenter(magnetAttractorHole, magnetAttractor.GetCenter() + new Vector3(0, 0, -magnetAttractorHoleRadius));
             totalMount -= magnetAttractorHole;
 
-            CsgObject magnetAttractorHole2 = new Cylinder(magnetAttractorHoleRadius / 2, magnetAttractor.YSize + .1, Alignment.y);
+            CsgObject magnetAttractorHole2 = new Cylinder(magnetAttractorHoleRadius / 2, magnetAttractor.YSize + .1, 2);
             magnetAttractorHole2 = new SetCenter(magnetAttractorHole2, magnetAttractor.GetCenter() + new Vector3(0, 0, magnetAttractorHoleRadius));
             totalMount -= magnetAttractorHole2;
 

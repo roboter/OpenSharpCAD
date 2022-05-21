@@ -34,12 +34,12 @@ namespace SimplePartScripting
             centerBar = new Align(centerBar, Face.Front, centerBarHold, Face.Back, offsetY: -1);
             total += centerBar;
 
-            CsgObject noseSpace = new Cylinder(centerXSize / 2 + .5, centerXSize / 2 - 2, centerBarHoldBox.ZSize + 1, Alignment.z);
+            CsgObject noseSpace = new Cylinder(centerXSize / 2 + .5, centerXSize / 2 - 2, 2);
             noseSpace = new Align(noseSpace, Face.Front, centerBarHold, Face.Front, 0, -noseSpace.YSize/2);
             total -= noseSpace;
 
-            CsgObject spinner = new Cylinder(6, 10, Alignment.y);
-            CsgObject spinnerRidge = new Cylinder(.5, spinner.YSize - 2 , Alignment.y);
+            CsgObject spinner = new Cylinder(6, 10, 2);
+            CsgObject spinnerRidge = new Cylinder(.5, spinner.YSize - 2 , 2);
             spinnerRidge = new Translate(spinnerRidge, spinner.XSize / 2);
             for (int i = 0; i <= 10; i++)
             {
@@ -75,10 +75,10 @@ namespace SimplePartScripting
 
         static CsgObject LeftTube(bool hollow = true)
         {
-            CsgObject tPTube = new Cylinder(40 / 2, 105, Alignment.y);
+            CsgObject tPTube = new Cylinder(40 / 2, 105, 2);
             if (hollow)
             {
-                tPTube -= new Cylinder(40 / 2 - 1, 106, Alignment.y);
+                tPTube -= new Cylinder(40 / 2 - 1, 106,  2);
             }
             tPTube = new Translate(tPTube, -(tPTube.XSize / 2 + centerXSize / 2));
             return tPTube;

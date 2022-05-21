@@ -26,7 +26,7 @@ namespace SimplePartScripting
             footBaseBox.BevelEdge(Face.Left | Face.Front, footBevelRadius);
             footBaseBox.BevelEdge(Face.Left | Face.Back, footBevelRadius);
             CsgObject footBase = footBaseBox;
-            CsgObject mountHole = new Cylinder(footMountHoleDiameter/2, footBase.ZSize + .2);
+            CsgObject mountHole = new Cylinder(footMountHoleDiameter/2, footBase.ZSize + .2, 2);
             mountHole = new Align(mountHole, Face.Left, footBase, Face.Left, wallWidth);
             footBase -= mountHole;
             total = footBase;
@@ -36,7 +36,7 @@ namespace SimplePartScripting
             risingWallBox.BevelEdge(Face.Top | Face.Front, wallBevelRadius);
             CsgObject risingWall = risingWallBox;
             risingWall = new Align(risingWall, Face.Right | Face.Bottom, footBase, Face.Right | Face.Bottom);
-            CsgObject powerScrewHole = new Cylinder(powerSupplyHoleDiameter / 2, footBase.ZSize + .2, Alignment.x);
+            CsgObject powerScrewHole = new Cylinder(powerSupplyHoleDiameter / 2, footBase.ZSize + .2,  2);
             powerScrewHole = new Align(powerScrewHole, Face.Top | Face.Right, risingWall, Face.Top | Face.Right, offsetX: .02, offsetZ: -wallWidth);
             risingWall -= powerScrewHole;
 

@@ -22,7 +22,7 @@ namespace SimplePartScripting
             CsgObject dialGauge;  // the csg object we will use as the master part.
 
             CsgObject frontBarRide = new Box(50, xCarriageBarWidth + 4, xCarriageBarWidth / 2 + 4);
-            CsgObject barGroove = new Cylinder(xCarriageBarWidth/2, frontBarRide.XSize + .2, Alignment.x);
+            CsgObject barGroove = new Cylinder(xCarriageBarWidth/2, frontBarRide.XSize + .2, 2);
             barGroove = new Translate(barGroove, 0, 0, -barGroove.ZSize / 2);
             frontBarRide -= barGroove;
             dialGauge = frontBarRide;
@@ -40,7 +40,7 @@ namespace SimplePartScripting
             dialGauge += backSideWall;
 
             // make the plate on the bottom
-            double distanceAccrossBottom = backSideWall.GetAxisAlignedBoundingBox().minXYZ.y - frontSideWall.GetAxisAlignedBoundingBox().maxXYZ.y;
+            double distanceAccrossBottom = backSideWall.GetAxisAlignedBoundingBox().MinXYZ.Y - frontSideWall.GetAxisAlignedBoundingBox().MaxXYZ.Y;
             CsgObject dialBase = new Box(frontBarRide.XSize, distanceAccrossBottom + .02, wallWidth); // make it bigger so it is manifold
             dialBase = new Align(dialBase, Face.Front | Face.Bottom, frontSideWall, Face.Back | Face.Bottom, offsetY: .01);
             dialGauge += dialBase;
@@ -54,7 +54,7 @@ namespace SimplePartScripting
             rightSideWall = new Align(rightSideWall, Face.Right | Face.Bottom | Face.Front, dialBase, Face.Right | Face.Bottom | Face.Front);
             dialGauge += rightSideWall;
 
-            CsgObject dialGaugeHole = new Cylinder(diameterOfDialGaugeBar / 2, dialBase.ZSize + .02, Alignment.z);
+            CsgObject dialGaugeHole = new Cylinder(diameterOfDialGaugeBar / 2, dialBase.ZSize + .02, 2);
             dialGaugeHole = new SetCenter(dialGaugeHole, dialBase.GetCenter() + new Vector3(0, dialGaugeBarOffsetFromCenter, 0));
             dialGauge -= dialGaugeHole;
 
