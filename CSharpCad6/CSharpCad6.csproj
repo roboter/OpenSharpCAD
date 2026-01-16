@@ -73,10 +73,17 @@
     <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.3.310801">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.4.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Submodules\agg-sharp\Glfw\GlfwProvider.csproj" />
+    <ProjectReference Include="..\DinamiclyExecuteCode\DynCode.csproj" />
+    <ProjectReference Include="..\Submodules\agg-sharp\agg\Agg.csproj" />
+    <ProjectReference Include="..\Submodules\agg-sharp\Csg\Csg.csproj" />
     <ProjectReference Include="..\Submodules\agg-sharp\Gui\Gui.csproj" />
     <ProjectReference Include="..\Submodules\agg-sharp\PlatformWin32\PlatformWin32.csproj" />
+    <ProjectReference Include="..\Submodules\agg-sharp\Glfw\GlfwProvider.csproj" />
+    <ProjectReference Include="..\Submodules\agg-sharp\PolygonMesh\PolygonMesh.csproj" />
+    <ProjectReference Include="..\Submodules\agg-sharp\RenderOpenGl\RenderOpenGl.csproj" />
+    <ProjectReference Include="..\Submodules\agg-sharp\VectorMath\VectorMath.csproj" />
   </ItemGroup>
 </Project>

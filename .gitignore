@@ -7,3 +7,7 @@
 [Bb]in
 [Oo]bj
 packages
+
+# Logs
+/logs/
+*.log

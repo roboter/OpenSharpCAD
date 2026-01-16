@@ -1,6 +1,11 @@
-﻿using Microsoft.CSharp;
-using System.CodeDom.Compiler;
+﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Emit;
 
 namespace DynCode
 {
@@ -8,57 +13,59 @@ namespace DynCode
     {
         public static object HelperFunction(string classCode, string mainClass, object[] requiredAssemblies)
         {
-            CSharpCodeProvider provider = new CSharpCodeProvider(new Dictionary<string, string> { { "CompilerVersion", "v4.0" } });
+            var syntaxTree = CSharpSyntaxTree.ParseText(classCode);
+            var assemblyName = Path.GetRandomFileName();
 
-            CompilerParameters parameters = new CompilerParameters
+            var references = new List<MetadataReference>();
+
+            // Add basic references from currently loaded assemblies
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            foreach (var assembly in assemblies)
             {
-                GenerateExecutable = false,       // Create a dll
-                GenerateInMemory = true,          // Create it in memory
-                WarningLevel = 3,                 // Default warning level
-                CompilerOptions = "/optimize",    // Optimize code
-                TreatWarningsAsErrors = false     // Better be false to avoid break in warnings
-            };
+                try
+                {
+                    if (!assembly.IsDynamic && !string.IsNullOrEmpty(assembly.Location))
+                    {
+                        references.Add(MetadataReference.CreateFromFile(assembly.Location));
+                    }
+                }
+                catch { }
+            }
 
-            //----------------
-            // Add basic referenced assemblies
-            parameters.ReferencedAssemblies.Add("system.dll");
-            parameters.ReferencedAssemblies.Add("System.Windows.Forms.dll");
-            parameters.ReferencedAssemblies.Add("System.Core.dll");
-            parameters.ReferencedAssemblies.Add("AGG.dll");
-
-            parameters.ReferencedAssemblies.Add("MatterHackers.Agg.UI.dll");
-            parameters.ReferencedAssemblies.Add("MatterHackers.PolygonMesh.dll");
-            parameters.ReferencedAssemblies.Add("MatterHackers.VectorMath.dll");
-            parameters.ReferencedAssemblies.Add("MatterHackers.Csg.dll");
-            parameters.ReferencedAssemblies.Add("MatterHackers.RenderOpenGl.dll");
-            //using MatterHackers.PolygonMesh;
-            //using MatterHackers.VectorMath;
-            //using MatterHackers.Csg.Operations;
-            //using MatterHackers.Csg.Solids;
-            //using MatterHackers.RenderOpenGl;
-            //using MatterHackers.Agg;
-
-            //----------------
-            // Add all extra assemblies required
+            // Add extra assemblies if provided
             foreach (var extraAsm in requiredAssemblies)
             {
-                parameters.ReferencedAssemblies.Add(extraAsm as string);
+                if (extraAsm is string path && File.Exists(path))
+                {
+                    references.Add(MetadataReference.CreateFromFile(path));
+                }
             }
 
-            //--------------------
-            // Try to compile the code received
-            CompilerResults results = provider.CompileAssemblyFromSource(parameters, classCode);
+            var compilation = CSharpCompilation.Create(
+                assemblyName,
+                new[] { syntaxTree },
+                references,
+                new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
-            //--------------------
-            // If the compilation returned error, then return the CompilerErrorCollection class with the errors to the caller
-            if (results.Errors.Count != 0)
+            using (var ms = new MemoryStream())
             {
-                return results.Errors;
-            }
+                EmitResult result = compilation.Emit(ms);
 
-            //--------------------
-            // Return the created class instance to caller
-            return results.CompiledAssembly.CreateInstance(mainClass);
+                if (!result.Success)
+                {
+                    // Convert Roslyn diagnostics to a format similar to CompilerErrorCollection if needed
+                    // For now, let's just return the diagnostics as a collection
+                    return result.Diagnostics.Where(diagnostic =>
+                        diagnostic.IsWarningAsError ||
+                        diagnostic.Severity == DiagnosticSeverity.Error).ToList();
+                }
+                else
+                {
+                    ms.Seek(0, SeekOrigin.Begin);
+                    Assembly assembly = Assembly.Load(ms.ToArray());
+                    return assembly.CreateInstance(mainClass);
+                }
+            }
         }
     }
 }
