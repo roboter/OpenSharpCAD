@@ -3,6 +3,7 @@ using MatterHackers.Agg;
 using MatterHackers.Agg.UI;
 using MatterHackers.Csg.Operations;
 using MatterHackers.VectorMath;
+using MatterHackers.PolygonMesh;
 
 using System.CodeDom.Compiler;
 using System.Text;
@@ -38,18 +39,23 @@ namespace OpenCSharpCad
             rootUnion.Box(8, 20, 40);
             rootUnion.Add(new Translate(new BoxPrimitive(10, 10, 20), 5, 10, 5));
             rootUnion.Add(new BoxPrimitive(8, 20, 10));
-            SuspendLayout();
+            // SuspendLayout();
             verticleSpliter = new Splitter();
+            verticleSpliter.SplitterDistance = 400;  // Set left panel width for text editor
+            verticleSpliter.Panel1.BackgroundColor = new Color(173, 216, 230);  // Debug: Panel1 light blue
+            verticleSpliter.Panel2.BackgroundColor = new Color(144, 238, 144);  // Debug: Panel2 light green
+            verticleSpliter.SplitterBackground = Color.Red;  // Debug: Splitter bar color
             {
                 // panel 1 stuff
                 textSide = new FlowLayoutWidget(FlowDirection.TopToBottom);
+                textSide.BackgroundColor = Color.Cyan;  // Debug: textSide color
                 {
                     objectEditorView = new GuiWidget(300, 500);
                     objectEditorList = new FlowLayoutWidget();
                     //  objectEditorList.AddChild(new TextEditWidget("Text in box"));
 
                     //   objectEditorView.AddChild(objectEditorList);
-                    objectEditorView.BackgroundColor = RGBA_Bytes.LightGray;
+                    objectEditorView.BackgroundColor = Color.LightGray;
                     //   matterScriptEditor.LocalBounds = new RectangleDouble(0, 0, 200, 300);
                     //    textSide.AddChild(objectEditorView);
                     var code = new StringBuilder();
@@ -102,16 +108,17 @@ namespace OpenCSharpCad
 
                 // pannel 2 stuff
                 FlowLayoutWidget renderSide = new FlowLayoutWidget(FlowDirection.TopToBottom);
+                renderSide.BackgroundColor = Color.Yellow;  // Debug: renderSide color
                 renderSide.AnchorAll();
                 {
-                    trackBallWidget = new TrackballTumbleWidget();
-                    trackBallWidget.DrawGlContent += new EventHandler(glLightedView_DrawGlContent);
+                    trackBallWidget = new TrackballTumbleWidget(new WorldView(Width, Height), renderSide);
+                    // trackBallWidget.DrawGlContent += new EventHandler(glLightedView_DrawGlContent);
                     renderSide.AddChild(trackBallWidget);
                 }
                 verticleSpliter.Panel2.AddChild(renderSide);
                 verticleSpliter.Panel1.AddChild(textSide);
             }
-            ResumeLayout();
+            // ResumeLayout();
 
             AnchorAll();
 
@@ -123,7 +130,7 @@ namespace OpenCSharpCad
 
             AddChild(verticleSpliter);
 
-            BackgroundColor = RGBA_Bytes.White;
+            BackgroundColor = Color.White;
             Compile();
         }
 
@@ -229,17 +236,18 @@ namespace OpenCSharpCad
         private MatterHackers.PolygonMesh.Mesh Pyramid()
         {
             MatterHackers.PolygonMesh.Mesh mesh = new MatterHackers.PolygonMesh.Mesh();
-            var v0 = mesh.CreateVertex(new Vector3(1, 0, 1));  // V0
-            var v1 = mesh.CreateVertex(new Vector3(1, 0, -1)); // V1
-            var v2 = mesh.CreateVertex(new Vector3(-1, 0, -1)); // V2
-            var v3 = mesh.CreateVertex(new Vector3(-1, 0, 1)); // V3
-            var v4 = mesh.CreateVertex(new Vector3(0, 1, 0)); // V4
+            mesh.Vertices.Add(new Vector3Float(1, 0, 1));  // V0
+            mesh.Vertices.Add(new Vector3Float(1, 0, -1)); // V1
+            mesh.Vertices.Add(new Vector3Float(-1, 0, -1)); // V2
+            mesh.Vertices.Add(new Vector3Float(-1, 0, 1)); // V3
+            mesh.Vertices.Add(new Vector3Float(0, 1, 0)); // V4
 
-            mesh.CreateFace(new Vertex[] { v0, v1, v2, v3 });
-            mesh.CreateFace(new Vertex[] { v3, v0, v4 });
-            mesh.CreateFace(new Vertex[] { v0, v1, v4 });
-            mesh.CreateFace(new Vertex[] { v1, v2, v4 });
-            mesh.CreateFace(new Vertex[] { v2, v3, v4 });
+            mesh.Faces.Add(0, 1, 2, mesh.Vertices);
+            mesh.Faces.Add(2, 3, 0, mesh.Vertices);
+            mesh.Faces.Add(3, 0, 4, mesh.Vertices);
+            mesh.Faces.Add(0, 1, 4, mesh.Vertices);
+            mesh.Faces.Add(1, 2, 4, mesh.Vertices);
+            mesh.Faces.Add(2, 3, 4, mesh.Vertices);
 
             return mesh;
         }

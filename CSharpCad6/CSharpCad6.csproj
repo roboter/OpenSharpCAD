@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
     <OutputType>WinExe</OutputType>
     <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>

@@ -70,9 +70,14 @@ namespace CSharpCAD
             rootUnion.Add(new BoxPrimitive(8, 20, 10));
 
             verticalSplitter = new Splitter();
+            verticalSplitter.SplitterDistance = 400;  // Set left panel width for text editor
+            verticalSplitter.Panel1.BackgroundColor = new Color(173, 216, 230);  // Debug: Panel1 light blue
+            verticalSplitter.Panel2.BackgroundColor = new Color(144, 238, 144);  // Debug: Panel2 light green
+            verticalSplitter.SplitterBackground = Color.Red;  // Debug: Splitter bar color
             {
                 // panel 1 stuff
                 textSide = new FlowLayoutWidget(FlowDirection.TopToBottom);
+                textSide.BackgroundColor = Color.Cyan;  // Debug: textSide color
                 {
                     objectEditorView = new GuiWidget(300, 500);
                     objectEditorList = new FlowLayoutWidget();
@@ -132,6 +137,7 @@ namespace CSharpCAD
 
                 // pannel 2 stuff
                 FlowLayoutWidget renderSide = new FlowLayoutWidget(FlowDirection.TopToBottom);
+                renderSide.BackgroundColor = Color.Yellow;  // Debug: renderSide color
                 renderSide.AnchorAll();
                 {
                     var world = new WorldView(800, 600);

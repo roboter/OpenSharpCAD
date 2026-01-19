@@ -1,0 +1,1 @@
+linear_extrude(height = 10, center = true, convexity = 10, twist = 0)polygon( points=[[0, 0], [0, 10], [10, 10], ] );

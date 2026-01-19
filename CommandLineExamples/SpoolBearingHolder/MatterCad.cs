@@ -52,21 +52,21 @@ namespace SimplePartScripting
             // CSG object is a Constructive Solid Geometry Object (a basic part in our system for doing boolean operations).
             CsgObject spoolBearingHolder;  // the csg object we will use as the master part.
 
-            spoolBearingHolder = new Cylinder(spoolType.spoolDiameter / 2 + 1, spoolType.spoolDiameter / 2 - 1, spoolType.retainingWallHeight + spoolType.wallWidth);
+            spoolBearingHolder = new Cylinder(spoolType.spoolDiameter / 2 + 1, spoolType.spoolDiameter / 2 - 1, spoolType.retainingWallHeight + spoolType.wallWidth, 60);
 
-            CsgObject insideHole = new Cylinder(spoolType.spoolDiameter / 2 - spoolType.wallWidth, spoolType.retainingWallHeight);
+            CsgObject insideHole = new Cylinder(spoolType.spoolDiameter / 2 - spoolType.wallWidth, spoolType.retainingWallHeight, 60);
             insideHole = new Align(insideHole, Face.Top, spoolBearingHolder, Face.Top, offsetZ: .02);
             spoolBearingHolder -= insideHole;
 
-            CsgObject spoolHoldLip = new Cylinder(spoolType.spoolDiameter / 2 + spoolType.wallWidth, spoolType.wallWidth);
+            CsgObject spoolHoldLip = new Cylinder(spoolType.spoolDiameter / 2 + spoolType.wallWidth, spoolType.wallWidth, 60);
             spoolHoldLip = new Align(spoolHoldLip, Face.Bottom, spoolBearingHolder, Face.Bottom);
             spoolBearingHolder += spoolHoldLip;
 
-            CsgObject bearingHolder = new Cylinder((spoolType.bearingDiameter + spoolType.wallWidth) / 2, spoolType.bearingHeight + spoolType.wallWidth);
+            CsgObject bearingHolder = new Cylinder((spoolType.bearingDiameter + spoolType.wallWidth) / 2, spoolType.bearingHeight + spoolType.wallWidth, 60);
             bearingHolder = new Align(bearingHolder, Face.Bottom, spoolBearingHolder, Face.Bottom);
             spoolBearingHolder += bearingHolder;
 
-            CsgObject bearingHole = new Cylinder(spoolType.bearingDiameter / 2, spoolType.bearingHeight);
+            CsgObject bearingHole = new Cylinder(spoolType.bearingDiameter / 2, spoolType.bearingHeight, 60);
             bearingHole = new Align(bearingHole, Face.Bottom, spoolBearingHolder, Face.Bottom, offsetZ: -.02);
             spoolBearingHolder -= bearingHole;
 
@@ -75,7 +75,7 @@ namespace SimplePartScripting
 
             spoolBearingHolder -= revolution;
 
-            CsgObject rodHole = new Cylinder(spoolType.bearingDiameter / 2 - spoolType.wallWidth, spoolBearingHolder.ZSize + 2);
+            CsgObject rodHole = new Cylinder(spoolType.bearingDiameter / 2 - spoolType.wallWidth, (int)(spoolBearingHolder.ZSize + 2), 60);
             rodHole = new Align(rodHole, Face.Top, spoolBearingHolder, Face.Top, offsetZ: .02);
             spoolBearingHolder -= rodHole;
 
