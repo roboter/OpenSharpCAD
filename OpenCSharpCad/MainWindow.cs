@@ -59,8 +59,7 @@ namespace OpenCSharpCad
                     //   matterScriptEditor.LocalBounds = new RectangleDouble(0, 0, 200, 300);
                     //    textSide.AddChild(objectEditorView);
                     var code = new StringBuilder();
-
-                    code.AppendLine("new Box(8, 20, 10);");
+                    code.AppendLine("Draw(new Box(8, 20, 10));");
                     //code.AppendLine("MatterHackers.PolygonMesh.Mesh mesh = new MatterHackers.PolygonMesh.Mesh();");
                     //code.AppendLine("var v0 = mesh.CreateVertex(new Vector3(1, 0, 1));  // V0");
                     //code.AppendLine("var v1 = mesh.CreateVertex(new Vector3(1, 0, -1)); // V1");
@@ -76,8 +75,8 @@ namespace OpenCSharpCad
 
                     //code.AppendLine("RenderMeshToGl.Render(mesh, new RGBA_Floats(.3, .8, 7)); ");
                     hello = new TextEditWidget(code.ToString().Replace('\r', '\n'));
-                    hello.TextChanged += Hello_TextChanged;
                     hello.Multiline = true;
+                    hello.TextChanged += Hello_TextChanged;  // Subscribe AFTER setting Multiline
                     textSide.AddChild(hello);
                     objectEditorList.AnchorAll();
                     //    textSide.BoundsChanged += new EventHandler(textSide_BoundsChanged);
@@ -152,6 +151,7 @@ namespace OpenCSharpCad
             sb.AppendLine("using MatterHackers.PolygonMesh;");
             sb.AppendLine("using MatterHackers.VectorMath; ");
             sb.AppendLine("using MatterHackers.Csg.Operations; ");
+            sb.AppendLine("using MatterHackers.Csg;");
             sb.AppendLine("using MatterHackers.Csg.Solids; ");
             sb.AppendLine("using MatterHackers.RenderOpenGl; ");
             sb.AppendLine("using MatterHackers.Agg;");
@@ -165,8 +165,13 @@ namespace OpenCSharpCad
             // My pre-defined class named FilterCountries that receive the sourceListBox
             sb.AppendLine("            public void Render()");
             sb.AppendLine("            {");
-
             sb.AppendLine(hello.Text);
+            sb.AppendLine("            }");
+
+            sb.AppendLine("            public void Draw(CsgObject objectToProcess)");
+            sb.AppendLine("            {");
+            sb.AppendLine("                var mesh = MatterHackers.RenderOpenGl.CsgToMesh.Convert(objectToProcess);");
+            sb.AppendLine("                GLHelper.Render(mesh, new Color(150, 150, 150, 255));");
             sb.AppendLine("            }");
             sb.AppendLine("      }");
             sb.AppendLine("}");

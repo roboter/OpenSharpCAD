@@ -71,8 +71,8 @@ namespace CSharpCAD
 
             verticalSplitter = new Splitter();
             verticalSplitter.SplitterDistance = 400;  // Set left panel width for text editor
-            verticalSplitter.Panel1.BackgroundColor = new Color(173, 216, 230);  // Debug: Panel1 light blue
-            verticalSplitter.Panel2.BackgroundColor = new Color(144, 238, 144);  // Debug: Panel2 light green
+            //verticalSplitter.Panel1.BackgroundColor = new Color(173, 216, 230);  // Debug: Panel1 light blue
+            //verticalSplitter.Panel2.BackgroundColor = new Color(144, 238, 144);  // Debug: Panel2 light green
             verticalSplitter.SplitterBackground = Color.Red;  // Debug: Splitter bar color
             {
                 // panel 1 stuff
@@ -84,12 +84,11 @@ namespace CSharpCAD
                     //  objectEditorList.AddChild(new TextEditWidget("Text in box"));
 
                     //   objectEditorView.AddChild(objectEditorList);
-                    objectEditorView.BackgroundColor = Color.LightGray;
+                    //   objectEditorView.BackgroundColor = Color.LightGray;
                     //   matterScriptEditor.LocalBounds = new RectangleDouble(0, 0, 200, 300);
                     //    textSide.AddChild(objectEditorView);
                     var code = new StringBuilder();
-
-                    code.AppendLine("new Box(8, 20, 10);");
+                    code.AppendLine("Draw(new Box(8, 20, 10));");
                     //code.AppendLine("MatterHackers.PolygonMesh.Mesh mesh = new MatterHackers.PolygonMesh.Mesh();");
                     //code.AppendLine("var v0 = mesh.CreateVertex(new Vector3(1, 0, 1));  // V0");
                     //code.AppendLine("var v1 = mesh.CreateVertex(new Vector3(1, 0, -1)); // V1");
@@ -105,9 +104,12 @@ namespace CSharpCAD
 
                     //code.AppendLine("RenderMeshToGl.Render(mesh, new RGBA_Floats(.3, .8, 7)); ");
                     hello = new TextEditWidget(code.ToString().Replace('\r', '\n'));
-                    hello.TextChanged += Hello_TextChanged;
                     hello.Multiline = true;
+                    hello.HAnchor = HAnchor.Stretch;
+                    hello.VAnchor = VAnchor.Stretch;
+                    hello.TextChanged += Hello_TextChanged;  // Subscribe AFTER setting Multiline
                     textSide.AddChild(hello);
+                    textSide.AnchorAll();
                     objectEditorList.AnchorAll();
                     //    textSide.BoundsChanged += new EventHandler(textSide_BoundsChanged);
 
@@ -137,12 +139,13 @@ namespace CSharpCAD
 
                 // pannel 2 stuff
                 FlowLayoutWidget renderSide = new FlowLayoutWidget(FlowDirection.TopToBottom);
-                renderSide.BackgroundColor = Color.Yellow;  // Debug: renderSide color
+
                 renderSide.AnchorAll();
                 {
                     var world = new WorldView(800, 600);
                     trackBallWidget = new TrackballTumbleView(world, renderSide);
                     trackBallWidget.DrawContent = glLightedView_DrawGlContent;
+                    //   trackBallWidget.BackgroundColor = Color.Yellow;  // Debug: renderSide color
                     renderSide.AddChild(trackBallWidget);
                 }
                 verticalSplitter.Panel2.AddChild(renderSide);
@@ -170,77 +173,25 @@ namespace CSharpCAD
 
         private void Compile()
         {
+            var compilerService = new CompilerService();
+            List<string> errors;
 
-            StringBuilder sb = new StringBuilder();
+            // The service expects just the content inside Render(), which comes from hello.Text
+            classRef = compilerService.Compile(hello.Text, out errors);
 
-            //-----------------
-            // Create the class as usual
-            sb.AppendLine("using System;");
-            sb.AppendLine("using System.Windows.Forms;");
-            sb.AppendLine("using System.Collections.Generic;");
-            sb.AppendLine("using MatterHackers.PolygonMesh;");
-            sb.AppendLine("using MatterHackers.VectorMath; ");
-            sb.AppendLine("using MatterHackers.Csg.Operations; ");
-            sb.AppendLine("using MatterHackers.Csg.Solids; ");
-            sb.AppendLine("using MatterHackers.RenderOpenGl; ");
-            sb.AppendLine("using MatterHackers.Agg;");
-
-            sb.AppendLine("namespace Test");
-            sb.AppendLine("{");
-
-            sb.AppendLine("      public class RenderTest");
-            sb.AppendLine("      {");
-
-            // My pre-defined class named FilterCountries that receive the sourceListBox
-            sb.AppendLine("            public void Render()");
-            sb.AppendLine("            {");
-
-            sb.AppendLine(hello.Text);
-            sb.AppendLine("            }");
-            sb.AppendLine("      }");
-            sb.AppendLine("}");
-
-
-
-
-            //-----------------
-            // The finished code
-            string classCode = sb.ToString();
-
-            //-----------------
-            // Dont need any extra assemblies
-
-
-            try
+            if (errors.Count > 0)
             {
-                // / txtErrors.Clear();
-
-                //------------
-                // Pass the class code, the namespace of the class and the list of extra assemblies needed
-                classRef = DynCode.CodeHelper.HelperFunction(classCode, "Test.RenderTest", new object[] { });
-
-                //-------------------
-                // If the compilation process returned an error, then show to the user all errors
-                if (classRef is List<Diagnostic> diagnostics)
+                StringBuilder sberror = new StringBuilder();
+                foreach (var error in errors)
                 {
-                    StringBuilder sberror = new StringBuilder();
-
-                    foreach (var error in diagnostics)
-                    {
-                        sberror.AppendLine(error.ToString());
-                    }
-
-                    //  txtErrors.Text = sberror.ToString();
-
-                    return;
+                    sberror.AppendLine(error);
                 }
+                // TODO: Display errors to user (e.g., txtErrors.Text = sberror.ToString())
+                // For now, logging as before might be done by caller or added here if needed, 
+                // but simpler to just return.
+                return;
             }
-            catch (Exception ex)
-            {
-                LogException(ex);
-                // If something very bad happened then throw it
-                //   MessageBox.Show(ex.Message);
-            }
+            trackBallWidget.Invalidate();
         }
         private void LogException(Exception ex)
         {
@@ -263,10 +214,7 @@ namespace CSharpCAD
         {
             try
             {
-                if (classRef != null)
-                {
-                    classRef.Render();
-                }
+                classRef?.Render();
             }
             catch (Exception ex)
             {
