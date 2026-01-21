@@ -1,4 +1,4 @@
-# mattercad
+# OpenSharpCAD
 Parametric cad using c#
 
 ## Video

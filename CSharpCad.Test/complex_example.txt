@@ -1,0 +1,25 @@
+// Complex CSG Example
+
+// 1. Union: A cross shape
+var cross = new Union();
+cross.Add(new Box(10, 30, 10));
+cross.Add(new Box(30, 10, 10));
+
+// 2. Difference: Sphere minus Cylinder
+var sphere = new Sphere(15);
+var cylinder = new Cylinder(5, 40);
+var hollowSphere = new Difference(sphere, cylinder);
+
+// 3. Intersection: Box intersection Sphere
+var box = new Box(20, 20, 20);
+var ball = new Sphere(14);
+var intersected = new Intersection(box, ball);
+
+// Assemble into a scene
+var scene = new Union();
+scene.Add(new Translate(cross, -40, 0, 10));
+scene.Add(new Translate(hollowSphere, 0, 0, 20));
+scene.Add(new Translate(intersected, 40, 0, 10));
+scene.Add(new Translate(new Box(120, 50, 2), 0, 0, -1));
+
+Draw(scene);

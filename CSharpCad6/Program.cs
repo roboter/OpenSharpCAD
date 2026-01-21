@@ -12,6 +12,7 @@ class Program
     [STAThread]
     static void Main(string[] args)
     {
+        Clipboard.SetSystemClipboard(new WindowsFormsClipboard());
         AggContext.Config.ProviderTypes.SystemWindowProvider = "MatterHackers.Agg.UI.OpenGLWinformsWindowProvider, agg_platform_win32";
 
         try

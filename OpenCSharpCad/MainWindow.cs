@@ -193,22 +193,59 @@ namespace OpenCSharpCad
 
                 //------------
                 // Pass the class code, the namespace of the class and the list of extra assemblies needed
-                classRef = DynCode.CodeHelper.HelperFunction(classCode, "Test.RenderTest", new object[] { });
+                var possibleClassRef = DynCode.CodeHelper.HelperFunction(classCode, "Test.RenderTest", new object[] { });
 
                 //-------------------
-                // If the compilation process returned an error, then show to the user all errors
-                if (classRef is CompilerErrorCollection)
+                // Check if the result is an error collection (List<Diagnostic>)
+                bool isError = false;
+                if (possibleClassRef is System.Collections.IEnumerable enumerable && !(possibleClassRef is string))
+                {
+                    foreach (var item in enumerable)
+                    {
+                        if (item.GetType().Name == "Diagnostic")
+                        {
+                            isError = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (isError)
                 {
                     StringBuilder sberror = new StringBuilder();
+                    System.Collections.IEnumerable errors = (System.Collections.IEnumerable)possibleClassRef;
 
-                    foreach (CompilerError error in (CompilerErrorCollection)classRef)
+                    bool setLineError = false;
+                    foreach (dynamic error in errors)
                     {
-                        sberror.AppendLine(string.Format("{0}:{1} {2} {3}", error.Line, error.Column, error.ErrorNumber, error.ErrorText));
+                        var lineSpan = error.Location.GetLineSpan();
+                        int line = lineSpan.StartLinePosition.Line;
+                        int column = lineSpan.StartLinePosition.Character;
+                        string id = error.Id;
+                        string message = error.GetMessage();
+
+                        sberror.AppendLine(string.Format("({0},{1}): error {2}: {3}", line + 1, column + 1, id, message));
+
+                        if (!setLineError)
+                        {
+                            // 16 is the number of lines we added before the user code (0-indexed)
+                            // 10 imports + 1 namespace + 1 brace + 1 class + 1 brace + 1 method + 1 brace = 16 lines
+                            int errorIndex = line - 16;
+                            if (errorIndex >= 0)
+                            {
+                                hello.ErrorLineIndex = errorIndex;
+                                setLineError = true;
+                            }
+                        }
                     }
 
+                    Console.WriteLine(sberror.ToString());
                     //  txtErrors.Text = sberror.ToString();
-
-                    return;
+                }
+                else
+                {
+                    classRef = possibleClassRef;
+                    hello.ErrorLineIndex = -1;
                 }
             }
             catch (Exception ex)

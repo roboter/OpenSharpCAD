@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using CSharpCAD;
 using MatterHackers.Csg;
 
@@ -12,12 +13,24 @@ namespace CSharpCad.Test
             Console.WriteLine("Running Compile Method Test...");
 
             // Provide the script content as if typed in the editor
-            string script = "Draw(new Box(8, 20, 10));";
+            string scriptPath = "complex_example.txt";
+            if (!File.Exists(scriptPath))
+            {
+                // Try BaseDirectory
+                scriptPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "complex_example.txt");
+            }
+
+            if (!File.Exists(scriptPath))
+            {
+                Console.WriteLine($"Error: Script file 'complex_example.txt' not found in CWD or BaseDirectory.");
+                return;
+            }
+            string scriptSource = File.ReadAllText(scriptPath);
 
             ICompilerService compiler = new CompilerService();
             List<string> errors;
 
-            var result = compiler.Compile(script, out errors);
+            var result = compiler.Compile(scriptSource, out errors);
 
             if (errors.Count > 0)
             {

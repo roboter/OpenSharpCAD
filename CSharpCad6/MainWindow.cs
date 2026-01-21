@@ -77,75 +77,59 @@ namespace CSharpCAD
             {
                 // panel 1 stuff
                 textSide = new FlowLayoutWidget(FlowDirection.TopToBottom);
-                textSide.BackgroundColor = Color.Cyan;  // Debug: textSide color
+                textSide.BackgroundColor = Color.Cyan;
                 {
                     objectEditorView = new GuiWidget(300, 500);
                     objectEditorList = new FlowLayoutWidget();
-                    //  objectEditorList.AddChild(new TextEditWidget("Text in box"));
 
-                    //   objectEditorView.AddChild(objectEditorList);
-                    //   objectEditorView.BackgroundColor = Color.LightGray;
-                    //   matterScriptEditor.LocalBounds = new RectangleDouble(0, 0, 200, 300);
-                    //    textSide.AddChild(objectEditorView);
+                    objectEditorView.BackgroundColor = Color.LightGray;
+
                     var code = new StringBuilder();
-                    code.AppendLine("Draw(new Box(8, 20, 10));");
-                    //code.AppendLine("MatterHackers.PolygonMesh.Mesh mesh = new MatterHackers.PolygonMesh.Mesh();");
-                    //code.AppendLine("var v0 = mesh.CreateVertex(new Vector3(1, 0, 1));  // V0");
-                    //code.AppendLine("var v1 = mesh.CreateVertex(new Vector3(1, 0, -1)); // V1");
-                    //code.AppendLine("var v2 = mesh.CreateVertex(new Vector3(-1, 0, -1)); // V2");
-                    //code.AppendLine("var v3 = mesh.CreateVertex(new Vector3(-1, 0, 1)); // V3");
-                    //code.AppendLine("var v4 = mesh.CreateVertex(new Vector3(0, 1, 0)); // v4");
+                    code.AppendLine("// Complex CSG Example");
+                    code.AppendLine("");
+                    code.AppendLine("// 1. Union: A cross shape");
+                    code.AppendLine("var cross = new Union();");
+                    code.AppendLine("cross.Add(new Box(10, 30, 10));");
+                    code.AppendLine("cross.Add(new Box(30, 10, 10));");
+                    code.AppendLine("");
+                    code.AppendLine("// 2. Difference: Sphere minus Cylinder");
+                    code.AppendLine("var sphere = new Sphere(15);");
+                    code.AppendLine("var cylinder = new Cylinder(5, 40);");
+                    code.AppendLine("var hollowSphere = new Difference(sphere, cylinder);");
+                    code.AppendLine("");
+                    code.AppendLine("// 3. Intersection: Box intersection Sphere");
+                    code.AppendLine("var box = new Box(20, 20, 20);");
+                    code.AppendLine("var ball = new Sphere(14);");
+                    code.AppendLine("var intersected = new Intersection(box, ball);");
+                    code.AppendLine("");
+                    code.AppendLine("// Assemble into a scene");
+                    code.AppendLine("var scene = new Union();");
+                    code.AppendLine("scene.Add(new Translate(cross, -40, 0, 10));");
+                    code.AppendLine("scene.Add(new Translate(hollowSphere, 0, 0, 20));");
+                    code.AppendLine("scene.Add(new Translate(intersected, 40, 0, 10));");
+                    code.AppendLine("scene.Add(new Translate(new Box(120, 50, 2), 0, 0, -1));");
+                    code.AppendLine("");
+                    code.AppendLine("Draw(scene);");
 
-                    //code.AppendLine("mesh.CreateFace(new Vertex[] { v0, v1, v2, v3 });");
-                    //code.AppendLine("mesh.CreateFace(new Vertex[] { v3, v0, v4 });");
-                    //code.AppendLine("mesh.CreateFace(new Vertex[] { v0, v1, v4 });");
-                    //code.AppendLine("mesh.CreateFace(new Vertex[] { v1, v2, v4 });");
-                    //code.AppendLine("mesh.CreateFace(new Vertex[] { v2, v3, v4 });");
-
-                    //code.AppendLine("RenderMeshToGl.Render(mesh, new RGBA_Floats(.3, .8, 7)); ");
                     hello = new TextEditWidget(code.ToString().Replace('\r', '\n'));
                     hello.Multiline = true;
                     hello.HAnchor = HAnchor.Stretch;
                     hello.VAnchor = VAnchor.Stretch;
-                    hello.TextChanged += Hello_TextChanged;  // Subscribe AFTER setting Multiline
+                    hello.TextChanged += Hello_TextChanged;
+
                     textSide.AddChild(hello);
                     textSide.AnchorAll();
                     objectEditorList.AnchorAll();
-                    //    textSide.BoundsChanged += new EventHandler(textSide_BoundsChanged);
-
-                    //#region Buttons
-                    //FlowLayoutWidget topButtonBar = new FlowLayoutWidget();
-
-                    //Button loadMatterScript = new Button("Load Matter Script");
-                    ////        loadMatterScript.Click += loadMatterScript_Click;
-                    //topButtonBar.AddChild(loadMatterScript);
-
-                    //outputScad = new Button("Output SCAD");
-                    ////        outputScad.Click += outputScad_Click;
-                    //topButtonBar.AddChild(outputScad);
-
-                    //textSide.AddChild(topButtonBar);
-
-                    //FlowLayoutWidget bottomButtonBar = new FlowLayoutWidget();
-
-                    //Button loadStl = new Button("Load STL");
-                    ////          loadStl.Click += LoadStl_Click;
-                    //bottomButtonBar.AddChild(loadStl);
-
-                    //textSide.AddChild(bottomButtonBar);
-
-                    //#endregion
                 }
 
                 // pannel 2 stuff
                 FlowLayoutWidget renderSide = new FlowLayoutWidget(FlowDirection.TopToBottom);
-
+                renderSide.BackgroundColor = Color.Yellow;
                 renderSide.AnchorAll();
                 {
                     var world = new WorldView(800, 600);
                     trackBallWidget = new TrackballTumbleView(world, renderSide);
                     trackBallWidget.DrawContent = glLightedView_DrawGlContent;
-                    //   trackBallWidget.BackgroundColor = Color.Yellow;  // Debug: renderSide color
                     renderSide.AddChild(trackBallWidget);
                 }
                 verticalSplitter.Panel2.AddChild(renderSide);
@@ -177,7 +161,7 @@ namespace CSharpCAD
             List<string> errors;
 
             // The service expects just the content inside Render(), which comes from hello.Text
-            classRef = compilerService.Compile(hello.Text, out errors);
+            var newClassRef = compilerService.Compile(hello.Text, out errors);
 
             if (errors.Count > 0)
             {
@@ -186,12 +170,60 @@ namespace CSharpCAD
                 {
                     sberror.AppendLine(error);
                 }
-                // TODO: Display errors to user (e.g., txtErrors.Text = sberror.ToString())
-                // For now, logging as before might be done by caller or added here if needed, 
-                // but simpler to just return.
+
+                // Parse the first error to find the line number
+                // Format example: (19,28): error CS0012: ...
+                // The line number in the error message matches the line in the "class wrapper" code, not necessarily the editor text.
+                // However, we constructed the wrapper such that the user code starts at specific line.
+                // We need to map wrapper line to editor line, or better yet, since we know exactly how many lines we added:
+                // CompilerService adds lines before user code. Checking CompilerService.cs...
+                // It adds 31 lines before 'scriptSource'.
+                // So UserLine = ErrorLine - 31.
+
+                if (errors.Count > 0)
+                {
+                    var error = errors[0];
+                    if (error.StartsWith("("))
+                    {
+                        int endIndex = error.IndexOf(",");
+                        if (endIndex > 1)
+                        {
+                            string lineStr = error.Substring(1, endIndex - 1);
+                            if (int.TryParse(lineStr, out int errorLine))
+                            {
+                                int editorLine = errorLine - 14; // Offset from CompilerService
+                                HighlightLine(editorLine);
+                            }
+                        }
+                    }
+                }
+
                 return;
             }
+
+            classRef = newClassRef;
             trackBallWidget.Invalidate();
+        }
+
+        private void HighlightLine(int lineNumberOneBased)
+        {
+            //if (lineNumberOneBased < 1) return;
+
+            //string text = hello.Text;
+            //string[] lines = text.Split('\n');
+
+            //if (lineNumberOneBased > lines.Length) return;
+
+            //int startIndex = 0;
+            //for (int i = 0; i < lineNumberOneBased - 1; i++)
+            //{
+            //    startIndex += lines[i].Length + 1; // +1 for \n which replace replaced \r with
+            //}
+
+            //int length = lines[lineNumberOneBased - 1].Length;
+
+            //// Select the line
+            //hello.InternalTextEditWidget.SetSelection(startIndex, startIndex + length - 1);
         }
         private void LogException(Exception ex)
         {
