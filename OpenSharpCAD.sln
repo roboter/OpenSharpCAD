@@ -45,7 +45,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiTest", "ApiTest\ApiTest.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AGGLib", "AGGLib", "{86D535C0-0396-4F6E-B70B-F467B0E3533D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataConverters3D", "submodules\agg-sharp\DataConverters3D\DataConverters3D.csproj", "{04667764-DC7B-4B95-AEF6-B4E6C87A54E9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataConverters3D", "Submodules\agg-sharp\DataConverters3D\DataConverters3D.csproj", "{04667764-DC7B-4B95-AEF6-B4E6C87A54E9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpCad6", "CSharpCad6\CSharpCad6.csproj", "{70B36E4B-16F6-42E7-B7E5-E9A39D8D71B5}"
 EndProject

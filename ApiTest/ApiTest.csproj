@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFrameworks Condition="'$(OS)' == 'Windows_NT'">net10.0;net10.0-windows</TargetFrameworks>
+    <TargetFrameworks Condition="'$(OS)' != 'Windows_NT'">net10.0</TargetFrameworks>
     <OutputType>Exe</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
@@ -8,7 +9,7 @@
     <ProjectReference Include="..\Submodules\agg-sharp\agg\Agg.csproj" />
     <ProjectReference Include="..\Submodules\agg-sharp\clipper_library\clipper_library.csproj" />
     <ProjectReference Include="..\Submodules\agg-sharp\Csg\Csg.csproj" />
-    <ProjectReference Include="..\Submodules\agg-sharp\PlatformWin32\PlatformWin32.csproj" Condition="'$(OS)' == 'Windows_NT'" />
+    <ProjectReference Include="..\Submodules\agg-sharp\PlatformWin32\PlatformWin32.csproj" Condition="'$(TargetFramework)' == 'net10.0-windows'" />
     <ProjectReference Include="..\Submodules\agg-sharp\PolygonMesh\PolygonMesh.csproj" />
     <ProjectReference Include="..\Submodules\agg-sharp\RenderOpenGl\RenderOpenGl.csproj" />
     <ProjectReference Include="..\Submodules\agg-sharp\Tesselate\Tesselate.csproj" />
