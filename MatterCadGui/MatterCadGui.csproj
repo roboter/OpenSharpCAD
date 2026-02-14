@@ -1,11 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net10.0-windows</TargetFramework>
+    <TargetFramework>$(NetVersion)-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
     <RootNamespace>MatterHackers.MatterCadGui</RootNamespace>
     <AssemblyName>MatterHackers.MatterCADGui</AssemblyName>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
     <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
 
