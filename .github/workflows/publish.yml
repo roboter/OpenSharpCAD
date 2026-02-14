@@ -2,6 +2,8 @@ name: Publish Release
 
 on:
   push:
+    branches:
+      - '*'
     tags:
       - 'v*'
   workflow_dispatch:
@@ -12,15 +14,16 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest, macos-latest]
-        runtime: [win-x64, osx-x64, osx-arm64]
-        exclude:
+        include:
           - os: windows-latest
-            runtime: osx-x64
-          - os: windows-latest
-            runtime: osx-arm64
-          - os: macos-latest
             runtime: win-x64
+            framework: net10.0-windows
+          - os: macos-latest
+            runtime: osx-x64
+            framework: net10.0
+          - os: macos-latest
+            runtime: osx-arm64
+            framework: net10.0
 
     steps:
     - name: Checkout
@@ -38,7 +41,7 @@ jobs:
 
     - name: Publish
       run: |
-        dotnet publish CSharpCad6/CSharpCad6.csproj -c Release -r ${{ matrix.runtime }} --self-contained true -p:PublishSingleFile=true -o ./publish/${{ matrix.runtime }}
+        dotnet publish CSharpCad6/CSharpCad6.csproj -c Release -r ${{ matrix.runtime }} -f ${{ matrix.framework }} --self-contained true -p:PublishSingleFile=true -o ./publish/${{ matrix.runtime }}
 
     - name: Zip Artifact
       shell: bash
