@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
     <OutputType>WinExe</OutputType>
     <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
@@ -80,7 +80,7 @@
     <ProjectReference Include="..\Submodules\agg-sharp\agg\Agg.csproj" />
     <ProjectReference Include="..\Submodules\agg-sharp\Csg\Csg.csproj" />
     <ProjectReference Include="..\Submodules\agg-sharp\Gui\Gui.csproj" />
-    <ProjectReference Include="..\Submodules\agg-sharp\PlatformWin32\PlatformWin32.csproj" />
+    <ProjectReference Include="..\Submodules\agg-sharp\PlatformWin32\PlatformWin32.csproj" Condition="'$(OS)' == 'Windows_NT'" />
     <ProjectReference Include="..\Submodules\agg-sharp\Glfw\GlfwProvider.csproj" />
     <ProjectReference Include="..\Submodules\agg-sharp\PolygonMesh\PolygonMesh.csproj" />
     <ProjectReference Include="..\Submodules\agg-sharp\RenderOpenGl\RenderOpenGl.csproj" />

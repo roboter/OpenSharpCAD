@@ -1,5 +1,6 @@
 ﻿using MatterHackers.Agg.Platform;
 using System;
+using System.Runtime.InteropServices;
 using System.Globalization;
 using System.Threading;
 using System.IO;
@@ -12,7 +13,14 @@ class Program
     [STAThread]
     static void Main(string[] args)
     {
-        AggContext.Config.ProviderTypes.SystemWindowProvider = "MatterHackers.Agg.UI.OpenGLWinformsWindowProvider, agg_platform_win32";
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            AggContext.Config.ProviderTypes.SystemWindowProvider = "MatterHackers.Agg.UI.OpenGLWinformsWindowProvider, agg_platform_win32";
+        }
+        else
+        {
+            AggContext.Config.ProviderTypes.SystemWindowProvider = "MatterHackers.GlfwProvider.GlfwWindowProvider, MatterHackers.GlfwProvider";
+        }
 
         try
         {
