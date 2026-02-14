@@ -37,14 +37,23 @@ jobs:
         dotnet-version: 10.0.x
 
     - name: Restore dependencies
-      run: dotnet restore CSharpCad6/CSharpCad6.csproj
+      run: dotnet restore OpenSharpCAD.sln
+
+    - name: Run Tests
+      run: dotnet test CSharpCad.UnitTests/CSharpCad.UnitTests.csproj -f ${{ matrix.framework }}
 
     - name: Publish
       run: |
         dotnet publish CSharpCad6/CSharpCad6.csproj -c Release -r ${{ matrix.runtime }} -f ${{ matrix.framework }} --self-contained true -p:PublishSingleFile=true -o ./publish/${{ matrix.runtime }}
 
-    - name: Zip Artifact
-      shell: bash
+    - name: Zip Artifact (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        cd publish/${{ matrix.runtime }}
+        7z a ../../CSharpCAD-${{ matrix.runtime }}.zip .
+
+    - name: Zip Artifact (non-Windows)
+      if: runner.os != 'Windows'
       run: |
         cd publish/${{ matrix.runtime }}
         zip -r ../../CSharpCAD-${{ matrix.runtime }}.zip .
@@ -67,7 +76,7 @@ jobs:
         path: ./artifacts
 
     - name: Create Release
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       with:
         files: ./artifacts/**/*.zip
       env:
