@@ -55,22 +55,22 @@ jobs:
 
     - name: Publish
       run: |
-        dotnet publish CSharpCad6/CSharpCad6.csproj -c Release -r ${{ matrix.runtime }} -f ${{ matrix.framework }} --self-contained true -p:PublishSingleFile=true -o ./publish/${{ matrix.runtime }}
+        dotnet publish OpenSharpCAD/OpenSharpCAD.csproj -c Release -r ${{ matrix.runtime }} -f ${{ matrix.framework }} --self-contained true -p:PublishSingleFile=true -o ./publish/${{ matrix.runtime }}
 
     - name: Zip Artifact
       run: |
         cd publish/${{ matrix.runtime }}
         if [[ "${{ runner.os }}" == "Windows" ]]; then
-          7z a ../../CSharpCAD-${{ matrix.runtime }}.zip .
+          7z a ../../OpenSharpCAD-${{ matrix.runtime }}.zip .
         else
-          zip -r ../../CSharpCAD-${{ matrix.runtime }}.zip .
+          zip -r ../../OpenSharpCAD-${{ matrix.runtime }}.zip .
         fi
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: CSharpCAD-${{ matrix.runtime }}
-        path: CSharpCAD-${{ matrix.runtime }}.zip
+        name: OpenSharpCAD-${{ matrix.runtime }}
+        path: OpenSharpCAD-${{ matrix.runtime }}.zip
 
   release:
     name: Create Release
@@ -82,7 +82,7 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         path: ./artifacts
-        pattern: CSharpCAD-*
+        pattern: OpenSharpCAD-*
         merge-multiple: true
 
     - name: Create Release
