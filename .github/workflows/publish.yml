@@ -13,9 +13,13 @@ permissions:
 
 jobs:
   build:
-    name: Build and Publish
+    name: Build and Publish (${{ matrix.runtime }})
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
     strategy:
+      fail-fast: false
       matrix:
         include:
           - os: windows-latest
@@ -37,7 +41,11 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 10.0.x
+        dotnet-version: |
+          10.0.x
+
+    - name: List SDKs
+      run: dotnet --list-sdks
 
     - name: Restore dependencies
       run: dotnet restore OpenSharpCAD.sln
@@ -49,17 +57,14 @@ jobs:
       run: |
         dotnet publish CSharpCad6/CSharpCad6.csproj -c Release -r ${{ matrix.runtime }} -f ${{ matrix.framework }} --self-contained true -p:PublishSingleFile=true -o ./publish/${{ matrix.runtime }}
 
-    - name: Zip Artifact (Windows)
-      if: runner.os == 'Windows'
+    - name: Zip Artifact
       run: |
         cd publish/${{ matrix.runtime }}
-        7z a ../../CSharpCAD-${{ matrix.runtime }}.zip .
-
-    - name: Zip Artifact (non-Windows)
-      if: runner.os != 'Windows'
-      run: |
-        cd publish/${{ matrix.runtime }}
-        zip -r ../../CSharpCAD-${{ matrix.runtime }}.zip .
+        if [[ "${{ runner.os }}" == "Windows" ]]; then
+          7z a ../../CSharpCAD-${{ matrix.runtime }}.zip .
+        else
+          zip -r ../../CSharpCAD-${{ matrix.runtime }}.zip .
+        fi
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
@@ -77,10 +82,12 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         path: ./artifacts
+        pattern: CSharpCAD-*
+        merge-multiple: true
 
     - name: Create Release
       uses: softprops/action-gh-release@v2
       with:
-        files: ./artifacts/**/*.zip
+        files: ./artifacts/*.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
