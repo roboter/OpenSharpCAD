@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CSharpCad6\CSharpCad6.csproj" />
+    <ProjectReference Include="..\OpenSharpCAD\OpenSharpCAD.csproj" />
   </ItemGroup>
 
 </Project>
