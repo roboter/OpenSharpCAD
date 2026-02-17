@@ -31,13 +31,33 @@ namespace CSharpCAD
             base.OnDraw(graphics2D);
             if (DrawContent != null)
             {
-                GLHelper.SetGlContext(this.World, this.TransformToScreenSpace(LocalBounds), new LightingData()
+                RectangleDouble screenRect = this.TransformToScreenSpace(LocalBounds);
+                // Scale viewport for Retina displays
+                screenRect.Left *= GuiWidget.DeviceScale;
+                screenRect.Bottom *= GuiWidget.DeviceScale;
+                screenRect.Right *= GuiWidget.DeviceScale;
+                screenRect.Top *= GuiWidget.DeviceScale;
+
+                GLHelper.SetGlContext(this.World, screenRect, new LightingData()
                 {
                     AmbientLight = new float[] { 0.2f, 0.2f, 0.2f, 1.0f }
                 });
                 DrawContent();
                 GLHelper.UnsetGlContext();
             }
+        }
+
+        public override void OnMouseDown(MouseEventArgs mouseEvent)
+        {
+            System.Console.WriteLine("TrackballTumbleView.OnMouseDown");
+            base.OnMouseDown(mouseEvent);
+        }
+
+        public override void OnMouseMove(MouseEventArgs mouseEvent)
+        {
+            // Logging mouse move might be too noisy, but useful for initial check
+            // System.Console.WriteLine("TrackballTumbleView.OnMouseMove");
+            base.OnMouseMove(mouseEvent);
         }
     }
 
@@ -69,100 +89,63 @@ namespace CSharpCAD
             rootUnion.Add(new Translate(new BoxPrimitive(10, 10, 20), 5, 10, 5));
             rootUnion.Add(new BoxPrimitive(8, 20, 10));
 
-            verticalSplitter = new Splitter();
-            //verticalSplitter.SplitterDistance = 400;  // Set left panel width for text editor
-            //verticalSplitter.Panel1.BackgroundColor = new Color(173, 216, 230);  // Debug: Panel1 light blue
-            //verticalSplitter.Panel2.BackgroundColor = new Color(144, 238, 144);  // Debug: Panel2 light green
-            verticalSplitter.SplitterBackground = Color.Red;  // Debug: Splitter bar color
+            verticalSplitter = new Splitter()
+            {
+                HAnchor = HAnchor.Stretch,
+                VAnchor = VAnchor.Stretch,
+                SplitterDistance = 400,
+                SplitterBackground = Color.Red,
+            };
+            verticalSplitter.Panel1.BackgroundColor = new Color(173, 216, 230);
+            verticalSplitter.Panel2.BackgroundColor = new Color(144, 238, 144);
+            AddChild(verticalSplitter);
+
             {
                 // panel 1 stuff
-                textSide = new FlowLayoutWidget(FlowDirection.TopToBottom);
-                textSide.BackgroundColor = Color.Cyan;  // Debug: textSide color
+                textSide = new FlowLayoutWidget(FlowDirection.TopToBottom)
                 {
-                    objectEditorView = new GuiWidget(300, 500);
-                    objectEditorList = new FlowLayoutWidget();
-                    //  objectEditorList.AddChild(new TextEditWidget("Text in box"));
+                    HAnchor = HAnchor.Stretch,
+                    VAnchor = VAnchor.Stretch,
+                    BackgroundColor = Color.Cyan,
+                };
 
-                    //   objectEditorView.AddChild(objectEditorList);
-                    //   objectEditorView.BackgroundColor = Color.LightGray;
-                    //   matterScriptEditor.LocalBounds = new RectangleDouble(0, 0, 200, 300);
-                    //    textSide.AddChild(objectEditorView);
-                    var code = new StringBuilder();
-                    code.AppendLine("Draw(new Box(8, 20, 10));");
-                    //code.AppendLine("MatterHackers.PolygonMesh.Mesh mesh = new MatterHackers.PolygonMesh.Mesh();");
-                    //code.AppendLine("var v0 = mesh.CreateVertex(new Vector3(1, 0, 1));  // V0");
-                    //code.AppendLine("var v1 = mesh.CreateVertex(new Vector3(1, 0, -1)); // V1");
-                    //code.AppendLine("var v2 = mesh.CreateVertex(new Vector3(-1, 0, -1)); // V2");
-                    //code.AppendLine("var v3 = mesh.CreateVertex(new Vector3(-1, 0, 1)); // V3");
-                    //code.AppendLine("var v4 = mesh.CreateVertex(new Vector3(0, 1, 0)); // v4");
+                var code = new StringBuilder();
+                code.AppendLine("Draw(new Box(8, 20, 10));");
 
-                    //code.AppendLine("mesh.CreateFace(new Vertex[] { v0, v1, v2, v3 });");
-                    //code.AppendLine("mesh.CreateFace(new Vertex[] { v3, v0, v4 });");
-                    //code.AppendLine("mesh.CreateFace(new Vertex[] { v0, v1, v4 });");
-                    //code.AppendLine("mesh.CreateFace(new Vertex[] { v1, v2, v4 });");
-                    //code.AppendLine("mesh.CreateFace(new Vertex[] { v2, v3, v4 });");
-
-                    //code.AppendLine("RenderMeshToGl.Render(mesh, new RGBA_Floats(.3, .8, 7)); ");
-                    hello = new TextEditWidget(code.ToString().Replace('\r', '\n'));
-                    hello.Multiline = true;
-                    hello.HAnchor = HAnchor.Stretch;
-                    hello.VAnchor = VAnchor.Stretch;
-                    hello.TextChanged += Hello_TextChanged;  // Subscribe AFTER setting Multiline
-                    textSide.AddChild(hello);
-                    textSide.AnchorAll();
-                    objectEditorList.AnchorAll();
-                    //    textSide.BoundsChanged += new EventHandler(textSide_BoundsChanged);
-
-                    //#region Buttons
-                    //FlowLayoutWidget topButtonBar = new FlowLayoutWidget();
-
-                    //Button loadMatterScript = new Button("Load Matter Script");
-                    ////        loadMatterScript.Click += loadMatterScript_Click;
-                    //topButtonBar.AddChild(loadMatterScript);
-
-                    //outputScad = new Button("Output SCAD");
-                    ////        outputScad.Click += outputScad_Click;
-                    //topButtonBar.AddChild(outputScad);
-
-                    //textSide.AddChild(topButtonBar);
-
-                    //FlowLayoutWidget bottomButtonBar = new FlowLayoutWidget();
-
-                    //Button loadStl = new Button("Load STL");
-                    ////          loadStl.Click += LoadStl_Click;
-                    //bottomButtonBar.AddChild(loadStl);
-
-                    //textSide.AddChild(bottomButtonBar);
-
-                    //#endregion
-                }
-
-                // pannel 2 stuff
-                FlowLayoutWidget renderSide = new FlowLayoutWidget(FlowDirection.TopToBottom);
-
-                renderSide.AnchorAll();
+                hello = new TextEditWidget(code.ToString().Replace('\r', '\n'))
                 {
-                    var world = new WorldView(800, 600);
-                    trackBallWidget = new TrackballTumbleView(world, renderSide);
-                    trackBallWidget.DrawContent = glLightedView_DrawGlContent;
-                    //   trackBallWidget.BackgroundColor = Color.Yellow;  // Debug: renderSide color
-                    renderSide.AddChild(trackBallWidget);
-                }
-                verticalSplitter.Panel2.AddChild(renderSide);
+                    Multiline = true,
+                    HAnchor = HAnchor.Stretch,
+                    VAnchor = VAnchor.Stretch,
+                };
+                hello.TextChanged += Hello_TextChanged;
+                textSide.AddChild(hello);
                 verticalSplitter.Panel1.AddChild(textSide);
             }
 
-            AnchorAll();
+            {
+                // panel 2 stuff
+                FlowLayoutWidget renderSide = new FlowLayoutWidget(FlowDirection.TopToBottom)
+                {
+                    HAnchor = HAnchor.Stretch,
+                    VAnchor = VAnchor.Stretch,
+                };
 
-            verticalSplitter.AnchorAll();
-
-            textSide.AnchorAll();
-
-            trackBallWidget.AnchorAll();
-
-            AddChild(verticalSplitter);
+                var world = new WorldView(800, 600);
+                world.TranslationMatrix = Matrix4X4.CreateTranslation(0, 0, -50);
+                trackBallWidget = new TrackballTumbleView(world, renderSide)
+                {
+                    HAnchor = HAnchor.Stretch,
+                    VAnchor = VAnchor.Stretch,
+                    DrawContent = glLightedView_DrawGlContent,
+                    TransformState = MatterHackers.VectorMath.TrackBall.TrackBallTransformType.Rotation,
+                };
+                renderSide.AddChild(trackBallWidget);
+                verticalSplitter.Panel2.AddChild(renderSide);
+            }
 
             BackgroundColor = Color.White;
+            PerformLayout();
             Compile();
         }
 
@@ -214,10 +197,12 @@ namespace CSharpCAD
         {
             try
             {
-                classRef?.Render();
+                if (classRef == null) return;
+                classRef.Render();
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Error during classRef.Render(): " + ex.Message);
                 LogException(ex);
             }
         }

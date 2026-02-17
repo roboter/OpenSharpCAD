@@ -9,8 +9,8 @@ namespace CSharpCAD
     {
         public object Compile(string scriptSource, out List<string> errors)
         {
-            errors = new List<string>();
-            StringBuilder sb = new StringBuilder();
+            errors = [];
+            StringBuilder sb = new();
 
             //-----------------
             // Create the class code wrapper
@@ -21,6 +21,7 @@ namespace CSharpCAD
             sb.AppendLine("using MatterHackers.Csg;");
             sb.AppendLine("using MatterHackers.Csg.Solids; ");
             sb.AppendLine("using MatterHackers.RenderOpenGl; ");
+            sb.AppendLine("using MatterHackers.RenderOpenGl.OpenGl; ");
             sb.AppendLine("using MatterHackers.Agg;");
 
             sb.AppendLine("namespace Test");
@@ -29,12 +30,17 @@ namespace CSharpCAD
             sb.AppendLine("      {");
             sb.AppendLine("            public void Render()");
             sb.AppendLine("            {");
+            sb.AppendLine("                try {");
             sb.AppendLine(scriptSource);
+            sb.AppendLine("                } catch (Exception ex) { System.Console.WriteLine(\"Error in Render(): \" + ex.Message); }");
             sb.AppendLine("            }");
 
             sb.AppendLine("            public void Draw(CsgObject objectToProcess)");
             sb.AppendLine("            {");
+            sb.AppendLine("                if (objectToProcess == null) { System.Console.WriteLine(\"Draw: objectToProcess is null\"); return; }");
             sb.AppendLine("                var mesh = MatterHackers.RenderOpenGl.CsgToMesh.Convert(objectToProcess);");
+            sb.AppendLine("                if (mesh == null) { System.Console.WriteLine(\"Draw: mesh is null\"); return; }");
+            sb.AppendLine("                if (GL.Instance == null) { System.Console.WriteLine(\"Draw: GL.Instance is NULL!\"); }");
             sb.AppendLine("                GLHelper.Render(mesh, new Color(150, 150, 150, 255));");
             sb.AppendLine("            }");
             sb.AppendLine("      }");
@@ -47,6 +53,7 @@ namespace CSharpCAD
                 // Pass the class code, the namespace of the class and the list of extra assemblies needed
                 var classRef = DynCode.CodeHelper.HelperFunction(classCode, "Test.RenderTest", new object[]
                 {
+                    typeof(System.Console).Assembly.Location,
                     typeof(MatterHackers.Csg.CsgObject).Assembly.Location,
                     typeof(MatterHackers.VectorMath.Vector3).Assembly.Location,
                     typeof(MatterHackers.Agg.Graphics2D).Assembly.Location,
