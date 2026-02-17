@@ -1,0 +1,11 @@
+{
+    "terminal.integrated.env.osx": {
+        "PATH": "/usr/local/share/dotnet:${env:PATH}"
+    },
+    "dotnetAcquisitionExtension.existingDotnetPath": [
+        {
+            "extensionId": "ms-dotnettools.csharp",
+            "path": "/usr/local/share/dotnet/dotnet"
+        }
+    ]
+}

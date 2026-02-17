@@ -70,7 +70,7 @@ namespace CSharpCAD
             rootUnion.Add(new BoxPrimitive(8, 20, 10));
 
             verticalSplitter = new Splitter();
-            verticalSplitter.SplitterDistance = 400;  // Set left panel width for text editor
+            //verticalSplitter.SplitterDistance = 400;  // Set left panel width for text editor
             //verticalSplitter.Panel1.BackgroundColor = new Color(173, 216, 230);  // Debug: Panel1 light blue
             //verticalSplitter.Panel2.BackgroundColor = new Color(144, 238, 144);  // Debug: Panel2 light green
             verticalSplitter.SplitterBackground = Color.Red;  // Debug: Splitter bar color
