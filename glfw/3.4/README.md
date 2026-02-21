@@ -455,4 +455,3 @@ request, please file it in the
 
 Finally, if you're interested in helping out with the development of GLFW or
 porting it to your favorite platform, join us on the forum or GitHub.
-

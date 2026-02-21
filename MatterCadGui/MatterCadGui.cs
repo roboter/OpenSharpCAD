@@ -31,7 +31,7 @@ namespace MatterHackers.MatterCad
             {
                 AggContext.Config.ProviderTypes.SystemWindowProvider = "MatterHackers.GlfwProvider.GlfwWindowProvider, MatterHackers.GlfwProvider";
             }
-        
+
             MatterCadGui cadWindow = new MatterCadGui(true)
             {
                 UseOpenGL = true,

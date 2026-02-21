@@ -12,7 +12,7 @@ namespace MatterHackers.MatterCadGui.CsgEditors
             this.target = target;
 
             AddChild(new TextWidget("Cylinder R1,R2,H,S"));
-            
+
             AddNumberEdit(target.Radius1, (val) => target.Radius1 = val, 0);
             AddNumberEdit(target.Radius2, (val) => target.Radius2 = val, 1);
             AddNumberEdit(target.Height, (val) => target.Height = val, 2);
