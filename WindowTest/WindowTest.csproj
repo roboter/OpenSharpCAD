@@ -1,11 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>$(NetVersion)-windows</TargetFramework>
     <OutputType>Exe</OutputType>
     <RootNamespace>WindowTest</RootNamespace>
     <AssemblyName>WindowTest</AssemblyName>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,0 +1,8 @@
+<Project>
+  <PropertyGroup>
+    <Company>MatterHackers Inc.</Company>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NetVersion>net10.0</NetVersion>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+  </PropertyGroup>
+</Project>
