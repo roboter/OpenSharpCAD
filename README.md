@@ -11,6 +11,7 @@ OpenSharpCAD is a parametric CAD system that allows you to design 3D parts using
 
 ### Prerequisites
 - [.NET 10.0 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
+- **GLFW**: On Windows the native GLFW binary is supplied by the [glfw](https://www.nuget.org/packages/glfw/) NuGet package. On macOS and Linux the build uses bundled binaries in the repo (or install GLFW via your system package manager if you prefer).
 
 ### Installation
 Clone the repository including all submodules:
@@ -28,7 +29,7 @@ Build and run using the .NET CLI:
 dotnet build OpenSharpCAD/OpenSharpCAD.csproj
 
 # Run the application
-dotnet run --project OpenSharpCAD/OpenSharpCAD.csproj -f net10.0
+dotnet run --project OpenSharpCAD/OpenSharpCAD.csproj
 ```
 
 ### Windows

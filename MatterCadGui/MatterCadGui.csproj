@@ -1,12 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>$(NetVersion)-windows</TargetFramework>
+    <TargetFrameworks Condition="'$(OS)' == 'Windows_NT'">$(NetVersion);$(NetVersion)-windows</TargetFrameworks>
+    <!-- On non-Windows, target only -windows so we can cross-build the WinForms GUI (e.g. for CI) -->
+    <TargetFramework Condition="'$(OS)' != 'Windows_NT'">$(NetVersion)-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
     <RootNamespace>MatterHackers.MatterCadGui</RootNamespace>
     <AssemblyName>MatterHackers.MatterCADGui</AssemblyName>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 
     <UseWindowsForms>true</UseWindowsForms>
+    <StartupObject>MatterHackers.MatterCad.MatterCadGui</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
