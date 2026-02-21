@@ -2,11 +2,12 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFrameworks Condition="'$(OS)' == 'Windows_NT'">$(NetVersion);$(NetVersion)-windows</TargetFrameworks>
+    <TargetFrameworks Condition="'$(OS)' != 'Windows_NT'">$(NetVersion)</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CSharpCad6\CSharpCad6.csproj" />
+    <ProjectReference Include="..\OpenSharpCAD\OpenSharpCAD.csproj" />
     <ProjectReference Include="..\Submodules\agg-sharp\Csg\Csg.csproj" />
     <ProjectReference Include="..\Submodules\agg-sharp\VectorMath\VectorMath.csproj" />
     <ProjectReference Include="..\Submodules\agg-sharp\agg\Agg.csproj" />

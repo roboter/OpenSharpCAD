@@ -1,0 +1,97 @@
+name: Publish Release
+
+on:
+  push:
+    branches:
+      - '*'
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build and Publish (${{ matrix.runtime }})
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            runtime: win-x64
+            framework: net10.0-windows
+          - os: macos-14  # Sonoma, Apple Silicon; cross-builds osx-x64
+            runtime: osx-x64
+            framework: net10.0
+          - os: macos-14
+            runtime: osx-arm64
+            framework: net10.0
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: |
+          10.0.x
+
+    - name: List SDKs
+      run: dotnet --list-sdks
+
+    - name: Restore dependencies
+      run: dotnet restore OpenSharpCAD.sln
+
+    - name: Run Tests
+      run: dotnet test CSharpCad.UnitTests/CSharpCad.UnitTests.csproj -f ${{ matrix.framework }}
+
+    - name: Publish OpenSharpCAD
+      run: |
+        dotnet publish OpenSharpCAD/OpenSharpCAD.csproj -c Release -r ${{ matrix.runtime }} -f ${{ matrix.framework }} --self-contained true -p:PublishSingleFile=true -o ./publish/${{ matrix.runtime }}/OpenSharpCAD
+
+    - name: Publish MatterCADGui
+      run: |
+        dotnet publish MatterCadGui/MatterCadGui.csproj -c Release -r ${{ matrix.runtime }} -f ${{ matrix.framework }} --self-contained true -p:PublishSingleFile=true -o ./publish/${{ matrix.runtime }}/MatterCADGui
+
+    - name: Zip Artifact
+      run: |
+        cd publish/${{ matrix.runtime }}
+        if [[ "${{ runner.os }}" == "Windows" ]]; then
+          7z a ../../OpenSharpCAD-${{ matrix.runtime }}.zip .
+        else
+          zip -r ../../OpenSharpCAD-${{ matrix.runtime }}.zip .
+        fi
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: OpenSharpCAD-${{ matrix.runtime }}
+        path: OpenSharpCAD-${{ matrix.runtime }}.zip
+
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+    - name: Download Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: ./artifacts
+        pattern: OpenSharpCAD-*
+        merge-multiple: true
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: ./artifacts/*.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

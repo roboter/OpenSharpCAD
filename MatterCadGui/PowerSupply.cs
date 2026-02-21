@@ -1,4 +1,4 @@
-﻿using MatterHackers.Csg;
+using MatterHackers.Csg;
 using MatterHackers.Csg.Solids;
 using MatterHackers.Csg.Transform;
 using MatterHackers.VectorMath;
@@ -39,7 +39,7 @@ namespace MatterHackers.MatterCadGui
             footBaseBox.BevelEdge(Face.Left | Face.Front, footBevelRadius);
             footBaseBox.BevelEdge(Face.Left | Face.Back, footBevelRadius);
             CsgObject footBase = footBaseBox;
-            CsgObject mountHole = new Cylinder(footMountHoleDiameter / 2, footBase.ZSize + .2);
+            CsgObject mountHole = new Cylinder(footMountHoleDiameter / 2, footBase.ZSize + .2, 32);
             mountHole = new Align(mountHole, Face.Left, footBase, Face.Left, wallWidth);
             footBase -= mountHole;
             total = footBase;
@@ -49,7 +49,7 @@ namespace MatterHackers.MatterCadGui
             risingWallBox.BevelEdge(Face.Top | Face.Front, wallBevelRadius);
             CsgObject risingWall = risingWallBox;
             risingWall = new Align(risingWall, Face.Right | Face.Bottom, footBase, Face.Right | Face.Bottom);
-            CsgObject powerScrewHole = new Cylinder(powerSupplyHoleDiameter / 2, footBase.ZSize + .2, Alignment.x);
+            CsgObject powerScrewHole = new Cylinder(powerSupplyHoleDiameter / 2, footBase.ZSize + .2, 32, Alignment.x);
             powerScrewHole = new Align(powerScrewHole, Face.Top | Face.Right, risingWall, Face.Top | Face.Right, offsetX: .02, offsetZ: -wallWidth);
             risingWall -= powerScrewHole;
 
@@ -90,14 +90,16 @@ namespace MatterHackers.MatterCadGui
 
             Vector3 xPositive = (x120y20 - x20y20).GetNormal();
             Vector3 yPositive = (x20y120 - x20y20).GetNormal();
-            Vector3 planNormal = Vector3.Cross(yPositive, xPositive);
+            Vector3 planNormal;
+            yPositive.Cross(ref xPositive, out planNormal);
 
             Matrix4X4 bedLevel = Matrix4X4.LookAt(Vector3.Zero, planNormal, yPositive);
 
-            Vector3 fixedX20Y20 = Vector3.Transform(x20y20, bedLevel);
-            Vector3 fixedX120Y20 = Vector3.Transform(x120y20, bedLevel);
-            Vector3 fixedX20Y120 = Vector3.Transform(x20y120, bedLevel);
-            double zAtX0Y0 = fixedX120Y20.z;
+            Vector3 fixedX20Y20, fixedX120Y20, fixedX20Y120;
+            x20y20.Transform(ref bedLevel, out fixedX20Y20);
+            x120y20.Transform(ref bedLevel, out fixedX120Y20);
+            x20y120.Transform(ref bedLevel, out fixedX20Y120);
+            double zAtX0Y0 = fixedX120Y20.Z;
 
             Matrix4X4 inverseBedLevel = Matrix4X4.Invert(bedLevel);
 
@@ -118,7 +120,8 @@ namespace MatterHackers.MatterCadGui
             result[2, 1] = -(A[0, 0] * A[2, 1] - A[2, 0] * A[0, 1]) * invdet;
             result[2, 2] = (A[0, 0] * A[1, 1] - A[1, 0] * A[0, 1]) * invdet;
 
-            Vector3 stepPositionX20Y20 = Vector3.Transform(fixedX20Y20, inverseBedLevel);
+            Vector3 stepPositionX20Y20;
+            fixedX20Y20.Transform(ref inverseBedLevel, out stepPositionX20Y20);
         }
 
         static double wallWidth = 4;
@@ -142,10 +145,10 @@ namespace MatterHackers.MatterCadGui
             CsgObject mainBar = new Box(wallWidth * 1.5, 37, 2.5);
             total = mainBar;
 
-            CsgObject magnetAttractorHole = new Cylinder(magnetAttractorHoleRadius / 2, mainBar.ZSize + .1, Alignment.z);
+            CsgObject magnetAttractorHole = new Cylinder(magnetAttractorHoleRadius / 2, mainBar.ZSize + .1, 32, Alignment.z);
             magnetAttractorHole = new SetCenter(magnetAttractorHole, mainBar.GetCenter() + new Vector3(0, -magnetAttractorHoleRadius, 0));
 
-            CsgObject magnetAttractorHole2 = new Cylinder(magnetAttractorHoleRadius / 2, mainBar.ZSize + .1, Alignment.z);
+            CsgObject magnetAttractorHole2 = new Cylinder(magnetAttractorHoleRadius / 2, mainBar.ZSize + .1, 32, Alignment.z);
             magnetAttractorHole2 = new SetCenter(magnetAttractorHole2, mainBar.GetCenter() + new Vector3(0, magnetAttractorHoleRadius, 0));
 
             CsgObject bothHoles = magnetAttractorHole + magnetAttractorHole2;
@@ -182,11 +185,11 @@ namespace MatterHackers.MatterCadGui
             total = fakeXCarriage;
 
             double pivotRingYOffset = -pivotHeight / 2 - wallWidth / 2 - .5;
-            CsgObject pivotRingFront = new Cylinder(pivotRingRadius / 2, wallWidth, Alignment.y);
+            CsgObject pivotRingFront = new Cylinder(pivotRingRadius / 2, wallWidth, 32, Alignment.y);
             CsgObject pivotFrontWall = new Box(pivotRingRadius, wallWidth, mountPivotHeight);
             pivotFrontWall = new Translate(pivotFrontWall, 0, 0, -mountPivotHeight / 2);
             CsgObject pivotSupportFront = pivotRingFront + pivotFrontWall;
-            CsgObject pivotHole = new Cylinder(pivotHoleRadius / 2, pivotRingFront.YSize + .1, Alignment.y);
+            CsgObject pivotHole = new Cylinder(pivotHoleRadius / 2, pivotRingFront.YSize + .1, 32, Alignment.y);
             pivotHole = new SetCenter(pivotHole, pivotRingFront.GetCenter());
             pivotSupportFront -= pivotHole;
             pivotSupportFront = new Translate(pivotSupportFront, 0, pivotRingYOffset, mountPivotHeight);
@@ -197,9 +200,9 @@ namespace MatterHackers.MatterCadGui
             CsgObject pivotSupportBack = pivotSupportFront.NewMirrorAccrossY();
             total += pivotSupportBack;
 
-            CsgObject backMagnetHolder = new Box(wallWidth * 2, magnetSize.x + wallWidth, backMagnetHeight);
+            CsgObject backMagnetHolder = new Box(wallWidth * 2, magnetSize.X + wallWidth, backMagnetHeight);
             backMagnetHolder = new Align(backMagnetHolder, Face.Bottom | Face.Right, fakeXCarriage, Face.Top | Face.Right, 0, 0, -.1);
-            CsgObject backMagnetHole = new Box(magnetSize.z, magnetSize.x, magnetSize.y);
+            CsgObject backMagnetHole = new Box(magnetSize.Z, magnetSize.X, magnetSize.Y);
             backMagnetHole = new SetCenter(backMagnetHole, backMagnetHolder.GetCenter());
             backMagnetHole = new Align(backMagnetHole, Face.Left | Face.Top, backMagnetHolder, Face.Left | Face.Top, -.1, 0, -wallWidth / 2);
 
@@ -210,9 +213,9 @@ namespace MatterHackers.MatterCadGui
             backMagnetHolder -= backMagnetHole;
             total += backMagnetHolder;
 
-            CsgObject baseMagnetHolder = new Box(wallWidth * 2, magnetSize.x + wallWidth, baseMagnetHeight);
+            CsgObject baseMagnetHolder = new Box(wallWidth * 2, magnetSize.X + wallWidth, baseMagnetHeight);
             baseMagnetHolder = new Align(baseMagnetHolder, Face.Bottom, fakeXCarriage, Face.Top, -14, 0, -.1);
-            CsgObject baseMagnetHole = new Box(magnetSize.y, magnetSize.x, magnetSize.z);
+            CsgObject baseMagnetHole = new Box(magnetSize.Y, magnetSize.X, magnetSize.Z);
             baseMagnetHole = new SetCenter(baseMagnetHole, baseMagnetHolder.GetCenter());
             baseMagnetHole = new Align(baseMagnetHole, Face.Top, baseMagnetHolder, Face.Top, 0, 0, .1);
             baseMagnetHolder -= baseMagnetHole;
@@ -226,9 +229,9 @@ namespace MatterHackers.MatterCadGui
             // CSG object is a Constructive Solid Geometry Object (a basic part in our system for doing boolean operations).
             CsgObject totalMount;  // the csg object we will use as the master part.
 
-            CsgObject pivotHole = new Cylinder(pivotHoleRadius / 2, pivotHeight + .1);
+            CsgObject pivotHole = new Cylinder(pivotHoleRadius / 2, pivotHeight + .1, 32);
 
-            CsgObject pivotMount = new Cylinder(pivotRingRadius / 2, pivotHeight);
+            CsgObject pivotMount = new Cylinder(pivotRingRadius / 2, pivotHeight, 32);
             pivotMount = new Align(pivotMount, Face.Bottom, pivotHole, Face.Bottom, offsetZ: .02);
             totalMount = pivotMount;
 
@@ -237,8 +240,8 @@ namespace MatterHackers.MatterCadGui
             totalMount += holdArm;
 
             CsgObject switchMount = new Box(switchHeight, switchWidth, wallWidth);
-            switchMount -= new Translate(new Cylinder(switchHoleDiameter / 2, switchMount.ZSize + .1), new Vector3(0, switchHoleSeparation / 2, 0));
-            switchMount -= new Translate(new Cylinder(switchHoleDiameter / 2, switchMount.ZSize + .1), new Vector3(0, -switchHoleSeparation / 2, 0));
+            switchMount -= new Translate(new Cylinder(switchHoleDiameter / 2, switchMount.ZSize + .1, 32), new Vector3(0, switchHoleSeparation / 2, 0));
+            switchMount -= new Translate(new Cylinder(switchHoleDiameter / 2, switchMount.ZSize + .1, 32), new Vector3(0, -switchHoleSeparation / 2, 0));
             switchMount = new Align(switchMount, Face.Left | Face.Front | Face.Bottom, holdArm, Face.Right | Face.Front | Face.Bottom, offsetX: -.02, offsetY: -5);
             totalMount += switchMount;
 
@@ -265,11 +268,11 @@ namespace MatterHackers.MatterCadGui
 
             totalMount -= pivotHole;
 
-            CsgObject magnetAttractorHole = new Cylinder(magnetAttractorHoleRadius / 2, magnetAttractor.YSize + .1, Alignment.y);
+            CsgObject magnetAttractorHole = new Cylinder(magnetAttractorHoleRadius / 2, magnetAttractor.YSize + .1, 32, Alignment.y);
             magnetAttractorHole = new SetCenter(magnetAttractorHole, magnetAttractor.GetCenter() + new Vector3(0, 0, -magnetAttractorHoleRadius));
             totalMount -= magnetAttractorHole;
 
-            CsgObject magnetAttractorHole2 = new Cylinder(magnetAttractorHoleRadius / 2, magnetAttractor.YSize + .1, Alignment.y);
+            CsgObject magnetAttractorHole2 = new Cylinder(magnetAttractorHoleRadius / 2, magnetAttractor.YSize + .1, 32, Alignment.y);
             magnetAttractorHole2 = new SetCenter(magnetAttractorHole2, magnetAttractor.GetCenter() + new Vector3(0, 0, magnetAttractorHoleRadius));
             totalMount -= magnetAttractorHole2;
 

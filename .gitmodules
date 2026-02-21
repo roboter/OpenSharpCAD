@@ -1,4 +1,4 @@
 [submodule "Submodules/agg-sharp"]
 	path = Submodules/agg-sharp
-	url = https://github.com/MatterHackers/agg-sharp.git
-	branch = dot_net6
+	url = https://github.com/roboter/agg-sharp.git
+	branch = macos-fixes

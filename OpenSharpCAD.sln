@@ -1,69 +1,81 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.3.11312.210 d18.3
+VisualStudioVersion = 18.3.11312.210
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Agg", "Submodules\agg-sharp\agg\Agg.csproj", "{657DBC6D-C3EA-4398-A3FA-DDB73C14F71B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Agg", "Submodules/agg-sharp/agg/Agg.csproj", "{657DBC6D-C3EA-4398-A3FA-DDB73C14F71B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VectorMath", "Submodules\agg-sharp\VectorMath\VectorMath.csproj", "{D3E41B4E-BFBB-44CA-94C8-95C00F754FDD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VectorMath", "Submodules/agg-sharp/VectorMath/VectorMath.csproj", "{D3E41B4E-BFBB-44CA-94C8-95C00F754FDD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlatformWin32", "Submodules\agg-sharp\PlatformWin32\PlatformWin32.csproj", "{670BDDFF-927B-425D-9DD1-22ACB14356EB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlatformWin32", "Submodules/agg-sharp/PlatformWin32/PlatformWin32.csproj", "{670BDDFF-927B-425D-9DD1-22ACB14356EB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gui", "Submodules\agg-sharp\Gui\Gui.csproj", "{74F6BB6C-9D02-4512-A59A-21940E35C532}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gui", "Submodules/agg-sharp/Gui/Gui.csproj", "{74F6BB6C-9D02-4512-A59A-21940E35C532}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RenderOpenGl", "Submodules\agg-sharp\RenderOpenGl\RenderOpenGl.csproj", "{545B6912-77FF-4B34-BA76-6C3D6A32BE6A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RenderOpenGl", "Submodules/agg-sharp/RenderOpenGl/RenderOpenGl.csproj", "{545B6912-77FF-4B34-BA76-6C3D6A32BE6A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Csg", "Submodules\agg-sharp\Csg\Csg.csproj", "{7E61A5BD-E78F-4B80-88C9-3821B4FA062E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Csg", "Submodules/agg-sharp/Csg/Csg.csproj", "{7E61A5BD-E78F-4B80-88C9-3821B4FA062E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PolygonMesh", "Submodules\agg-sharp\PolygonMesh\PolygonMesh.csproj", "{86F6AAF2-9B50-40B8-A427-1897D76471C5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PolygonMesh", "Submodules/agg-sharp/PolygonMesh/PolygonMesh.csproj", "{86F6AAF2-9B50-40B8-A427-1897D76471C5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataConverters2D", "Submodules\agg-sharp\DataConverters2D\DataConverters2D.csproj", "{94838988-523C-4B11-AD82-8B9B76F23A31}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataConverters2D", "Submodules/agg-sharp/DataConverters2D/DataConverters2D.csproj", "{94838988-523C-4B11-AD82-8B9B76F23A31}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "clipper_library", "Submodules\agg-sharp\clipper_library\clipper_library.csproj", "{9B062971-A88E-4A3D-B3C9-12B78D15FA66}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "clipper_library", "Submodules/agg-sharp/clipper_library/clipper_library.csproj", "{9B062971-A88E-4A3D-B3C9-12B78D15FA66}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tesselate", "Submodules\agg-sharp\Tesselate\Tesselate.csproj", "{AE37DE1F-22F7-49EE-8732-FC6BC8DC58D9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tesselate", "Submodules/agg-sharp/Tesselate/Tesselate.csproj", "{AE37DE1F-22F7-49EE-8732-FC6BC8DC58D9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CommandLineExamples", "CommandLineExamples", "{86B9DD30-1D43-4FEB-A3A4-3AADAE06FB72}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BedLevelMount", "CommandLineExamples\BedLevelMount\BedLevelMount.csproj", "{0B8D6F56-BD7F-4426-B858-D9292B084656}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BedLevelMount", "CommandLineExamples/BedLevelMount/BedLevelMount.csproj", "{0B8D6F56-BD7F-4426-B858-D9292B084656}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DialGaugeMount", "CommandLineExamples\DialGaugeMount\DialGaugeMount.csproj", "{6964AB8C-D98D-4B03-B267-1987C6719200}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DialGaugeMount", "CommandLineExamples/DialGaugeMount/DialGaugeMount.csproj", "{6964AB8C-D98D-4B03-B267-1987C6719200}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PowerSupplyMountingFeet", "CommandLineExamples\PowerSupplyMountingFeet\PowerSupplyMountingFeet.csproj", "{5B0F0CBD-4EB3-4FC1-A91D-99D01B147AEC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PowerSupplyMountingFeet", "CommandLineExamples/PowerSupplyMountingFeet/PowerSupplyMountingFeet.csproj", "{5B0F0CBD-4EB3-4FC1-A91D-99D01B147AEC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpoolBarHolderM90", "CommandLineExamples\SpoolBarHolderM90\SpoolBarHolderM90.csproj", "{E2669B8B-E1F8-429A-AA56-8ED4DEC435D6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpoolBarHolderM90", "CommandLineExamples/SpoolBarHolderM90/SpoolBarHolderM90.csproj", "{E2669B8B-E1F8-429A-AA56-8ED4DEC435D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpoolBearingHolder", "CommandLineExamples\SpoolBearingHolder\SpoolBearingHolder.csproj", "{44C38F3C-3E09-43CF-8E79-66B5301F6935}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpoolBearingHolder", "CommandLineExamples/SpoolBearingHolder/SpoolBearingHolder.csproj", "{44C38F3C-3E09-43CF-8E79-66B5301F6935}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StepArmForHobbit", "CommandLineExamples\StepArmForHobbit\StepArmForHobbit.csproj", "{A26961E3-57BB-4502-97EE-7A0FDB0D55C7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StepArmForHobbit", "CommandLineExamples/StepArmForHobbit/StepArmForHobbit.csproj", "{A26961E3-57BB-4502-97EE-7A0FDB0D55C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TPBinoculars", "CommandLineExamples\TPBinoculars\TPBinoculars.csproj", "{BE642CE0-F1C5-496F-95B9-48AE30E6A919}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TPBinoculars", "CommandLineExamples/TPBinoculars/TPBinoculars.csproj", "{BE642CE0-F1C5-496F-95B9-48AE30E6A919}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrainConnector", "CommandLineExamples\TrainConnector\TrainConnector.csproj", "{6A6CB7E7-5460-4697-A79D-20606C63E6E0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrainConnector", "CommandLineExamples/TrainConnector/TrainConnector.csproj", "{6A6CB7E7-5460-4697-A79D-20606C63E6E0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiTest", "ApiTest\ApiTest.csproj", "{46C6BEA2-032E-47CC-A027-9D53AFB716F1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiTest", "ApiTest/ApiTest.csproj", "{46C6BEA2-032E-47CC-A027-9D53AFB716F1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AGGLib", "AGGLib", "{86D535C0-0396-4F6E-B70B-F467B0E3533D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataConverters3D", "submodules\agg-sharp\DataConverters3D\DataConverters3D.csproj", "{04667764-DC7B-4B95-AEF6-B4E6C87A54E9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataConverters3D", "Submodules/agg-sharp/DataConverters3D/DataConverters3D.csproj", "{04667764-DC7B-4B95-AEF6-B4E6C87A54E9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpCad6", "CSharpCad6\CSharpCad6.csproj", "{70B36E4B-16F6-42E7-B7E5-E9A39D8D71B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenSharpCAD", "OpenSharpCAD/OpenSharpCAD.csproj", "{70B36E4B-16F6-42E7-B7E5-E9A39D8D71B5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "geometry3Sharp", "Submodules\agg-sharp\geometry3Sharp\geometry3Sharp.csproj", "{CF3B71BC-D90E-4EB2-98B4-D868186B1074}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "geometry3Sharp", "Submodules/agg-sharp/geometry3Sharp/geometry3Sharp.csproj", "{CF3B71BC-D90E-4EB2-98B4-D868186B1074}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GlfwProvider", "Submodules\agg-sharp\Glfw\GlfwProvider.csproj", "{1DEB3E33-BBDB-4837-BD1D-B947E517AE9C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GlfwProvider", "Submodules/agg-sharp/Glfw/GlfwProvider.csproj", "{1DEB3E33-BBDB-4837-BD1D-B947E517AE9C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GuiAutomation", "Submodules\agg-sharp\GuiAutomation\GuiAutomation.csproj", "{12DBEF37-2847-4C1F-B0E0-0C80F00C2A8E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GuiAutomation", "Submodules/agg-sharp/GuiAutomation/GuiAutomation.csproj", "{12DBEF37-2847-4C1F-B0E0-0C80F00C2A8E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageProcessing", "Submodules\agg-sharp\ImageProcessing\ImageProcessing.csproj", "{31C91025-547B-4C59-BD53-C23AED2E9AD9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageProcessing", "Submodules/agg-sharp/ImageProcessing/ImageProcessing.csproj", "{31C91025-547B-4C59-BD53-C23AED2E9AD9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Localizations", "Submodules\agg-sharp\Localizations\Localizations.csproj", "{00E6805C-05B3-4007-A6C2-562A738BC60D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Localizations", "Submodules/agg-sharp/Localizations/Localizations.csproj", "{00E6805C-05B3-4007-A6C2-562A738BC60D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Typography.One", "Submodules\agg-sharp\Typography\Typography.One\Typography.One.csproj", "{57BDD8E7-06FC-481E-A894-4BF9314D69BD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Typography.One", "Submodules/agg-sharp/Typography/Typography.One/Typography.One.csproj", "{57BDD8E7-06FC-481E-A894-4BF9314D69BD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GLFW.NETStandard", "Submodules\agg-sharp\glfw-net\GLFW.NET\GLFW.NETStandard.csproj", "{DA40C187-6CF1-4EB7-9433-30084B461619}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GLFW.NETStandard", "Submodules/agg-sharp/glfw-net/GLFW.NET/GLFW.NETStandard.csproj", "{DA40C187-6CF1-4EB7-9433-30084B461619}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpCad.Test", "CSharpCad.Test\CSharpCad.Test.csproj", "{8D6750B7-CF9D-2A81-9F1C-BFE60487C58B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpCad.Test", "CSharpCad.Test/CSharpCad.Test.csproj", "{8D6750B7-CF9D-2A81-9F1C-BFE60487C58B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpCad.UnitTests", "CSharpCad.UnitTests/CSharpCad.UnitTests.csproj", "{D3F5276D-7906-4F14-A268-85DFC5BFA1F7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DinamiclyExecuteCode", "DinamiclyExecuteCode", "{5B9A5638-2ECE-A0A8-C99D-9976BD40631C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DynCode", "DinamiclyExecuteCode/DynCode.csproj", "{92F3BA81-0852-4BED-89BD-626ACD035B4F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Submodules", "Submodules", "{B3415621-5EBA-1A55-0B57-0078FEC59DC7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "agg-sharp", "agg-sharp", "{E620BE5E-B207-2237-38E1-3F997CD4455F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "agg", "agg", "{DA296AEB-DC52-4494-C000-673F3D4ABDC2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -777,6 +789,54 @@ Global
 		{8D6750B7-CF9D-2A81-9F1C-BFE60487C58B}.Release64|x64.Build.0 = Release|Any CPU
 		{8D6750B7-CF9D-2A81-9F1C-BFE60487C58B}.Release64|x86.ActiveCfg = Release|Any CPU
 		{8D6750B7-CF9D-2A81-9F1C-BFE60487C58B}.Release64|x86.Build.0 = Release|Any CPU
+		{D3F5276D-7906-4F14-A268-85DFC5BFA1F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3F5276D-7906-4F14-A268-85DFC5BFA1F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3F5276D-7906-4F14-A268-85DFC5BFA1F7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D3F5276D-7906-4F14-A268-85DFC5BFA1F7}.Debug|x64.Build.0 = Debug|Any CPU
+		{D3F5276D-7906-4F14-A268-85DFC5BFA1F7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D3F5276D-7906-4F14-A268-85DFC5BFA1F7}.Debug|x86.Build.0 = Debug|Any CPU
+		{D3F5276D-7906-4F14-A268-85DFC5BFA1F7}.Debug64|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3F5276D-7906-4F14-A268-85DFC5BFA1F7}.Debug64|Any CPU.Build.0 = Debug|Any CPU
+		{D3F5276D-7906-4F14-A268-85DFC5BFA1F7}.Debug64|x64.ActiveCfg = Debug|Any CPU
+		{D3F5276D-7906-4F14-A268-85DFC5BFA1F7}.Debug64|x64.Build.0 = Debug|Any CPU
+		{D3F5276D-7906-4F14-A268-85DFC5BFA1F7}.Debug64|x86.ActiveCfg = Debug|Any CPU
+		{D3F5276D-7906-4F14-A268-85DFC5BFA1F7}.Debug64|x86.Build.0 = Debug|Any CPU
+		{D3F5276D-7906-4F14-A268-85DFC5BFA1F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3F5276D-7906-4F14-A268-85DFC5BFA1F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3F5276D-7906-4F14-A268-85DFC5BFA1F7}.Release|x64.ActiveCfg = Release|Any CPU
+		{D3F5276D-7906-4F14-A268-85DFC5BFA1F7}.Release|x64.Build.0 = Release|Any CPU
+		{D3F5276D-7906-4F14-A268-85DFC5BFA1F7}.Release|x86.ActiveCfg = Release|Any CPU
+		{D3F5276D-7906-4F14-A268-85DFC5BFA1F7}.Release|x86.Build.0 = Release|Any CPU
+		{D3F5276D-7906-4F14-A268-85DFC5BFA1F7}.Release64|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3F5276D-7906-4F14-A268-85DFC5BFA1F7}.Release64|Any CPU.Build.0 = Debug|Any CPU
+		{D3F5276D-7906-4F14-A268-85DFC5BFA1F7}.Release64|x64.ActiveCfg = Debug|Any CPU
+		{D3F5276D-7906-4F14-A268-85DFC5BFA1F7}.Release64|x64.Build.0 = Debug|Any CPU
+		{D3F5276D-7906-4F14-A268-85DFC5BFA1F7}.Release64|x86.ActiveCfg = Debug|Any CPU
+		{D3F5276D-7906-4F14-A268-85DFC5BFA1F7}.Release64|x86.Build.0 = Debug|Any CPU
+		{92F3BA81-0852-4BED-89BD-626ACD035B4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92F3BA81-0852-4BED-89BD-626ACD035B4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92F3BA81-0852-4BED-89BD-626ACD035B4F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{92F3BA81-0852-4BED-89BD-626ACD035B4F}.Debug|x64.Build.0 = Debug|Any CPU
+		{92F3BA81-0852-4BED-89BD-626ACD035B4F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{92F3BA81-0852-4BED-89BD-626ACD035B4F}.Debug|x86.Build.0 = Debug|Any CPU
+		{92F3BA81-0852-4BED-89BD-626ACD035B4F}.Debug64|Any CPU.ActiveCfg = Debug|Any CPU
+		{92F3BA81-0852-4BED-89BD-626ACD035B4F}.Debug64|Any CPU.Build.0 = Debug|Any CPU
+		{92F3BA81-0852-4BED-89BD-626ACD035B4F}.Debug64|x64.ActiveCfg = Debug|Any CPU
+		{92F3BA81-0852-4BED-89BD-626ACD035B4F}.Debug64|x64.Build.0 = Debug|Any CPU
+		{92F3BA81-0852-4BED-89BD-626ACD035B4F}.Debug64|x86.ActiveCfg = Debug|Any CPU
+		{92F3BA81-0852-4BED-89BD-626ACD035B4F}.Debug64|x86.Build.0 = Debug|Any CPU
+		{92F3BA81-0852-4BED-89BD-626ACD035B4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92F3BA81-0852-4BED-89BD-626ACD035B4F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92F3BA81-0852-4BED-89BD-626ACD035B4F}.Release|x64.ActiveCfg = Release|Any CPU
+		{92F3BA81-0852-4BED-89BD-626ACD035B4F}.Release|x64.Build.0 = Release|Any CPU
+		{92F3BA81-0852-4BED-89BD-626ACD035B4F}.Release|x86.ActiveCfg = Release|Any CPU
+		{92F3BA81-0852-4BED-89BD-626ACD035B4F}.Release|x86.Build.0 = Release|Any CPU
+		{92F3BA81-0852-4BED-89BD-626ACD035B4F}.Release64|Any CPU.ActiveCfg = Debug|Any CPU
+		{92F3BA81-0852-4BED-89BD-626ACD035B4F}.Release64|Any CPU.Build.0 = Debug|Any CPU
+		{92F3BA81-0852-4BED-89BD-626ACD035B4F}.Release64|x64.ActiveCfg = Debug|Any CPU
+		{92F3BA81-0852-4BED-89BD-626ACD035B4F}.Release64|x64.Build.0 = Debug|Any CPU
+		{92F3BA81-0852-4BED-89BD-626ACD035B4F}.Release64|x86.ActiveCfg = Debug|Any CPU
+		{92F3BA81-0852-4BED-89BD-626ACD035B4F}.Release64|x86.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -810,13 +870,16 @@ Global
 		{57BDD8E7-06FC-481E-A894-4BF9314D69BD} = {86D535C0-0396-4F6E-B70B-F467B0E3533D}
 		{DA40C187-6CF1-4EB7-9433-30084B461619} = {86D535C0-0396-4F6E-B70B-F467B0E3533D}
 		{8D6750B7-CF9D-2A81-9F1C-BFE60487C58B} = {86D535C0-0396-4F6E-B70B-F467B0E3533D}
+		{92F3BA81-0852-4BED-89BD-626ACD035B4F} = {5B9A5638-2ECE-A0A8-C99D-9976BD40631C}
+		{E620BE5E-B207-2237-38E1-3F997CD4455F} = {B3415621-5EBA-1A55-0B57-0078FEC59DC7}
+		{DA296AEB-DC52-4494-C000-673F3D4ABDC2} = {E620BE5E-B207-2237-38E1-3F997CD4455F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F09D4ADF-2076-4C42-A278-386A79AF65AA}
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		Submodules\agg-sharp\Typography\Typography.GlyphLayout\Typography.GlyphLayout.projitems*{57bdd8e7-06fc-481e-a894-4bf9314d69bd}*SharedItemsImports = 5
-		Submodules\agg-sharp\Typography\Typography.OpenFont\Typography.OpenFont.projitems*{57bdd8e7-06fc-481e-a894-4bf9314d69bd}*SharedItemsImports = 5
+		Submodules/agg-sharp/Typography/Typography.GlyphLayout/Typography.GlyphLayout.projitems*{57bdd8e7-06fc-481e-a894-4bf9314d69bd}*SharedItemsImports = 5
+		Submodules/agg-sharp/Typography/Typography.OpenFont/Typography.OpenFont.projitems*{57bdd8e7-06fc-481e-a894-4bf9314d69bd}*SharedItemsImports = 5
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = MatterCAD.csproj
