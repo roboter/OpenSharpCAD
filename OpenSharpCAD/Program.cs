@@ -37,8 +37,12 @@ class Program
         }
         catch (Exception ex)
         {
-            string projectRoot = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", ".."));
-            string logDir = Path.Combine(projectRoot, "logs");
+            string logDir = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "CSharpCAD",
+                "logs"
+            );
+
             if (!Directory.Exists(logDir))
             {
                 Directory.CreateDirectory(logDir);
