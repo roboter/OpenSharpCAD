@@ -25,10 +25,10 @@ jobs:
           - os: windows-latest
             runtime: win-x64
             framework: net10.0-windows
-          - os: macos-latest
+          - os: macos-14  # Sonoma, Apple Silicon; cross-builds osx-x64
             runtime: osx-x64
             framework: net10.0
-          - os: macos-latest
+          - os: macos-14
             runtime: osx-arm64
             framework: net10.0
 
