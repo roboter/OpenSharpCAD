@@ -4,6 +4,7 @@ using MatterHackers.Csg.Operations;
 using MatterHackers.Csg.Solids;
 using MatterHackers.RenderOpenGl;
 using MatterHackers.Agg;
+using MatterHackers.Csg;
 
 namespace CSharpCAD
 {
@@ -32,6 +33,16 @@ namespace CSharpCAD
         public static void Box(this Union rootUnion, double sizeX, double sizeY, double sizeZ)
         {
             rootUnion.Add(new Box(sizeX, sizeY, sizeZ));
+        }
+
+        public static void Cylinder(this Union rootUnion, double radius, double height, int sides = 40, Alignment alignment = Alignment.z, string name = "")
+        {
+            rootUnion.Add(new Cylinder(radius, height, sides, alignment, name));
+        }
+
+        public static void Cylinder(this Union rootUnion, double radius1, double radius2, double height, int sides = 40, Alignment alignment = Alignment.z, string name = "")
+        {
+            rootUnion.Add(new Cylinder(radius1, radius2, height, sides, alignment, name));
         }
     }
 }

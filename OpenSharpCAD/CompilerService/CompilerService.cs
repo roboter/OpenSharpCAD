@@ -7,7 +7,7 @@ namespace CSharpCAD
 {
     public class CompilerService : ICompilerService
     {
-        public object Compile(string scriptSource, out List<string> errors)
+        public object Compile(string scriptSource, out List<Diagnostic> errors)
         {
             errors = [];
             StringBuilder sb = new();
@@ -18,6 +18,7 @@ namespace CSharpCAD
             sb.AppendLine("using System.Collections.Generic;");
             sb.AppendLine("using MatterHackers.VectorMath; ");
             sb.AppendLine("using MatterHackers.Csg.Operations; ");
+            sb.AppendLine("using MatterHackers.Csg.Transform; ");
             sb.AppendLine("using MatterHackers.Csg;");
             sb.AppendLine("using MatterHackers.Csg.Solids; ");
             sb.AppendLine("using MatterHackers.RenderOpenGl; ");
@@ -54,6 +55,7 @@ namespace CSharpCAD
                 var classRef = DynCode.CodeHelper.HelperFunction(classCode, "Test.RenderTest", new object[]
                 {
                     typeof(System.Console).Assembly.Location,
+                    typeof(MatterHackers.Csg.Transform.Translate).Assembly.Location,
                     typeof(MatterHackers.Csg.CsgObject).Assembly.Location,
                     typeof(MatterHackers.VectorMath.Vector3).Assembly.Location,
                     typeof(MatterHackers.Agg.Graphics2D).Assembly.Location,
@@ -63,10 +65,7 @@ namespace CSharpCAD
 
                 if (classRef is List<Diagnostic> diagnostics)
                 {
-                    foreach (var error in diagnostics)
-                    {
-                        errors.Add(error.ToString());
-                    }
+                    errors = diagnostics;
                     return null;
                 }
 
@@ -74,7 +73,8 @@ namespace CSharpCAD
             }
             catch (Exception ex)
             {
-                errors.Add(ex.Message);
+                // Create a basic diagnostic if something else fails
+                Console.WriteLine(ex.Message);
                 return null;
             }
         }

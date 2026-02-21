@@ -73,6 +73,7 @@ namespace CSharpCAD
         private FlowLayoutWidget objectEditorList;
         private FlowLayoutWidget textSide;
         private TextEditWidget hello;
+        private ListBox errorListBox;
         private Union rootUnion = new Union("root");
         dynamic classRef;
 
@@ -110,7 +111,15 @@ namespace CSharpCAD
                 };
 
                 var code = new StringBuilder();
-                code.AppendLine("Draw(new Box(8, 20, 10));");
+                code.AppendLine("var holesize =4;");
+                code.AppendLine("// draw a box");
+                code.AppendLine("var box = new Box(20, 20, 20);");
+                code.AppendLine("var rotated = new Rotate(box, x: MathHelper.DegreesToRadians(45));");
+                code.AppendLine("var cylinder = new Cylinder(50,20,60);");
+                code.AppendLine("// draw the rotated box on top of the original");
+                code.AppendLine("var translated = new Translate(new Box(40, 10, 10), 0, holesize, holesize);");
+                code.AppendLine("Draw(box + rotated - translated + cylinder);");
+
 
                 hello = new TextEditWidget(code.ToString().Replace('\r', '\n'))
                 {
@@ -125,23 +134,34 @@ namespace CSharpCAD
 
             {
                 // panel 2 stuff
-                FlowLayoutWidget renderSide = new FlowLayoutWidget(FlowDirection.TopToBottom)
+                Splitter rightSplitter = new Splitter()
                 {
                     HAnchor = HAnchor.Stretch,
                     VAnchor = VAnchor.Stretch,
+                    Orientation = Orientation.Horizontal,
+                    SplitterDistance = 150,
                 };
+                verticalSplitter.Panel2.AddChild(rightSplitter);
 
                 var world = new WorldView(800, 600);
                 world.TranslationMatrix = Matrix4X4.CreateTranslation(0, 0, -50);
-                trackBallWidget = new TrackballTumbleView(world, renderSide)
+                trackBallWidget = new TrackballTumbleView(world, rightSplitter.Panel1)
                 {
                     HAnchor = HAnchor.Stretch,
                     VAnchor = VAnchor.Stretch,
                     DrawContent = glLightedView_DrawGlContent,
                     TransformState = MatterHackers.VectorMath.TrackBall.TrackBallTransformType.Rotation,
                 };
-                renderSide.AddChild(trackBallWidget);
-                verticalSplitter.Panel2.AddChild(renderSide);
+                rightSplitter.Panel1.AddChild(trackBallWidget);
+
+                errorListBox = new ListBox()
+                {
+                    HAnchor = HAnchor.Stretch,
+                    VAnchor = VAnchor.Stretch,
+                    BackgroundColor = Color.White,
+                };
+                errorListBox.SelectedValueChanged += ErrorListBox_SelectedValueChanged;
+                rightSplitter.Panel2.AddChild(errorListBox);
             }
 
             BackgroundColor = Color.White;
@@ -151,27 +171,42 @@ namespace CSharpCAD
 
         private void Hello_TextChanged(object sender, EventArgs e)
         {
+            hello.ErrorLineIndices.Clear();
             Compile();
+        }
+
+        private void ErrorListBox_SelectedValueChanged(object sender, EventArgs e)
+        {
+            if (errorListBox.SelectedItem is ListBoxTextItem item)
+            {
+                if (int.TryParse(item.ItemValue, out int line))
+                {
+                    hello.JumpToLine(line);
+                }
+            }
         }
 
         private void Compile()
         {
             var compilerService = new CompilerService();
-            List<string> errors;
+            List<Diagnostic> errors;
 
             // The service expects just the content inside Render(), which comes from hello.Text
             classRef = compilerService.Compile(hello.Text, out errors);
 
+            errorListBox.Clear();
+
             if (errors.Count > 0)
             {
-                StringBuilder sberror = new StringBuilder();
                 foreach (var error in errors)
                 {
-                    sberror.AppendLine(error);
+                    var lineSpan = error.Location.GetLineSpan();
+                    int line = lineSpan.StartLinePosition.Line - 17; // offset from preamble
+                    string message = $"{line + 1}: {error.GetMessage()}";
+                    errorListBox.AddChild(new ListBoxTextItem(message, line.ToString()));
+                    hello.ErrorLineIndices.Add(line);
                 }
-                // TODO: Display errors to user (e.g., txtErrors.Text = sberror.ToString())
-                // For now, logging as before might be done by caller or added here if needed, 
-                // but simpler to just return.
+                hello.Invalidate();
                 return;
             }
             trackBallWidget.Invalidate();

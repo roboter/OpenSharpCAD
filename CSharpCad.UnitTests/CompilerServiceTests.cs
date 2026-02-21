@@ -1,5 +1,7 @@
 using CSharpCAD;
 using NUnit.Framework;
+using Microsoft.CodeAnalysis;
+using System.Collections.Generic;
 
 namespace CSharpCad.UnitTests;
 
@@ -11,7 +13,7 @@ public class CompilerServiceTests
     {
         string script = "Draw(new Box(8, 20, 10));";
         ICompilerService compiler = new CompilerService();
-        List<string> errors;
+        List<Diagnostic> errors;
 
         var result = compiler.Compile(script, out errors);
 
@@ -24,7 +26,7 @@ public class CompilerServiceTests
     {
         string script = "InvalidMethod();";
         ICompilerService compiler = new CompilerService();
-        List<string> errors;
+        List<Diagnostic> errors;
 
         var result = compiler.Compile(script, out errors);
 

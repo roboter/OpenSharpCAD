@@ -45,7 +45,7 @@ You can use either Visual Studio or the .NET CLI:
 dotnet build OpenSharpCAD/OpenSharpCAD.csproj
 
 # Run the application
-dotnet run --project OpenSharpCAD/OpenSharpCAD.csproj -f net10.0-windows
+dotnet run --project OpenSharpCAD/OpenSharpCAD.csproj
 ```
 
 ## Links

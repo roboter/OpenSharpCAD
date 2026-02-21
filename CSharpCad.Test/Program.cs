@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using CSharpCAD;
 using MatterHackers.Csg;
+using Microsoft.CodeAnalysis;
 
 namespace CSharpCad.Test
 {
@@ -15,7 +16,7 @@ namespace CSharpCad.Test
             string script = "Draw(new Box(8, 20, 10));";
 
             ICompilerService compiler = new CompilerService();
-            List<string> errors;
+            List<Diagnostic> errors;
 
             var result = compiler.Compile(script, out errors);
 
