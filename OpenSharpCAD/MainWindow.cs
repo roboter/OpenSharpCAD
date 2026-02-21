@@ -213,13 +213,20 @@ namespace CSharpCAD
         }
         private void LogException(Exception ex)
         {
+            // Always output to console so the user can see what happened
+            Console.Error.WriteLine($"ERROR: {ex.Message}");
+            Console.Error.WriteLine(ex.StackTrace);
+
             try
             {
-                string logDir = Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                    "CSharpCAD",
-                    "logs"
-                );
+                string baseDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                if (string.IsNullOrEmpty(baseDir))
+                {
+                    baseDir = Path.GetTempPath();
+                }
+
+                string logDir = Path.Combine(baseDir, "CSharpCAD", "logs");
+
                 if (!Directory.Exists(logDir))
                 {
                     Directory.CreateDirectory(logDir);

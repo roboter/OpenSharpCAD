@@ -37,19 +37,32 @@ class Program
         }
         catch (Exception ex)
         {
-            string logDir = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "CSharpCAD",
-                "logs"
-            );
+            // Always output to console so the user can see what happened
+            Console.Error.WriteLine($"GLOBAL ERROR: {ex.Message}");
+            Console.Error.WriteLine(ex.StackTrace);
 
-            if (!Directory.Exists(logDir))
+            try
             {
-                Directory.CreateDirectory(logDir);
+                string baseDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                if (string.IsNullOrEmpty(baseDir))
+                {
+                    baseDir = Path.GetTempPath();
+                }
+
+                string logDir = Path.Combine(baseDir, "CSharpCAD", "logs");
+
+                if (!Directory.Exists(logDir))
+                {
+                    Directory.CreateDirectory(logDir);
+                }
+                string logPath = Path.Combine(logDir, "errors.log");
+                string logMessage = $"[{DateTime.Now}] GLOBAL ERROR: {ex.Message}{Environment.NewLine}{ex.StackTrace}{Environment.NewLine}{new string('=', 30)}{Environment.NewLine}";
+                File.AppendAllText(logPath, logMessage);
             }
-            string logPath = Path.Combine(logDir, "errors.log");
-            string logMessage = $"[{DateTime.Now}] GLOBAL ERROR: {ex.Message}{Environment.NewLine}{ex.StackTrace}{Environment.NewLine}{new string('=', 30)}{Environment.NewLine}";
-            File.AppendAllText(logPath, logMessage);
+            catch (Exception logEx)
+            {
+                Console.Error.WriteLine($"Failed to write to log file: {logEx.Message}");
+            }
         }
     }
 }
