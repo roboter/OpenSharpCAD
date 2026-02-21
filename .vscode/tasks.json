@@ -1,0 +1,41 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "command": "/usr/local/share/dotnet/dotnet",
+            "type": "shell",
+            "args": [
+                "build",
+                "${workspaceFolder}/OpenSharpCAD/OpenSharpCAD.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "publish",
+            "command": "/usr/local/share/dotnet/dotnet",
+            "type": "shell",
+            "args": [
+                "publish",
+                "${workspaceFolder}/OpenSharpCAD/OpenSharpCAD.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "watch",
+            "command": "/usr/local/share/dotnet/dotnet",
+            "type": "shell",
+            "args": [
+                "watch",
+                "run",
+                "--project",
+                "${workspaceFolder}/OpenSharpCAD/OpenSharpCAD.csproj"
+            ],
+            "problemMatcher": "$msCompile"
+        }
+    ]
+}

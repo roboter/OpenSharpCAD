@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks Condition="'$(OS)' == 'Windows_NT'">$(NetVersion);$(NetVersion)-windows</TargetFrameworks>
@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CSharpCad6\CSharpCad6.csproj" />
+    <ProjectReference Include="..\OpenSharpCAD\OpenSharpCAD.csproj" />
   </ItemGroup>
 
 </Project>

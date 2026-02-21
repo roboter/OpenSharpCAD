@@ -47,7 +47,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AGGLib", "AGGLib", "{86D535
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataConverters3D", "Submodules/agg-sharp/DataConverters3D/DataConverters3D.csproj", "{04667764-DC7B-4B95-AEF6-B4E6C87A54E9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpCad6", "CSharpCad6/CSharpCad6.csproj", "{70B36E4B-16F6-42E7-B7E5-E9A39D8D71B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenSharpCAD", "OpenSharpCAD/OpenSharpCAD.csproj", "{70B36E4B-16F6-42E7-B7E5-E9A39D8D71B5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "geometry3Sharp", "Submodules/agg-sharp/geometry3Sharp/geometry3Sharp.csproj", "{CF3B71BC-D90E-4EB2-98B4-D868186B1074}"
 EndProject
