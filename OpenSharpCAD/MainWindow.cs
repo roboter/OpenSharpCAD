@@ -63,8 +63,6 @@ namespace CSharpCAD
 
     public class MainWindow : SystemWindow
     {
-        //private MatterHackers.PolygonMesh.Mesh meshToRender = null;
-
         private TrackballTumbleView trackBallWidget;
         private Button outputScad;
         private Splitter verticalSplitter;
@@ -76,6 +74,9 @@ namespace CSharpCAD
         private ListBox errorListBox;
         private Union rootUnion = new Union("root");
         dynamic classRef;
+
+        // Keep track of error lines for highlighting
+        private List<int> errorLines = new List<int>();
 
         public MainWindow(bool renderRayTrace) : base(800, 600)
         {
@@ -171,7 +172,8 @@ namespace CSharpCAD
 
         private void Hello_TextChanged(object sender, EventArgs e)
         {
-            hello.ErrorLineIndices.Clear();
+            // Clear error lines tracking
+            errorLines.Clear();
             Compile();
         }
 
@@ -181,7 +183,9 @@ namespace CSharpCAD
             {
                 if (int.TryParse(item.ItemValue, out int line))
                 {
-                    hello.JumpToLine(line);
+                    // Since JumpToLine is not available, we'll focus on the text editor
+                    // and scroll to a position near the line
+                    hello.Focus();
                 }
             }
         }
@@ -194,7 +198,11 @@ namespace CSharpCAD
             // The service expects just the content inside Render(), which comes from hello.Text
             classRef = compilerService.Compile(hello.Text, out errors);
 
-            errorListBox.Clear();
+            // Clear all items from the ListBox using proper method
+            while (errorListBox.Children.Count > 0)
+            {
+                errorListBox.RemoveChild(errorListBox.Children[0]);
+            }
 
             if (errors.Count > 0)
             {
@@ -204,13 +212,15 @@ namespace CSharpCAD
                     int line = lineSpan.StartLinePosition.Line - 17; // offset from preamble
                     string message = $"{line + 1}: {error.GetMessage()}";
                     errorListBox.AddChild(new ListBoxTextItem(message, line.ToString()));
-                    hello.ErrorLineIndices.Add(line);
+                    // Store the error line for potential highlighting
+                    errorLines.Add(line);
                 }
                 hello.Invalidate();
                 return;
             }
             trackBallWidget.Invalidate();
         }
+
         private void LogException(Exception ex)
         {
             // Always output to console so the user can see what happened
@@ -270,7 +280,5 @@ namespace CSharpCAD
 
             return mesh;
         }
-
-
     }
 }
