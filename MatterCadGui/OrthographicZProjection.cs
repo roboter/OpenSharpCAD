@@ -1,4 +1,4 @@
-﻿/*
+/*
 Copyright (c) 2012, Lars Brubaker
 All rights reserved.
 
@@ -27,8 +27,6 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the FreeBSD Project.
 */
 
-
-
 using MatterHackers.Agg;
 using MatterHackers.Agg.VertexSource;
 using MatterHackers.VectorMath;
@@ -41,24 +39,21 @@ namespace MatterHackers.PolygonMesh.Processors
         {
             foreach (Face face in meshToDraw.Faces)
             {
-                PathStorage polygonProjected = new PathStorage();
-                bool first = true;
-                foreach (FaceEdge faceEdge in face.FaceEdges())
-                {
-                    Vector2 position = new Vector2(faceEdge.firstVertex.Position.x, faceEdge.firstVertex.Position.y);
-                    position += offset;
-                    position *= scale;
-                    if (first)
-                    {
-                        polygonProjected.MoveTo(position.x, position.y);
-                        first = false;
-                    }
-                    else
-                    {
-                        polygonProjected.LineTo(position.x, position.y);
-                    }
-                }
-                graphics2D.Render(polygonProjected, RGBA_Bytes.Blue);
+                VertexStorage polygonProjected = new VertexStorage();
+                var v0 = new Vector2(meshToDraw.Vertices[face.v0].X, meshToDraw.Vertices[face.v0].Y);
+                var v1 = new Vector2(meshToDraw.Vertices[face.v1].X, meshToDraw.Vertices[face.v1].Y);
+                var v2 = new Vector2(meshToDraw.Vertices[face.v2].X, meshToDraw.Vertices[face.v2].Y);
+                v0 += offset;
+                v1 += offset;
+                v2 += offset;
+                v0 *= scale;
+                v1 *= scale;
+                v2 *= scale;
+                polygonProjected.MoveTo(v0.X, v0.Y);
+                polygonProjected.LineTo(v1.X, v1.Y);
+                polygonProjected.LineTo(v2.X, v2.Y);
+                polygonProjected.LineTo(v0.X, v0.Y);
+                graphics2D.Render(polygonProjected, Color.Blue);
             }
         }
     }

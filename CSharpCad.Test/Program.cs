@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using CSharpCAD;
 using MatterHackers.Csg;
+using Microsoft.CodeAnalysis;
 
 namespace CSharpCad.Test
 {
@@ -28,7 +29,7 @@ namespace CSharpCad.Test
             string scriptSource = File.ReadAllText(scriptPath);
 
             ICompilerService compiler = new CompilerService();
-            List<string> errors;
+            List<Diagnostic> errors;
 
             var result = compiler.Compile(scriptSource, out errors);
 

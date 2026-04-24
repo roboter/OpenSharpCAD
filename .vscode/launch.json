@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": ".NET Core Launch (console)",
+            "type": "dotnet",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/OpenSharpCAD/bin/Debug/net10.0/CSharpCAD.dll",
+            "args": [
+                "-f",
+                "net10.0"
+            ],
+            "cwd": "${workspaceFolder}/OpenSharpCAD",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        }
+    ]
+}

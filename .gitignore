@@ -11,3 +11,5 @@ packages
 # Logs
 /logs/
 *.log
+
+.fake

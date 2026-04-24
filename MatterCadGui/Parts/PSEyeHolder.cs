@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using MatterHackers.Csg;
 using MatterHackers.Csg.Operations;
 using MatterHackers.Csg.Processors;
@@ -8,7 +8,7 @@ using MatterHackers.VectorMath;
 
 namespace SimplePartScripting
 {
-    class SimplePartTester
+    class PSEyeHolderPartTester
     {
         public static CsgObject SimplePartFunction()
         {
@@ -75,7 +75,7 @@ namespace SimplePartScripting
             insideBevelRight = new Align(insideBevelRight, Face.Bottom, standBase, Face.Top);
             standTotal += insideBevelRight;
 
-            CsgObject ringCutOut = new Cylinder(11, 6, Alignment.y);
+            CsgObject ringCutOut = new Cylinder(11, 6, 32, Alignment.y);
             ringCutOut = new SetCenter(ringCutOut, standBase.GetCenter());
             ringCutOut = new Align(ringCutOut, Face.Bottom | Face.Back, standBase, Face.Top | Face.Front, 0, 5.9, -4);
             standTotal -= ringCutOut;

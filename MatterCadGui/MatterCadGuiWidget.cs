@@ -28,17 +28,28 @@
 //*/
 
 
+using MatterHackers.Agg;
+using MatterHackers.Agg.Image;
+using MatterHackers.Agg.Platform;
+using MatterHackers.Agg.UI;
+using MatterHackers.Agg.VertexSource;
+using MatterHackers.Csg.Operations;
+using MatterHackers.Csg.Processors;
 using MatterHackers.MatterCadGui;
 using MatterHackers.PolygonMesh.Processors;
+using MatterHackers.RenderOpenGl;
+using MatterHackers.VectorMath;
 using System;
 using System.Globalization;
 using System.IO;
+using System.Threading;
 
 namespace MatterHackers.MatterCad
 {
     public class MatterCadGuiWidget : GuiWidget
     {
         PolygonMesh.Mesh meshToRender = null;
+        WorldView worldView = new WorldView(0, 0);
 
         TrackballTumbleWidget trackBallWidget;
         Button outputScad;
@@ -63,7 +74,6 @@ namespace MatterHackers.MatterCad
             //rootUnion.Add(new LinearExtrude(new double[] { 1.1, 2.2, 3.3, 6.3 }, 7));
             //rootUnion.Add(
             //    new Difference (new Translate(new Cylinder(10, 40), 5, 10, 5), new Translate(new BoxPrimitive(10, 10, 20,"test",true), 5, 20, 5)));
-            SuspendLayout();
             verticleSpliter = new Splitter();
 
             // pannel 1 stuff
@@ -73,11 +83,10 @@ namespace MatterHackers.MatterCad
             objectEditorList = new FlowLayoutWidget();
 
             textEdit = new TextEditWidget("test", 300, 400);
-            textEdit.HAnchor = HAnchor.ParentLeftRight;
-            //     textEdit.MinimumSize = new Vector2(Math.Max(textEdit.MinimumSize.x, pixelWidth), Math.Max(textEdit.MinimumSize.y, pixelHeight));
-            textEdit.VAnchor = VAnchor.ParentBottomTop;
+            textEdit.HAnchor = HAnchor.Stretch;
+            textEdit.VAnchor = VAnchor.Stretch;
             textEdit.Multiline = true;
-            textEdit.BackgroundColor = RGBA_Bytes.Yellow;
+            textEdit.BackgroundColor = Color.Yellow;
 
             // objectEditorList.AddChild(textEdit);//CsgEditorBase.CreateEditorForCsg(rootUnion));
             //   objectEditorView.AddChild(objectEditorList);
@@ -87,12 +96,12 @@ namespace MatterHackers.MatterCad
             textSide.LocalBounds = new RectangleDouble(0, 0, 200, 300);
             //      objectEditorView.DebugShowBounds = true;
             textSide.AddChild(textEdit);
-            textSide.BoundsChanged += new EventHandler(textSide_BoundsChanged);
+            textSide.BoundsChanged += new EventHandler(TextSide_BoundsChanged);
 
             FlowLayoutWidget topButtonBar = new FlowLayoutWidget();
 
             Button loadMatterScript = new Button("Load Matter Script");
-            loadMatterScript.Click += loadMatterScript_Click;
+            loadMatterScript.Click += LoadMatterScript_Click;
             topButtonBar.AddChild(loadMatterScript);
 
             outputScad = new Button("Output SCAD");
@@ -113,22 +122,20 @@ namespace MatterHackers.MatterCad
             FlowLayoutWidget renderSide = new FlowLayoutWidget(FlowDirection.TopToBottom);
             renderSide.AnchorAll();
 
-            trackBallWidget = new TrackballTumbleWidget();
-            trackBallWidget.DrawGlContent += new EventHandler(glLightedView_DrawGlContent);
+            trackBallWidget = new TrackballTumbleWidget(worldView, this);
             renderSide.AddChild(trackBallWidget);
 
             verticleSpliter.Panel2.AddChild(renderSide);
             verticleSpliter.Panel1.AddChild(textSide);
 
 
-            ResumeLayout();
             objectEditorView.AnchorAll();
             AnchorAll();
             verticleSpliter.AnchorAll();
             textSide.AnchorAll();
             trackBallWidget.AnchorAll();
             AddChild(verticleSpliter);
-            BackgroundColor = RGBA_Bytes.White;
+            BackgroundColor = Color.White;
         }
 
         public override void OnParentChanged(EventArgs e)
@@ -141,42 +148,41 @@ namespace MatterHackers.MatterCad
         {
             OpenFileDialogParams opeParams = new OpenFileDialogParams("STL Files|*.stl");
 
-            FileDialog.OpenFileDialog(opeParams, (openParams) =>
+            AggContext.FileDialogs.OpenFileDialog(opeParams, (openParams) =>
             {
-                var streamToLoadFrom = File.Open(openParams.FileName, FileMode.Open);
-
-                if (streamToLoadFrom != null)
+                if (openParams?.FileName != null)
                 {
-                    var loadedFileName = openParams.FileName;
-
-                    meshToRender = StlProcessing.Load(streamToLoadFrom);
+                    using (var streamToLoadFrom = File.Open(openParams.FileName, FileMode.Open))
+                    {
+                        meshToRender = StlProcessing.Load(streamToLoadFrom, CancellationToken.None);
+                    }
 
                     ImageBuffer plateInventory = new ImageBuffer((int)(300 * 8.5), 300 * 11, 32, new BlenderBGRA());
                     Graphics2D plateGraphics = plateInventory.NewGraphics2D();
-                    plateGraphics.Clear(RGBA_Bytes.White);
+                    plateGraphics.Clear(Color.White);
 
                     double inchesPerMm = 0.0393701;
                     double pixelsPerInch = 300;
                     double pixelsPerMm = inchesPerMm * pixelsPerInch;
                     AxisAlignedBoundingBox aabb = meshToRender.GetAxisAlignedBoundingBox();
-                    Vector2 lowerLeftInMM = new Vector2(-aabb.minXYZ.x, -aabb.minXYZ.y);
-                    Vector3 centerInMM = (aabb.maxXYZ - aabb.minXYZ) / 2;
+                    Vector2 lowerLeftInMM = new Vector2(-aabb.MinXYZ.X, -aabb.MinXYZ.Y);
+                    Vector3 centerInMM = (aabb.MaxXYZ - aabb.MinXYZ) / 2;
                     Vector2 offsetInMM = new Vector2(20, 30);
 
                     {
-                        RectangleDouble bounds = new RectangleDouble(offsetInMM.x * pixelsPerMm,
-                            offsetInMM.y * pixelsPerMm,
-                            (offsetInMM.x + aabb.maxXYZ.x - aabb.minXYZ.x) * pixelsPerMm,
-                            (offsetInMM.y + aabb.maxXYZ.y - aabb.minXYZ.y) * pixelsPerMm);
+                        RectangleDouble bounds = new RectangleDouble(offsetInMM.X * pixelsPerMm,
+                            offsetInMM.Y * pixelsPerMm,
+                            (offsetInMM.X + aabb.MaxXYZ.X - aabb.MinXYZ.X) * pixelsPerMm,
+                            (offsetInMM.Y + aabb.MaxXYZ.Y - aabb.MinXYZ.Y) * pixelsPerMm);
                         bounds.Inflate(3 * pixelsPerMm);
                         RoundedRect rect = new RoundedRect(bounds, 3 * pixelsPerMm);
-                        plateGraphics.Render(rect, RGBA_Bytes.LightGray);
+                        plateGraphics.Render(rect, Color.LightGray);
                         Stroke rectOutline = new Stroke(rect, .5 * pixelsPerMm);
-                        plateGraphics.Render(rectOutline, RGBA_Bytes.DarkGray);
+                        plateGraphics.Render(rectOutline, Color.DarkGray);
                     }
 
                     OrthographicZProjection.DrawTo(plateGraphics, meshToRender, lowerLeftInMM + offsetInMM, pixelsPerMm);
-                    plateGraphics.DrawString(Path.GetFileName(openParams.FileName), (offsetInMM.x + centerInMM.x) * pixelsPerMm, (offsetInMM.y - 10) * pixelsPerMm, 50, Agg.Font.Justification.Center);
+                    plateGraphics.DrawString(Path.GetFileName(openParams.FileName), (offsetInMM.X + centerInMM.X) * pixelsPerMm, (offsetInMM.Y - 10) * pixelsPerMm, 50, Agg.Font.Justification.Center);
 
                     //ImageBuffer logoImage = new ImageBuffer();
                     //ImageIO.LoadImageData("Logo.png", logoImage);
@@ -187,54 +193,36 @@ namespace MatterHackers.MatterCad
             });
         }
 
-        void textSide_BoundsChanged(object sender, EventArgs e)
+        void TextSide_BoundsChanged(object sender, EventArgs e)
         {
             objectEditorView.LocalBounds = new RectangleDouble(0, 0, ((GuiWidget)sender).Width - 10, objectEditorView.Height);
             Invalidate();
         }
 
-        void glLightedView_DrawGlContent(object sender, EventArgs e)
+        void GlLightedView_DrawGlContent(object sender, EventArgs e)
         {
-            if (rootUnion != null)
-            {
-                RenderCsgToGl.Render(rootUnion);
-            }
+            // CSG rendering (RenderCsgToGl) is not built; only mesh rendering is available.
             if (meshToRender != null)
             {
-                RenderMeshToGl.Render(meshToRender, RGBA_Bytes.Gray);
+                GLHelper.Render(meshToRender, Color.Gray);
             }
         }
 
 
-        void loadMatterScript_Click(object sender, EventArgs mouseEvent)
+        void LoadMatterScript_Click(object sender, EventArgs mouseEvent)
         {
             OpenFileDialogParams openParams = new OpenFileDialogParams("MatterScript Files, c-sharp code|*.part;*.cs");
 
-            FileDialog.OpenFileDialog(openParams, (streamToLoadFrom) =>
+            AggContext.FileDialogs.OpenFileDialog(openParams, (selectedParams) =>
             {
-
-                if (streamToLoadFrom != null)
+                if (selectedParams?.FileName != null)
                 {
-                    SuspendLayout();
-                    var loadedFileName = openParams.FileName;
-                    string extension = Path.GetExtension(openParams.FileName).ToUpper(CultureInfo.InvariantCulture);
-                    //if (extension == ".CS")
-                    //{
-                    //}
-                    //else if (extension == ".VB")
-                    //{
-                    //}
-
-                    string text = File.ReadAllText(loadedFileName);
-
-                    StreamReader streamReader = new StreamReader(streamToLoadFrom.FileName);
-                    textEdit.Text = streamReader.ReadToEnd();
-                    streamReader.Close();
+                    string text = File.ReadAllText(selectedParams.FileName);
+                    textEdit.Text = text;
 
                     verticleSpliter.SplitterDistance = verticleSpliter.SplitterDistance - 1;
                     verticleSpliter.SplitterDistance = verticleSpliter.SplitterDistance + 1;
 
-                    ResumeLayout();
                     AnchorAll();
                     verticleSpliter.AnchorAll();
                     textSide.AnchorAll();
@@ -244,18 +232,17 @@ namespace MatterHackers.MatterCad
                     Invalidate();
                 }
             });
-
         }
         private void OutputScad_Click(object sender, EventArgs e)
         {
             if (rootUnion != null)
             {
                 SaveFileDialogParams saveParams = new SaveFileDialogParams("Text files (*.scad)|*.scad");
-                FileDialog.SaveFileDialog(saveParams, (streamToSaveTo) =>
+                AggContext.FileDialogs.SaveFileDialog(saveParams, (saveParamsResult) =>
                 {
-                    if (streamToSaveTo != null)
+                    if (saveParamsResult?.FileName != null)
                     {
-                        OpenSCadOutput.Save(rootUnion, streamToSaveTo.FileName);//"c:/output.scad")
+                        OpenSCadOutput.Save(rootUnion, saveParamsResult.FileName);
                     }
                 });
             }
@@ -263,7 +250,7 @@ namespace MatterHackers.MatterCad
 
         public override void OnDraw(Graphics2D graphics2D)
         {
-            graphics2D.Clear(RGBA_Bytes.White);
+            graphics2D.Clear(Color.White);
             base.OnDraw(graphics2D);
         }
     }

@@ -1,0 +1,44 @@
+{
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "spdxVersion": "SPDX-2.3",
+  "name": "SBOM-SPDX-glfw-3.4",
+  "creationInfo": {
+    "created": "2024-02-23T11:45:31Z",
+    "creators": [
+      "Tool: https://github.com/Homebrew/brew"
+    ]
+  },
+  "dataLicense": "CC0-1.0",
+  "documentNamespace": "https://formulae.brew.sh/spdx/glfw-3.4.json",
+  "documentDescribes": [
+    "SPDXRef-Archive-glfw-src"
+  ],
+  "files": [],
+  "packages": [
+    {
+      "SPDXID": "SPDXRef-Archive-glfw-src",
+      "name": "glfw",
+      "versionInfo": "3.4",
+      "filesAnalyzed": false,
+      "licenseDeclared": "NOASSERTION",
+      "builtDate": "2024-02-23 11:45:31 UTC",
+      "licenseConcluded": "Zlib",
+      "downloadLocation": "https://github.com/glfw/glfw/archive/refs/tags/3.4.tar.gz",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c038d34200234d071fae9345bc455e4a8f2f544ab60150765d7704e08f3dac01"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-File-glfw",
+      "relationshipType": "PACKAGE_OF",
+      "relatedSpdxElement": "SPDXRef-Archive-glfw-src"
+    }
+  ]
+}

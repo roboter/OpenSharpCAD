@@ -1,5 +1,7 @@
+using MatterHackers.Agg.Platform;
 using MatterHackers.Agg.UI;
 using System;
+using System.Runtime.InteropServices;
 
 namespace MatterHackers.MatterCad
 {
@@ -21,6 +23,15 @@ namespace MatterHackers.MatterCad
         [STAThread]
         public static void Main(string[] args)
         {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                AggContext.Config.ProviderTypes.SystemWindowProvider = "MatterHackers.Agg.UI.OpenGLWinformsWindowProvider, agg_platform_win32";
+            }
+            else
+            {
+                AggContext.Config.ProviderTypes.SystemWindowProvider = "MatterHackers.GlfwProvider.GlfwWindowProvider, MatterHackers.GlfwProvider";
+            }
+
             MatterCadGui cadWindow = new MatterCadGui(true)
             {
                 UseOpenGL = true,

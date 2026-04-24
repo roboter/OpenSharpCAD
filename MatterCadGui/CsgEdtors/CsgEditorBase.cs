@@ -28,6 +28,10 @@ namespace MatterHackers.MatterCadGui.CsgEditors
             {
                 return new CsgEditorTranslate((Translate)csgObject);
             }
+            else if (csgObject.GetType() == typeof(Cylinder.CylinderPrimitive))
+            {
+                return new CsgEditorCylinder((Cylinder.CylinderPrimitive)csgObject);
+            }
             else
             {
                 Debug.WriteLine(csgObject.GetType());

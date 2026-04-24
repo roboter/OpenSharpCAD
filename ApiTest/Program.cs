@@ -12,8 +12,8 @@ namespace ApiTest
         {
             CsgObject box = new Box(100, 100, 100);
             //return box;
-            //CsgObject cylinder = new Cylinder(50, 50, 50);
-            // return cylinder;
+            CsgObject cylinder = new Cylinder(50, 50, 50);
+             return cylinder;
             //CsgObject tor = new Torus(10, 20);
             //return tor;
 
