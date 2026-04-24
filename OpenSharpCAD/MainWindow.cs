@@ -166,7 +166,7 @@ namespace CSharpCAD
 
             BackgroundColor = Color.White;
             PerformLayout();
-         //   Compile();
+            Compile();
         }
 
         private void Hello_TextChanged(object sender, EventArgs e)
@@ -198,9 +198,9 @@ namespace CSharpCAD
             classRef = compilerService.Compile(hello.Text, out errors);
 
             // Clear all items from the ListBox using proper method
-            while (errorListBox.Children.Count > 0)
+            while (errorListBox.Count > 0)
             {
-                errorListBox.RemoveChild(errorListBox.Children[0]);
+                errorListBox.RemoveChild(0);
             }
 
             if (errors.Count > 0)
