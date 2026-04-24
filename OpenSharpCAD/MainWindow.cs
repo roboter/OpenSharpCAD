@@ -133,41 +133,40 @@ namespace CSharpCAD
                 verticalSplitter.Panel1.AddChild(textSide);
             }
 
+
+            // panel 2 stuff
+            Splitter rightSplitter = new Splitter()
             {
-                // panel 2 stuff
-                Splitter rightSplitter = new Splitter()
-                {
-                    HAnchor = HAnchor.Stretch,
-                    VAnchor = VAnchor.Stretch,
-                    Orientation = Orientation.Horizontal,
-                    SplitterDistance = 150,
-                };
-                verticalSplitter.Panel2.AddChild(rightSplitter);
+                HAnchor = HAnchor.Stretch,
+                VAnchor = VAnchor.Stretch,
+                Orientation = Orientation.Horizontal,
+                SplitterDistance = 150,
+            };
+            verticalSplitter.Panel2.AddChild(rightSplitter);
 
-                var world = new WorldView(800, 600);
-                world.TranslationMatrix = Matrix4X4.CreateTranslation(0, 0, -50);
-                trackBallWidget = new TrackballTumbleView(world, rightSplitter.Panel1)
-                {
-                    HAnchor = HAnchor.Stretch,
-                    VAnchor = VAnchor.Stretch,
-                    DrawContent = glLightedView_DrawGlContent,
-                    TransformState = MatterHackers.VectorMath.TrackBall.TrackBallTransformType.Rotation,
-                };
-                rightSplitter.Panel1.AddChild(trackBallWidget);
+            var world = new WorldView(800, 600);
+            world.TranslationMatrix = Matrix4X4.CreateTranslation(0, 0, -50);
+            trackBallWidget = new TrackballTumbleView(world, rightSplitter.Panel1)
+            {
+                HAnchor = HAnchor.Stretch,
+                VAnchor = VAnchor.Stretch,
+                DrawContent = glLightedView_DrawGlContent,
+                TransformState = MatterHackers.VectorMath.TrackBall.TrackBallTransformType.Rotation,
+            };
+            rightSplitter.Panel1.AddChild(trackBallWidget);
 
-                errorListBox = new ListBox()
-                {
-                    HAnchor = HAnchor.Stretch,
-                    VAnchor = VAnchor.Stretch,
-                    BackgroundColor = Color.White,
-                };
-                errorListBox.SelectedValueChanged += ErrorListBox_SelectedValueChanged;
-                rightSplitter.Panel2.AddChild(errorListBox);
-            }
+            errorListBox = new ListBox()
+            {
+                HAnchor = HAnchor.Stretch,
+                VAnchor = VAnchor.Stretch,
+                BackgroundColor = Color.White,
+            };
+            errorListBox.SelectedValueChanged += ErrorListBox_SelectedValueChanged;
+            rightSplitter.Panel2.AddChild(errorListBox);
 
             BackgroundColor = Color.White;
             PerformLayout();
-            Compile();
+         //   Compile();
         }
 
         private void Hello_TextChanged(object sender, EventArgs e)
