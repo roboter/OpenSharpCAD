@@ -2,6 +2,9 @@
 
 Parametric CAD using C#
 
+## Screenshot
+![Screenshot](Screenshot.png)
+
 ## Video
 [![YouTube Demo](https://img.youtube.com/vi/dlQ3HhHRtSU/0.jpg)](https://youtu.be/dlQ3HhHRtSU)
 

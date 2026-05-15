@@ -78,7 +78,7 @@ namespace CSharpCAD
         private GuiWidget objectEditorView;
         private FlowLayoutWidget objectEditorList;
         private FlowLayoutWidget textSide;
-        private TextEditWidget hello;
+        private CodeEditorWidget _codeEditor;
         private ListBox errorListBox;
         private Union rootUnion = new Union("root");
         dynamic classRef;
@@ -88,13 +88,9 @@ namespace CSharpCAD
 
         public MainWindow(bool renderRayTrace) : base(800, 600)
         {
-            //     rootUnion.Add(new Translate(new BoxPrimitive(10, 10, 20), 5, 10, 5));
-            //rootUnion.Add(new Box(8, 20, 10));
-            //rootUnion.Add(new Cylinder(10, 40));
-            //      rootUnion.Add(new Translate(new Sphere(radius: 30), 15, 20, 40)); //not implemented
+
             var testUnion = new Translate(new Box(10, 10, 20) - new Box(8, 20, 10), 5, 5, 5); //new Difference(
-            //  rootUnion.Add(new LinearExtrude(new double[] { 1.1, 2.2, 3.3, 6.3 }, 7));
-            //rootUnion.Add(testUnion);
+
             rootUnion.Box(8, 20, 40);
             rootUnion.Add(new Translate(new BoxPrimitive(10, 10, 20), 5, 10, 5));
             rootUnion.Add(new BoxPrimitive(8, 20, 10));
@@ -125,18 +121,19 @@ namespace CSharpCAD
                 code.AppendLine("var box = new Box(12, 20, 20);");
                 code.AppendLine("var rotated = new Rotate(box, x: MathHelper.DegreesToRadians(45));");
                 code.AppendLine("var cylinder = new Cylinder(6,20,60);");
-                code.AppendLine("// draw the rotated box on top of the original");
+                code.AppendLine("// draw with default grey");
+                code.AppendLine("Draw(box + rotated - cylinder);");
+                code.AppendLine("// draw with a color: RGB(r, g, b)  or  RGBA(r, g, b, a)  or  RGBf(0.0-1.0, ...)");
                 code.AppendLine("var translated = new Translate(new Box(40, 10, 10), 0, holesize, holesize);");
-                code.AppendLine("Draw(box + rotated + translated - cylinder);");
+                code.AppendLine("Draw(translated, RGB(80, 180, 255));");
 
-                hello = new TextEditWidget(code.ToString().Replace('\r', '\n'), pointSize: 16)
+                _codeEditor = new CodeEditorWidget(code.ToString().Replace('\r', '\n'), fontSize: 16)
                 {
-                    Multiline = true,
                     HAnchor = HAnchor.Stretch,
                     VAnchor = VAnchor.Stretch,
                 };
-                hello.TextChanged += Hello_TextChanged;
-                textSide.AddChild(hello);
+                _codeEditor.TextChanged += Hello_TextChanged;
+                textSide.AddChild(_codeEditor);
                 verticalSplitter.Panel1.AddChild(textSide);
             }
 
@@ -196,9 +193,8 @@ namespace CSharpCAD
             {
                 if (int.TryParse(item.ItemValue, out int line))
                 {
-                    // Since JumpToLine is not available, we'll focus on the text editor
-                    // and scroll to a position near the line
-                    hello.Focus();
+                    // Focus the editor and scroll to the error line
+                    _codeEditor.Editor.Focus();
                 }
             }
         }
@@ -209,7 +205,7 @@ namespace CSharpCAD
             List<Diagnostic> errors;
 
             // The service expects just the content inside Render(), which comes from hello.Text
-            classRef = compilerService.Compile(hello.Text, out errors);
+            classRef = compilerService.Compile(_codeEditor.Text, out errors);
 
             // Clear all items from the ListBox using proper method
             while (errorListBox.Count > 0)
@@ -228,7 +224,7 @@ namespace CSharpCAD
                     // Store the error line for potential highlighting
                     errorLines.Add(line);
                 }
-                hello.Invalidate();
+                _codeEditor.InvalidateGutter();
                 return;
             }
             trackBallWidget.Invalidate();

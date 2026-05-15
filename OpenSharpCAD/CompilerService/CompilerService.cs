@@ -44,6 +44,23 @@ namespace CSharpCAD
             sb.AppendLine("                if (GL.Instance == null) { System.Console.WriteLine(\"Draw: GL.Instance is NULL!\"); }");
             sb.AppendLine("                GLHelper.Render(mesh, new Color(150, 150, 150, 255));");
             sb.AppendLine("            }");
+
+            // Draw with explicit color
+            sb.AppendLine("            public void Draw(CsgObject objectToProcess, Color color)");
+            sb.AppendLine("            {");
+            sb.AppendLine("                if (objectToProcess == null) { System.Console.WriteLine(\"Draw: objectToProcess is null\"); return; }");
+            sb.AppendLine("                var mesh = MatterHackers.RenderOpenGl.CsgToMesh.Convert(objectToProcess);");
+            sb.AppendLine("                if (mesh == null) { System.Console.WriteLine(\"Draw: mesh is null\"); return; }");
+            sb.AppendLine("                GLHelper.Render(mesh, color);");
+            sb.AppendLine("            }");
+
+            // Convenience color constructors available in scripts
+            sb.AppendLine("            // RGB(0-255, 0-255, 0-255)");
+            sb.AppendLine("            public Color RGB(int r, int g, int b) => new Color(r, g, b, 255);");
+            sb.AppendLine("            // RGBA(0-255, 0-255, 0-255, 0-255)");
+            sb.AppendLine("            public Color RGBA(int r, int g, int b, int a) => new Color(r, g, b, a);");
+            sb.AppendLine("            // RGB using 0.0-1.0 floats");
+            sb.AppendLine("            public Color RGBf(double r, double g, double b) => new Color(r, g, b);");
             sb.AppendLine("      }");
             sb.AppendLine("}");
 
