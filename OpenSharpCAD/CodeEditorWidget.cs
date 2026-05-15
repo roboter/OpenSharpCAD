@@ -46,6 +46,9 @@ namespace CSharpCAD
             BackgroundColor = EditorPalette.Background;
             // Make base text invisible — we redraw everything in OnDraw with syntax colors
             TextColor = Color.Transparent;
+            // Restore cursor and selection visibility (they are derived from TextColor in the base class)
+            CursorColor = EditorPalette.DefaultText;
+            HighlightColor = new Color(EditorPalette.DefaultText, 100);
 
             RebuildTokens(text);
             TextChanged += (s, e) => RebuildTokens(Text);
@@ -302,11 +305,115 @@ namespace CSharpCAD
     }
 
     // ────────────────────────────────────────────────────────────────────────────
+    // 3.5. Autocomplete Popup Widget
+    // ────────────────────────────────────────────────────────────────────────────
+    public class AutocompleteWidget : GuiWidget
+    {
+        private ListBox _listBox;
+        private List<string> _allSuggestions;
+        private SyntaxTextEditWidget _editor;
+
+        public AutocompleteWidget(SyntaxTextEditWidget editor, List<string> suggestions)
+        {
+            _editor = editor;
+            _allSuggestions = suggestions;
+
+            BackgroundColor = new Color(40, 42, 54);
+
+            _listBox = new ListBox(new RectangleDouble(0, 0, 180, 120));
+            AddChild(_listBox);
+            
+            Width = 180;
+            Height = 120;
+            Visible = false;
+        }
+
+        public override void OnDraw(Graphics2D g)
+        {
+            base.OnDraw(g);
+            g.Rectangle(LocalBounds, new Color(68, 71, 90));
+        }
+
+        public void Filter(string prefix)
+        {
+            if (_listBox.ScrollArea.Children.Count > 0)
+            {
+                _listBox.ScrollArea.Children[0].CloseChildren();
+            }
+            
+            var matches = new List<string>();
+            foreach (var s in _allSuggestions)
+            {
+                if (s.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                {
+                    matches.Add(s);
+                    if (matches.Count >= 20) break;
+                }
+            }
+
+            if (matches.Count == 0)
+            {
+                Visible = false;
+                return;
+            }
+
+            foreach (var match in matches)
+            {
+                _listBox.AddChild(new ListBoxTextItem(match, match) { 
+                    TextColor = Color.White,
+                    Height = 20
+                });
+            }
+
+            _listBox.SelectedIndex = 0;
+            Visible = true;
+            Invalidate();
+        }
+
+        public void SelectNext() 
+        { 
+            if (_listBox.SelectedIndex < _listBox.Count - 1) _listBox.SelectedIndex++; 
+        }
+        
+        public void SelectPrev() 
+        { 
+            if (_listBox.SelectedIndex > 0) _listBox.SelectedIndex--; 
+        }
+
+        public string GetSelected()
+        {
+            var item = _listBox.SelectedItem as FlowLayoutWidget;
+            if (item != null && item.Children.Count > 0)
+            {
+                var textItem = item.Children[0] as ListBoxTextItem;
+                return textItem?.ItemValue;
+            }
+            return null;
+        }
+    }
+
+    // ────────────────────────────────────────────────────────────────────────────
     // 4. The public-facing CodeEditorWidget
     // ────────────────────────────────────────────────────────────────────────────
     public class CodeEditorWidget : GuiWidget
     {
         public SyntaxTextEditWidget Editor { get; }
+        private AutocompleteWidget _autocomplete;
+
+        private static readonly string[] Keywords = {
+            "abstract", "as", "base", "bool", "break", "byte", "case", "catch", "char", "checked",
+            "class", "const", "continue", "decimal", "default", "delegate", "do", "double", "else",
+            "enum", "event", "explicit", "extern", "false", "finally", "fixed", "float", "for",
+            "foreach", "goto", "if", "implicit", "in", "int", "interface", "internal", "is", "lock",
+            "long", "namespace", "new", "null", "object", "operator", "out", "override", "params",
+            "private", "protected", "public", "readonly", "ref", "return", "sbyte", "sealed",
+            "short", "sizeof", "stackalloc", "static", "string", "struct", "switch", "this", "throw",
+            "true", "try", "typeof", "uint", "ulong", "unchecked", "unsafe", "ushort", "using",
+            "virtual", "void", "volatile", "while",
+            // CAD Specific
+            "Draw", "Box", "Sphere", "Cylinder", "Union", "Difference", "Intersection",
+            "Rotate", "Translate", "Scale", "RGB", "RGBA", "RGBf", "Color", "Vector3", "CsgObject"
+        };
 
         public string Text
         {
@@ -355,9 +462,102 @@ namespace CSharpCAD
             row.AddChild(Editor);
             AddChild(row);
 
+            // Add autocomplete popup as a top-level overlay
+            var sortedKeywords = new List<string>(Keywords);
+            sortedKeywords.Sort();
+            _autocomplete = new AutocompleteWidget(Editor, sortedKeywords);
+            AddChild(_autocomplete);
+
+            // Hook events for autocomplete
+            Editor.InternalTextEditWidget.KeyDown += Editor_KeyDown;
+            Editor.InternalTextEditWidget.KeyUp += Editor_KeyUp;
+            Editor.InternalTextEditWidget.MouseDown += (s, e) => _autocomplete.Visible = false;
+
             // Ensure we are at the top
             Editor.ScrollPosition = new Vector2(0, 0);
             Editor.TopLeftOffset = new Vector2(0, 0);
+        }
+
+        private void Editor_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (_autocomplete.Visible)
+            {
+                if (e.KeyCode == Keys.Down) { _autocomplete.SelectNext(); e.Handled = true; }
+                else if (e.KeyCode == Keys.Up) { _autocomplete.SelectPrev(); e.Handled = true; }
+                else if (e.KeyCode == Keys.Enter || e.KeyCode == Keys.Tab)
+                {
+                    ApplyAutocomplete();
+                    e.Handled = true;
+                    e.SuppressKeyPress = true;
+                }
+                else if (e.KeyCode == Keys.Escape)
+                {
+                    _autocomplete.Visible = false;
+                    e.Handled = true;
+                }
+            }
+        }
+
+        private void Editor_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Handled) return;
+
+            // Simple word-based trigger
+            string text = Editor.Text;
+            int pos = Editor.InternalTextEditWidget.CharIndexToInsertBefore;
+
+            if (pos > 0 && char.IsLetterOrDigit(text[pos - 1]))
+            {
+                int start = pos - 1;
+                while (start > 0 && char.IsLetterOrDigit(text[start - 1])) start--;
+                string prefix = text.Substring(start, pos - start);
+
+                if (prefix.Length >= 1)
+                {
+                    _autocomplete.Filter(prefix);
+                    if (_autocomplete.Visible)
+                    {
+                        UpdateAutocompletePos();
+                    }
+                }
+                else
+                {
+                    _autocomplete.Visible = false;
+                }
+            }
+            else
+            {
+                _autocomplete.Visible = false;
+            }
+        }
+
+        private void UpdateAutocompletePos()
+        {
+            var ite = Editor.InternalTextEditWidget;
+            var pos = ite.InsertBarPosition;
+
+            // Map editor-local cursor position to CodeEditorWidget coordinates
+            Vector2 editorPos = ite.TransformToParentSpace(this, pos);
+            
+            // Offset to show below the cursor line
+            _autocomplete.OriginRelativeParent = new Vector2(editorPos.X, editorPos.Y - _autocomplete.Height - 5);
+            _autocomplete.BringToFront();
+        }
+
+        private void ApplyAutocomplete()
+        {
+            string selected = _autocomplete.GetSelected();
+            if (string.IsNullOrEmpty(selected)) return;
+
+            string text = Editor.Text;
+            int pos = Editor.InternalTextEditWidget.CharIndexToInsertBefore;
+            int start = pos;
+            while (start > 0 && char.IsLetterOrDigit(text[start - 1])) start--;
+
+            string newText = text.Substring(0, start) + selected + text.Substring(pos);
+            Editor.Text = newText;
+            Editor.InternalTextEditWidget.CharIndexToInsertBefore = start + selected.Length;
+            _autocomplete.Visible = false;
         }
 
         /// <summary>Called externally when the parent scrolls, to keep the gutter in sync.</summary>
