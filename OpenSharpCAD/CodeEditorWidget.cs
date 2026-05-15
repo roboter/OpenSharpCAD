@@ -45,7 +45,7 @@ namespace CSharpCAD
         {
             BackgroundColor = EditorPalette.Background;
             // Make base text invisible — we redraw everything in OnDraw with syntax colors
-            TextColor = EditorPalette.Background;
+            TextColor = Color.Transparent;
 
             RebuildTokens(text);
             TextChanged += (s, e) => RebuildTokens(Text);
@@ -162,16 +162,13 @@ namespace CSharpCAD
 
                     if (segEnd > segStart)
                     {
-                        // Get pixel position of segStart in the ITE coordinate system
-                        // printer.GetOffsetLeftOfCharacterIndex returns:
-                        //   X = pixel X from left
-                        //   Y = negative offset from top-of-content, i.e. Y decreases per line
-                        // ITE draws cursor at: internalTextWidget.Height + printerY - lineH
                         var off = printer.GetOffsetLeftOfCharacterIndex(segStart);
-                        double drawY = Height + off.Y - lineH;
+                        // Align perfectly with the invisible base text. 
+                        // The baseline in InternalTextEditWidget space is Height + off.Y - Ascent.
+                        double drawY = Height + off.Y - printer.TypeFaceStyle.AscentInPixels;
 
                         string seg = src.Substring(segStart, segEnd - segStart);
-                        g.DrawString(seg, off.X, drawY, pointSize: lineH * 0.75, color: color);
+                        g.DrawString(seg, off.X, drawY, pointSize: printer.TypeFaceStyle.EmSizeInPoints, color: color);
                     }
 
                     // Skip the newline
@@ -190,11 +187,29 @@ namespace CSharpCAD
     {
         public SyntaxTextEditWidget(string text, double pointSize = 16)
         {
-            // Replace the default InternalTextEditWidget with the syntax-aware one
+            // The base constructor already created an InternalTextEditWidget and added it.
+            // We must remove it to avoid double-rendering and layout confusion.
+            if (InternalTextEditWidget != null)
+            {
+                ScrollArea.RemoveChild(InternalTextEditWidget);
+            }
+
+            // Replace with our syntax-aware one
             InternalTextEditWidget = new SyntaxHighlightInternalTextEditWidget(
                 text, pointSize, multiLine: true, tabIndex: 0);
+
+            // Re-hook it (this adds it back to the ScrollArea)
             HookUpToInternalWidget(0, 0);
+
+            // The InternalTextEditWidget manages its own size in UpdateLocalBounds.
+            // We should not set Fit/Stretch anchors here as it can interfere with the ScrollArea's own Fit logic.
+            InternalTextEditWidget.HAnchor = HAnchor.Absolute;
+            InternalTextEditWidget.VAnchor = VAnchor.Absolute;
+
             BackgroundColor = EditorPalette.Background;
+            
+            // Default to top
+            TopLeftOffset = Vector2.Zero;
         }
     }
 
@@ -248,24 +263,33 @@ namespace CSharpCAD
             while (charIndex <= text.Length)
             {
                 // Get Y for this line using printer
-                var off   = printer.GetOffsetLeftOfCharacterIndex(charIndex);
-                // Map to gutter Y (same formula ITE uses for cursor, plus scroll)
-                double gutterY = iteHeight + off.Y - lineH + scrollY;
+                var off = printer.GetOffsetLeftOfCharacterIndex(charIndex);
+                
+                // The baseline in the gutter must match the baseline in the editor view.
+                // We use the same math as the SyntaxHighlightInternalTextEditWidget but add the scroll offset.
+                double ascent = printer.TypeFaceStyle.AscentInPixels;
+                double scrollShift = _editor.ScrollArea.OriginRelativeParent.Y;
+                double baselineY = iteHeight + off.Y - ascent + scrollShift;
 
                 // Only draw if within the visible gutter
-                if (gutterY + lineH >= 0 && gutterY <= Height)
+                if (baselineY + lineH >= 0 && baselineY - lineH <= Height)
                 {
                     bool isCurrent = (lineNum == cursorLine);
                     Color numCol   = isCurrent ? EditorPalette.GutterFgCur : EditorPalette.GutterFg;
 
                     if (isCurrent)
-                        g.FillRectangle(0, gutterY, GutterWidth - 1, gutterY + lineH,
+                    {
+                        // Match the selection highlight box exactly
+                        double barY = Math.Ceiling(baselineY + printer.TypeFaceStyle.DescentInPixels);
+                        g.FillRectangle(0, barY, GutterWidth - 1, barY + lineH,
                                         new Color(60, 63, 80, 120));
+                    }
 
                     string numStr = (lineNum + 1).ToString();
                     double charW  = printer.TypeFaceStyle.GetAdvanceForCharacter('0');
                     double drawX  = GutterWidth - 10 - charW * numStr.Length;
-                    g.DrawString(numStr, drawX, gutterY + 1, _fontSize * 0.72, color: numCol);
+                    // Slightly larger font for line numbers
+                    g.DrawString(numStr, drawX, Math.Ceiling(baselineY), _editor.InternalTextEditWidget.Printer.TypeFaceStyle.EmSizeInPoints * 0.85, color: numCol);
                 }
 
                 // Advance to next line
@@ -314,6 +338,9 @@ namespace CSharpCAD
                 TextChanged?.Invoke(this, e);
             };
 
+            // Sync gutter scroll
+            Editor.ScrollPositionChanged += (s, e) => gutter.Invalidate();
+
             // Redraw gutter when cursor moves (line highlight)
             Editor.InternalTextEditWidget.InsertBarPositionChanged += (s, e) =>
                 gutter.Invalidate();
@@ -327,6 +354,10 @@ namespace CSharpCAD
             row.AddChild(gutter);
             row.AddChild(Editor);
             AddChild(row);
+
+            // Ensure we are at the top
+            Editor.ScrollPosition = new Vector2(0, 0);
+            Editor.TopLeftOffset = new Vector2(0, 0);
         }
 
         /// <summary>Called externally when the parent scrolls, to keep the gutter in sync.</summary>
