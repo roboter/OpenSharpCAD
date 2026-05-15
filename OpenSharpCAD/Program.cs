@@ -1,4 +1,4 @@
-﻿using MatterHackers.Agg.Platform;
+using MatterHackers.Agg.Platform;
 using System;
 using System.Runtime.InteropServices;
 using System.Globalization;
@@ -49,6 +49,7 @@ class Program
         {
             AggContext.Config.ProviderTypes.SystemWindowProvider = "MatterHackers.Agg.UI.OpenGLWinformsWindowProvider, agg_platform_win32";
             AggContext.Config.ProviderTypes.OsInformationProvider = "MatterHackers.Agg.Platform.WinformsInformationProvider, agg_platform_win32";
+            Clipboard.SetSystemClipboard(new WindowsFormsClipboard());
         }
         else
         {

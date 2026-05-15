@@ -114,13 +114,12 @@ namespace CSharpCAD
                 var code = new StringBuilder();
                 code.AppendLine("var holesize =4;");
                 code.AppendLine("// draw a box");
-                code.AppendLine("var box = new Box(20, 20, 20);");
+                code.AppendLine("var box = new Box(12, 20, 20);");
                 code.AppendLine("var rotated = new Rotate(box, x: MathHelper.DegreesToRadians(45));");
-                code.AppendLine("var cylinder = new Cylinder(50,20,60);");
+                code.AppendLine("var cylinder = new Cylinder(6,20,60);");
                 code.AppendLine("// draw the rotated box on top of the original");
                 code.AppendLine("var translated = new Translate(new Box(40, 10, 10), 0, holesize, holesize);");
-                code.AppendLine("Draw(box + rotated - translated + cylinder);");
-
+                code.AppendLine("Draw(box + rotated + translated - cylinder);");
 
                 hello = new TextEditWidget(code.ToString().Replace('\r', '\n'))
                 {
