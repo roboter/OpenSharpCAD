@@ -19,6 +19,8 @@ namespace CSharpCAD
     {
         public Action DrawContent;
         public WorldView World;
+        /// <summary>Fired after every camera rotation/move so overlays can refresh.</summary>
+        public Action ViewChanged;
 
         public TrackballTumbleView(WorldView world, GuiWidget sourceWidget)
             : base(world, sourceWidget)
@@ -55,9 +57,14 @@ namespace CSharpCAD
 
         public override void OnMouseMove(MouseEventArgs mouseEvent)
         {
-            // Logging mouse move might be too noisy, but useful for initial check
-            // System.Console.WriteLine("TrackballTumbleView.OnMouseMove");
             base.OnMouseMove(mouseEvent);
+            ViewChanged?.Invoke();
+        }
+
+        public override void OnMouseUp(MouseEventArgs mouseEvent)
+        {
+            base.OnMouseUp(mouseEvent);
+            ViewChanged?.Invoke();
         }
     }
 
@@ -66,6 +73,7 @@ namespace CSharpCAD
         private TrackballTumbleView trackBallWidget;
         private Button outputScad;
         private Splitter verticalSplitter;
+        private AxisOrientationWidget axisWidget;
 
         private GuiWidget objectEditorView;
         private FlowLayoutWidget objectEditorList;
@@ -121,7 +129,7 @@ namespace CSharpCAD
                 code.AppendLine("var translated = new Translate(new Box(40, 10, 10), 0, holesize, holesize);");
                 code.AppendLine("Draw(box + rotated + translated - cylinder);");
 
-                hello = new TextEditWidget(code.ToString().Replace('\r', '\n'))
+                hello = new TextEditWidget(code.ToString().Replace('\r', '\n'), pointSize: 16)
                 {
                     Multiline = true,
                     HAnchor = HAnchor.Stretch,
@@ -153,6 +161,13 @@ namespace CSharpCAD
                 TransformState = MatterHackers.VectorMath.TrackBall.TrackBallTransformType.Rotation,
             };
             rightSplitter.Panel1.AddChild(trackBallWidget);
+
+            // Axis orientation gizmo – floating overlay in the 3D panel
+            axisWidget = new AxisOrientationWidget(world);
+            rightSplitter.Panel1.AddChild(axisWidget);
+
+            // Refresh gizmo on every camera rotation
+            trackBallWidget.ViewChanged += () => axisWidget?.Invalidate();
 
             errorListBox = new ListBox()
             {
@@ -217,6 +232,7 @@ namespace CSharpCAD
                 return;
             }
             trackBallWidget.Invalidate();
+            axisWidget?.Invalidate();
         }
 
         private void LogException(Exception ex)
