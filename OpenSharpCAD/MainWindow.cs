@@ -79,7 +79,7 @@ namespace CSharpCAD
         private FlowLayoutWidget objectEditorList;
         private FlowLayoutWidget textSide;
         private CodeEditorWidget _codeEditor;
-        private ListBox errorListBox;
+        private ProblemsPanelWidget _problemsPanel;
         private Union rootUnion = new Union("root");
         private HelpWindow _helpWindow;
         dynamic classRef;
@@ -219,14 +219,11 @@ namespace CSharpCAD
             // Refresh gizmo on every camera rotation
             trackBallWidget.ViewChanged += () => axisWidget?.Invalidate();
 
-            errorListBox = new ListBox()
+            _problemsPanel = new ProblemsPanelWidget(diag =>
             {
-                HAnchor = HAnchor.Stretch,
-                VAnchor = VAnchor.Stretch,
-                BackgroundColor = Color.White,
-            };
-            errorListBox.SelectedValueChanged += ErrorListBox_SelectedValueChanged;
-            rightSplitter.Panel2.AddChild(errorListBox);
+                _codeEditor.NavigateTo(diag.Line, diag.Column, diag.StartIndex, diag.Length);
+            });
+            rightSplitter.Panel2.AddChild(_problemsPanel);
 
             BackgroundColor = Color.White;
             PerformLayout();
@@ -244,18 +241,6 @@ namespace CSharpCAD
             {
                 UiThread.RunOnIdle(() => Compile());
             }, null, 250, System.Threading.Timeout.Infinite);
-        }
-
-        private void ErrorListBox_SelectedValueChanged(object sender, EventArgs e)
-        {
-            if (errorListBox.SelectedItem is ListBoxTextItem item)
-            {
-                if (int.TryParse(item.ItemValue, out int line))
-                {
-                    // Focus the editor and scroll to the error line
-                    _codeEditor.Editor.Focus();
-                }
-            }
         }
 
         public void ToggleHelp()
@@ -291,12 +276,14 @@ namespace CSharpCAD
                     }
                 );
                 AddChild(_helpWindow);
+                _helpWindow.BringToFront();
             }
             else
             {
                 _helpWindow.Visible = !_helpWindow.Visible;
                 if (_helpWindow.Visible)
                 {
+                    _helpWindow.EnsureWithinParent();
                     _helpWindow.BringToFront();
                 }
                 else
@@ -330,14 +317,10 @@ namespace CSharpCAD
             var compilerService = new CompilerService();
             List<Diagnostic> errors;
 
-            // The service expects just the content inside Render(), which comes from hello.Text
-            classRef = compilerService.Compile(_codeEditor.Text, out errors);
+            string script = _codeEditor.Text ?? "";
+            classRef = compilerService.Compile(script, out errors);
 
-            // Clear all items from the ListBox using proper method
-            while (errorListBox.Count > 0)
-            {
-                errorListBox.RemoveChild(0);
-            }
+            var editorDiagnostics = new List<EditorDiagnostic>();
 
             if (errors.Count > 0)
             {
@@ -346,12 +329,39 @@ namespace CSharpCAD
                     var lineSpan = error.Location.GetLineSpan();
                     int line = lineSpan.StartLinePosition.Line; // #line 1 "script" makes this directly 0-indexed relative to user script
                     if (line < 0) line = 0;
-                    string message = $"{line + 1}: {error.GetMessage()}";
-                    errorListBox.AddChild(new ListBoxTextItem(message, line.ToString()));
-                    // Store the error line for potential highlighting
-                    errorLines.Add(line);
+                    int col = lineSpan.StartLinePosition.Character;
+                    if (col < 0) col = 0;
+
+                    int startIdx = GetCharIndex(script, line, col);
+                    int endCol = lineSpan.EndLinePosition.Character;
+                    int length = 1;
+                    if (lineSpan.EndLinePosition.Line == line && endCol > col)
+                    {
+                        length = endCol - col;
+                    }
+                    else
+                    {
+                        int end = startIdx;
+                        while (end < script.Length && (char.IsLetterOrDigit(script[end]) || script[end] == '_'))
+                            end++;
+                        length = Math.Max(1, end - startIdx);
+                    }
+
+                    editorDiagnostics.Add(new EditorDiagnostic
+                    {
+                        Id = error.Id,
+                        Message = error.GetMessage(),
+                        Line = line,
+                        Column = col,
+                        StartIndex = startIdx,
+                        Length = length,
+                        IsWarning = error.Severity == DiagnosticSeverity.Warning,
+                        IsRuntime = false,
+                    });
                 }
-                _codeEditor.InvalidateGutter();
+
+                _codeEditor.SetDiagnostics(editorDiagnostics);
+                _problemsPanel.SetDiagnostics(editorDiagnostics);
                 return;
             }
 
@@ -361,18 +371,50 @@ namespace CSharpCAD
                 classRef?.Build();
                 if (classRef != null && !string.IsNullOrEmpty((string)classRef.LastError))
                 {
-                    errorListBox.AddChild(new ListBoxTextItem($"Runtime Error: {classRef.LastError}", "0"));
+                    editorDiagnostics.Add(new EditorDiagnostic
+                    {
+                        Id = "Runtime",
+                        Message = (string)classRef.LastError,
+                        Line = 0,
+                        Column = 0,
+                        StartIndex = 0,
+                        Length = 0,
+                        IsRuntime = true,
+                    });
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error during script Build: " + ex.Message);
-                errorListBox.AddChild(new ListBoxTextItem($"Runtime Error: {ex.Message}", "0"));
+                editorDiagnostics.Add(new EditorDiagnostic
+                {
+                    Id = "Runtime",
+                    Message = ex.Message,
+                    Line = 0,
+                    Column = 0,
+                    StartIndex = 0,
+                    Length = 0,
+                    IsRuntime = true,
+                });
             }
 
-            _codeEditor.InvalidateGutter();
+            _codeEditor.SetDiagnostics(editorDiagnostics);
+            _problemsPanel.SetDiagnostics(editorDiagnostics);
             trackBallWidget.Invalidate();
             axisWidget?.Invalidate();
+        }
+
+        private static int GetCharIndex(string text, int line, int col)
+        {
+            if (string.IsNullOrEmpty(text)) return 0;
+            int curLine = 0;
+            int idx = 0;
+            while (idx < text.Length && curLine < line)
+            {
+                if (text[idx] == '\n') curLine++;
+                idx++;
+            }
+            return Math.Min(text.Length, idx + Math.Max(0, col));
         }
 
         private void LogException(Exception ex)
@@ -386,16 +428,16 @@ namespace CSharpCAD
                 string baseDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
                 if (string.IsNullOrEmpty(baseDir))
                 {
-                    baseDir = Path.GetTempPath();
+                    baseDir = System.IO.Path.GetTempPath();
                 }
 
-                string logDir = Path.Combine(baseDir, "CSharpCAD", "logs");
+                string logDir = System.IO.Path.Combine(baseDir, "CSharpCAD", "logs");
 
                 if (!Directory.Exists(logDir))
                 {
                     Directory.CreateDirectory(logDir);
                 }
-                string logPath = Path.Combine(logDir, "errors.log");
+                string logPath = System.IO.Path.Combine(logDir, "errors.log");
                 string logMessage = $"[{DateTime.Now}] {ex.Message}{Environment.NewLine}{ex.StackTrace}{Environment.NewLine}{new string('-', 30)}{Environment.NewLine}";
                 File.AppendAllText(logPath, logMessage);
             }

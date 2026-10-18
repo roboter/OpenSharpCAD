@@ -24,6 +24,8 @@ namespace CSharpCAD
             sb.AppendLine("using MatterHackers.RenderOpenGl; ");
             sb.AppendLine("using MatterHackers.RenderOpenGl.OpenGl; ");
             sb.AppendLine("using MatterHackers.Agg;");
+            sb.AppendLine("using Circle = MatterHackers.Csg.Solids.Circle;");
+            sb.AppendLine("using Path = MatterHackers.Csg.Solids.Path;");
 
             sb.AppendLine("namespace Test");
             sb.AppendLine("{");
@@ -72,6 +74,32 @@ namespace CSharpCAD
             sb.AppendLine("                var mesh = MatterHackers.RenderOpenGl.CsgToMesh.Convert(objectToProcess);");
             sb.AppendLine("                if (mesh != null) { _cachedMeshes.Add(new System.ValueTuple<MatterHackers.PolygonMesh.Mesh, Color>(mesh, color)); }");
             sb.AppendLine("            }");
+            sb.AppendLine();
+            sb.AppendLine("            public void Draw(I2DPrimitive primitive2D)");
+            sb.AppendLine("            {");
+            sb.AppendLine("                Draw(primitive2D, new Color(150, 150, 150, 255));");
+            sb.AppendLine("            }");
+            sb.AppendLine();
+            sb.AppendLine("            public void Draw(I2DPrimitive primitive2D, Color color)");
+            sb.AppendLine("            {");
+            sb.AppendLine("                if (primitive2D == null) return;");
+            sb.AppendLine("                var mesh = primitive2D.IsClosed ? primitive2D.ToMesh() : primitive2D.ToWireMesh(0.5);");
+            sb.AppendLine("                if (mesh != null) { _cachedMeshes.Add(new System.ValueTuple<MatterHackers.PolygonMesh.Mesh, Color>(mesh, color)); }");
+            sb.AppendLine("            }");
+            sb.AppendLine();
+            sb.AppendLine("            public void Draw(MatterHackers.PolygonMesh.Mesh mesh)");
+            sb.AppendLine("            {");
+            sb.AppendLine("                Draw(mesh, new Color(150, 150, 150, 255));");
+            sb.AppendLine("            }");
+            sb.AppendLine();
+            sb.AppendLine("            public void Draw(MatterHackers.PolygonMesh.Mesh mesh, Color color)");
+            sb.AppendLine("            {");
+            sb.AppendLine("                if (mesh != null) { _cachedMeshes.Add(new System.ValueTuple<MatterHackers.PolygonMesh.Mesh, Color>(mesh, color)); }");
+            sb.AppendLine("            }");
+            sb.AppendLine();
+            sb.AppendLine("            // Standalone 2D Extrude/Revolve functions");
+            sb.AppendLine("            public CsgObject Extrude(I2DPrimitive shape, double height, bool centered = false, Alignment alignment = Alignment.z) => shape?.Extrude(height, centered, alignment);");
+            sb.AppendLine("            public CsgObject Revolve(I2DPrimitive shape, double angleDegrees = 360, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true) => shape?.Revolve(angleDegrees, angleSteps, axisOffset, revolveAroundZ);");
 
             // Convenience color constructors available in scripts
             sb.AppendLine("            // RGB(0-255, 0-255, 0-255)");

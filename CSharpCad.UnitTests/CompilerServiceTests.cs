@@ -38,11 +38,12 @@ public class CompilerServiceTests
     public void TestHelpWindowConstructAndTabs()
     {
         // Verify that HelpWindow builds all tabs and layouts without throwing any layout exceptions
+        var parent = new MatterHackers.Agg.UI.GuiWidget(1024, 768);
         var helpWin = new HelpWindow((snippet, isExample) => { }, () => { });
+        parent.AddChild(helpWin);
         Assert.That(helpWin, Is.Not.Null);
 
-        helpWin.LocalBounds = new MatterHackers.Agg.RectangleDouble(0, 0, 1024, 768);
-        helpWin.PerformLayout();
+        parent.PerformLayout();
 
         // Count TextWidgets and verify they have valid non-empty text and non-black text color on dark theme
         int textWidgetCount = 0;
@@ -68,8 +69,8 @@ public class CompilerServiceTests
         Assert.That(helpWin.DialogCard, Is.Not.Null);
         double initialW = helpWin.DialogCard.Width;
         double initialH = helpWin.DialogCard.Height;
-        Assert.That(initialW, Is.GreaterThanOrEqualTo(520));
-        Assert.That(initialH, Is.GreaterThanOrEqualTo(380));
+        Assert.That(initialW, Is.GreaterThanOrEqualTo(460));
+        Assert.That(initialH, Is.GreaterThanOrEqualTo(320));
 
         // Test Maximize
         helpWin.ToggleMaximize();

@@ -42,6 +42,8 @@ using MatterHackers.Csg.Solids;
 using MatterHackers.RenderOpenGl;
 using MatterHackers.RenderOpenGl.OpenGl;
 using MatterHackers.Agg;
+using Circle = MatterHackers.Csg.Solids.Circle;
+using Path = MatterHackers.Csg.Solids.Path;
 
 namespace Test
 {
@@ -49,6 +51,12 @@ namespace Test
     {
         public void Draw(CsgObject objectToProcess) { }
         public void Draw(CsgObject objectToProcess, Color color) { }
+        public void Draw(I2DPrimitive primitive2D) { }
+        public void Draw(I2DPrimitive primitive2D, Color color) { }
+        public void Draw(MatterHackers.PolygonMesh.Mesh mesh) { }
+        public void Draw(MatterHackers.PolygonMesh.Mesh mesh, Color color) { }
+        public CsgObject Extrude(I2DPrimitive shape, double height, bool centered = false, Alignment alignment = Alignment.z) => default;
+        public CsgObject Revolve(I2DPrimitive shape, double angleDegrees = 360, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true) => default;
         public Color RGB(int r, int g, int b) => default;
         public Color RGBA(int r, int g, int b, int a) => default;
         public Color RGBf(double r, double g, double b) => default;

@@ -198,33 +198,25 @@ namespace CSharpCAD
             bool IsFullExample = false);
 
         public HelpWindow(Action<string, bool> onInsertCode, Action onClose)
+            : base(540, 420)
         {
             _onInsertCode = onInsertCode;
             _onClose      = onClose;
 
-            HAnchor = HAnchor.Stretch;
-            VAnchor = VAnchor.Stretch;
-            BackgroundColor = OverlayBg;
+            HAnchor = HAnchor.Absolute;
+            VAnchor = VAnchor.Absolute;
+            BackgroundColor = DialogBg;
+            MinimumSize = new Vector2(460, 320);
+            Position = new Vector2(430, 40);
 
-            // Clicking outside the dialog card dismisses the help window
-            Click += (s, e) =>
-            {
-                if (e is MouseEventArgs me)
-                {
-                    if (_isResizing || _isDraggingHeader) return;
-                    var localPos = new Vector2(me.X, me.Y);
-                    if (!_dialogCard.BoundsRelativeToParent.Contains(localPos))
-                    {
-                        _onClose?.Invoke();
-                    }
-                }
-            };
+            // Sleek window frame styling
+            Border = 1;
+            BorderColor = new Color(80, 88, 120);
 
             BuildUi();
         }
 
-        private GuiWidget _dialogCard;
-        public GuiWidget DialogCard => _dialogCard;
+        public GuiWidget DialogCard => this;
 
         private StyledButton _maxButton;
         private bool _isResizing;
@@ -236,25 +228,25 @@ namespace CSharpCAD
         private Vector2 _restorePos;
         private Vector2 _restoreSize;
 
+        public override void OnKeyDown(KeyEventArgs keyEvent)
+        {
+            if (keyEvent.KeyCode == Keys.Escape || keyEvent.KeyCode == Keys.F1)
+            {
+                _onClose?.Invoke();
+                keyEvent.Handled = true;
+                return;
+            }
+            base.OnKeyDown(keyEvent);
+        }
+
         private void BuildUi()
         {
-            // Resizable dialog container with minimum dimensions
-            _dialogCard = new GuiWidget(780, 560)
-            {
-                HAnchor = HAnchor.Absolute,
-                VAnchor = VAnchor.Absolute,
-                BackgroundColor = DialogBg,
-                MinimumSize = new Vector2(520, 380),
-                Position = new Vector2(100, 50)
-            };
-            AddChild(_dialogCard);
-
             var dialogLayout = new FlowLayoutWidget(FlowDirection.TopToBottom)
             {
                 HAnchor = HAnchor.Stretch,
                 VAnchor = VAnchor.Stretch,
             };
-            _dialogCard.AddChild(dialogLayout);
+            AddChild(dialogLayout);
 
             // 1. Top Header Bar (Draggable to move dialog, double-click to maximize/restore)
             var header = new FlowLayoutWidget(FlowDirection.LeftToRight)
@@ -281,7 +273,7 @@ namespace CSharpCAD
                     _isDraggingHeader = true;
                     _hasUserMovedOrResized = true;
                     headerStartMouseScreen = header.TransformToScreenSpace(new Vector2(e.X, e.Y));
-                    _dragStartPos = _dialogCard.Position;
+                    _dragStartPos = Position;
                 }
             };
 
@@ -291,10 +283,12 @@ namespace CSharpCAD
                 {
                     var curScreen = header.TransformToScreenSpace(new Vector2(e.X, e.Y));
                     var delta = curScreen - headerStartMouseScreen;
-                    double newX = Math.Clamp(_dragStartPos.X + delta.X, 0, Math.Max(0, Width - _dialogCard.Width));
-                    double newY = Math.Clamp(_dragStartPos.Y + delta.Y, 0, Math.Max(0, Height - _dialogCard.Height));
-                    _dialogCard.Position = new Vector2(newX, newY);
-                    _dialogCard.Invalidate();
+                    double parentW = Parent?.Width ?? 1024;
+                    double parentH = Parent?.Height ?? 768;
+                    double newX = Math.Clamp(_dragStartPos.X + delta.X, 0, Math.Max(0, parentW - Width));
+                    double newY = Math.Clamp(_dragStartPos.Y + delta.Y, 0, Math.Max(0, parentH - Height));
+                    Position = new Vector2(newX, newY);
+                    Invalidate();
                 }
             };
 
@@ -423,8 +417,8 @@ namespace CSharpCAD
                     {
                         _isResizing = true;
                         _hasUserMovedOrResized = true;
-                        _dragStartPos = _dialogCard.Position;
-                        _dragStartSize = _dialogCard.Size;
+                        _dragStartPos = Position;
+                        _dragStartSize = Size;
                     },
                     () => _isResizing = false,
                     cursor)
@@ -434,7 +428,7 @@ namespace CSharpCAD
                     Width = w,
                     Height = h
                 };
-                _dialogCard.AddChild(handle);
+                AddChild(handle);
             }
 
             // Edges
@@ -455,34 +449,39 @@ namespace CSharpCAD
 
         public void ToggleMaximize()
         {
+            double parentW = Parent?.Width ?? 1024;
+            double parentH = Parent?.Height ?? 768;
+
             if (!_isMaximized)
             {
-                _restorePos = _dialogCard.Position;
-                _restoreSize = _dialogCard.Size;
-                _dialogCard.Position = new Vector2(16, 16);
-                _dialogCard.Size = new Vector2(Math.Max(520, Width - 32), Math.Max(380, Height - 32));
+                _restorePos = Position;
+                _restoreSize = Size;
+                Position = new Vector2(16, 16);
+                Size = new Vector2(Math.Max(520, parentW - 32), Math.Max(380, parentH - 32));
                 _isMaximized = true;
                 _hasUserMovedOrResized = true;
                 _maxButton?.SetText("[=]");
             }
             else
             {
-                _dialogCard.Position = _restorePos;
-                _dialogCard.Size = _restoreSize;
+                Position = _restorePos;
+                Size = _restoreSize;
                 _isMaximized = false;
                 _maxButton?.SetText("[ ]");
             }
-            _dialogCard.Invalidate();
+            Invalidate();
         }
 
         private void HandleResize(ResizeEdge edge, Vector2 deltaScreen)
         {
             if (_isMaximized) return;
 
-            double minW = 520;
-            double minH = 380;
-            double maxW = Math.Max(minW, Width - 20);
-            double maxH = Math.Max(minH, Height - 20);
+            double parentW = Parent?.Width ?? 1024;
+            double parentH = Parent?.Height ?? 768;
+            double minW = 460;
+            double minH = 320;
+            double maxW = Math.Max(minW, parentW - 20);
+            double maxH = Math.Max(minH, parentH - 20);
 
             double newW = _dragStartSize.X;
             double newH = _dragStartSize.Y;
@@ -521,47 +520,51 @@ namespace CSharpCAD
                     break;
             }
 
-            _dialogCard.Position = new Vector2(newX, newY);
-            _dialogCard.Size = new Vector2(newW, newH);
-            _dialogCard.Invalidate();
+            Position = new Vector2(newX, newY);
+            Size = new Vector2(newW, newH);
+            Invalidate();
         }
 
-        public override void OnBoundsChanged(EventArgs e)
+        public override void OnParentChanged(EventArgs e)
         {
-            base.OnBoundsChanged(e);
-            if (!_hasUserMovedOrResized && Width > 0 && Height > 0)
+            base.OnParentChanged(e);
+            if (Parent != null)
             {
-                CenterDialog();
-            }
-            else if (_hasUserMovedOrResized && Width > 0 && Height > 0)
-            {
-                ClampDialogToWindow();
+                if (!_hasUserMovedOrResized)
+                {
+                    double posX = Math.Max(20, Math.Min(430, Parent.Width - Width - 20));
+                    double posY = Math.Max(20, Math.Min(40, Parent.Height - Height - 20));
+                    Position = new Vector2(posX, posY);
+                }
+                Parent.BoundsChanged -= Parent_BoundsChanged;
+                Parent.BoundsChanged += Parent_BoundsChanged;
             }
         }
 
-        private void CenterDialog()
+        private void Parent_BoundsChanged(object sender, EventArgs e)
         {
-            double targetW = Math.Min(_dialogCard.Width, Math.Max(520, Width - 40));
-            double targetH = Math.Min(_dialogCard.Height, Math.Max(380, Height - 40));
-            _dialogCard.Size = new Vector2(targetW, targetH);
-            _dialogCard.Position = new Vector2(
-                Math.Max(10, (Width - targetW) / 2),
-                Math.Max(10, (Height - targetH) / 2)
-            );
+            EnsureWithinParent();
         }
 
-        private void ClampDialogToWindow()
+        public void EnsureWithinParent()
         {
+            if (Parent == null) return;
             if (_isMaximized)
             {
-                _dialogCard.Position = new Vector2(16, 16);
-                _dialogCard.Size = new Vector2(Math.Max(520, Width - 32), Math.Max(380, Height - 32));
+                Position = new Vector2(16, 16);
+                Size = new Vector2(Math.Max(520, Parent.Width - 32), Math.Max(380, Parent.Height - 32));
                 return;
             }
 
-            double newX = Math.Clamp(_dialogCard.Position.X, 0, Math.Max(0, Width - _dialogCard.Width));
-            double newY = Math.Clamp(_dialogCard.Position.Y, 0, Math.Max(0, Height - _dialogCard.Height));
-            _dialogCard.Position = new Vector2(newX, newY);
+            double maxX = Math.Max(0, Parent.Width - Width);
+            double maxY = Math.Max(0, Parent.Height - Height);
+            double clampedX = Math.Clamp(Position.X, 0, maxX);
+            double clampedY = Math.Clamp(Position.Y, 0, maxY);
+            if (clampedX != Position.X || clampedY != Position.Y)
+            {
+                Position = new Vector2(clampedX, clampedY);
+                Invalidate();
+            }
         }
 
         private void SelectTab(int index)
@@ -743,6 +746,34 @@ namespace CSharpCAD
                 AccentCyan,
                 "Creates a torus ring centered at origin with inner and outer radii.\nParameters: innerRadius, outerRadius, alignment = Alignment.z",
                 "// Torus(innerRadius, outerRadius)\nvar donut = new Torus(innerRadius: 10, outerRadius: 22);\nDraw(donut, Color.Violet);"),
+
+            new HelpItem(
+                "Circle (2D Primitive)",
+                "2D Primitive",
+                AccentGreen,
+                "Creates a 2D circle that can be extruded into a cylinder or revolved into a torus.\nMethods: Extrude(height), Revolve(angleDegrees, axisOffset), ToMesh()",
+                "// Circle(radius)\nvar c = new Circle(radius: 15);\nvar cylinder = c.Extrude(height: 25);\nDraw(cylinder, RGB(100, 200, 255));"),
+
+            new HelpItem(
+                "Rectangle & Square (2D)",
+                "2D Primitive",
+                AccentGreen,
+                "Creates 2D rectangles or squares (with optional rounded corners).\nMethods: Extrude(height), Revolve(angleDegrees), ToMesh()",
+                "// Rectangle(width, height) or Square(size)\nvar rect = new Rectangle(width: 40, height: 25, cornerRadius: 4);\nvar body = rect.Extrude(height: 12);\nDraw(body, RGB(255, 160, 80));"),
+
+            new HelpItem(
+                "Path (2D Closed Polyline)",
+                "2D Primitive",
+                AccentGreen,
+                "Creates a 2D path from points. MUST be closed (via .Close()) before extruding/revolving!\nValidation will alert if the path is left open.\nMethods: MoveTo, LineTo, CurveTo, Close, Extrude, Revolve",
+                "// Path: build closed shape & extrude\nvar p = new Path();\np.MoveTo(-15, -10).LineTo(15, -10).LineTo(20, 10).LineTo(-20, 10).Close();\nvar prism = p.Extrude(height: 18);\nDraw(prism, RGB(120, 240, 160));"),
+
+            new HelpItem(
+                "Line & Dot (2D)",
+                "2D Primitive",
+                AccentYellow,
+                "Line and Dot 2D primitives. Lines and dots cannot be extruded directly because they do not enclose an area. Combine lines into a closed Path or convert Dot to Circle.",
+                "// Dot and Line: connect lines into closed path\nvar p = new Path();\np.Add(new Line(0, 0, 30, 0));\np.Add(new Line(30, 0, 15, 25));\np.Close(); // Required validation!\nDraw(p.Extrude(10), Color.Cyan);"),
 
             new HelpItem(
                 "LinearExtrude",

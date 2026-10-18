@@ -134,6 +134,14 @@ namespace CSharpCAD
             return EditorPalette.DefaultText;
         }
 
+        private List<EditorDiagnostic> _diagnostics = new();
+
+        public void SetDiagnostics(List<EditorDiagnostic> diagnostics)
+        {
+            _diagnostics = diagnostics ?? new();
+            Invalidate();
+        }
+
         public override void OnDraw(Graphics2D g)
         {
             // base.OnDraw draws: background, selection highlight, cursor, then child TextWidget
@@ -177,6 +185,61 @@ namespace CSharpCAD
 
                     // Skip the newline
                     segStart = segEnd < start + length ? segEnd + 1 : segEnd;
+                }
+            }
+
+            // ── Draw Error squiggly underlines & soft highlight boxes on exact spots ──
+            if (_diagnostics != null && _diagnostics.Count > 0)
+            {
+                foreach (var diag in _diagnostics)
+                {
+                    if (diag.StartIndex < 0 || diag.StartIndex >= src.Length || diag.Length <= 0) continue;
+
+                    int spanEnd = Math.Min(src.Length, diag.StartIndex + diag.Length);
+                    int curStart = diag.StartIndex;
+
+                    while (curStart < spanEnd)
+                    {
+                        int curEnd = curStart;
+                        while (curEnd < spanEnd && src[curEnd] != '\n' && src[curEnd] != '\r')
+                            curEnd++;
+
+                        if (curEnd > curStart)
+                        {
+                            var off1 = printer.GetOffsetLeftOfCharacterIndex(curStart);
+                            var off2 = printer.GetOffsetLeftOfCharacterIndex(curEnd);
+                            double drawY = Height + off1.Y - printer.TypeFaceStyle.AscentInPixels;
+                            double x1 = off1.X;
+                            double x2 = Math.Max(x1 + 6, off2.X);
+
+                            // 1. Soft highlight background box
+                            double boxY = drawY + printer.TypeFaceStyle.DescentInPixels;
+                            var bgTint = diag.IsWarning
+                                ? new Color(241, 250, 140, 40)
+                                : new Color(255, 85, 85, 45);
+                            g.FillRectangle(x1, boxY, x2, boxY + lineH, bgTint);
+
+                            // 2. Red / warning squiggly underline (sawtooth wave)
+                            double waveY = drawY - 2;
+                            var waveColor = diag.IsWarning
+                                ? new Color(241, 250, 140, 240)
+                                : new Color(255, 85, 85, 240);
+                            bool waveUp = false;
+                            for (double wx = x1; wx < x2; wx += 3)
+                            {
+                                double nextWx = Math.Min(x2, wx + 3);
+                                double yA = waveUp ? waveY + 2.5 : waveY;
+                                double yB = waveUp ? waveY : waveY + 2.5;
+                                g.Line(wx, yA, nextWx, yB, waveColor, 1.5);
+                                waveUp = !waveUp;
+                            }
+                        }
+
+                        // Skip newline
+                        curStart = (curEnd < spanEnd && (src[curEnd] == '\n' || src[curEnd] == '\r')) ? curEnd + 1 : curEnd;
+                        if (curStart < spanEnd && src[curStart - 1] == '\r' && src[curStart] == '\n')
+                            curStart++;
+                    }
                 }
             }
         }
@@ -238,6 +301,14 @@ namespace CSharpCAD
             BackgroundColor = EditorPalette.GutterBg;
         }
 
+        private List<EditorDiagnostic> _diagnostics = new();
+
+        public void SetDiagnostics(List<EditorDiagnostic> diagnostics)
+        {
+            _diagnostics = diagnostics ?? new();
+            Invalidate();
+        }
+
         public override void OnDraw(Graphics2D g)
         {
             base.OnDraw(g);
@@ -248,6 +319,16 @@ namespace CSharpCAD
             string text  = _editor.Text ?? "";
             var printer  = _editor.InternalTextEditWidget.Printer;
             double lineH = printer.TypeFaceStyle.EmSizeInPixels;
+
+            HashSet<int> errorLines = new();
+            if (_diagnostics != null)
+            {
+                foreach (var d in _diagnostics)
+                {
+                    if (!d.IsRuntime)
+                        errorLines.Add(d.Line);
+                }
+            }
 
             // Find current cursor line
             int cursorLine = 0;
@@ -278,8 +359,9 @@ namespace CSharpCAD
                 // Only draw if within the visible gutter
                 if (baselineY + lineH >= 0 && baselineY - lineH <= Height)
                 {
+                    bool hasError  = errorLines.Contains(lineNum);
                     bool isCurrent = (lineNum == cursorLine);
-                    Color numCol   = isCurrent ? EditorPalette.GutterFgCur : EditorPalette.GutterFg;
+                    Color numCol   = hasError ? new Color(255, 95, 95) : (isCurrent ? EditorPalette.GutterFgCur : EditorPalette.GutterFg);
 
                     if (isCurrent)
                     {
@@ -287,6 +369,13 @@ namespace CSharpCAD
                         double barY = Math.Ceiling(baselineY + printer.TypeFaceStyle.DescentInPixels);
                         g.FillRectangle(0, barY, GutterWidth - 1, barY + lineH,
                                         new Color(60, 63, 80, 120));
+                    }
+
+                    if (hasError)
+                    {
+                        // Draw crisp red circle badge for error line
+                        double dotY = baselineY + lineH * 0.35;
+                        g.Circle(10, dotY, 3.5, new Color(255, 85, 85));
                     }
 
                     string numStr = (lineNum + 1).ToString();
@@ -505,6 +594,7 @@ namespace CSharpCAD
     public class CodeEditorWidget : GuiWidget
     {
         public SyntaxTextEditWidget Editor { get; }
+        private readonly LineNumberGutter _gutter;
         private readonly AutocompleteWidget _autocomplete;
         private readonly RoslynCompletionEngine _completionEngine;
         private System.Threading.CancellationTokenSource _cts;
@@ -535,21 +625,21 @@ namespace CSharpCAD
                 VAnchor   = VAnchor.Stretch,
             };
 
-            var gutter = new LineNumberGutter(Editor, fontSize);
+            _gutter = new LineNumberGutter(Editor, fontSize);
 
             // Sync gutter scroll + invalidate whenever editor changes or scrolls
             Editor.TextChanged += (s, e) =>
             {
-                gutter.Invalidate();
+                _gutter.Invalidate();
                 TextChanged?.Invoke(this, e);
             };
 
             // Sync gutter scroll
-            Editor.ScrollPositionChanged += (s, e) => gutter.Invalidate();
+            Editor.ScrollPositionChanged += (s, e) => _gutter.Invalidate();
 
             // Redraw gutter when cursor moves (line highlight)
             Editor.InternalTextEditWidget.InsertBarPositionChanged += (s, e) =>
-                gutter.Invalidate();
+                _gutter.Invalidate();
 
             // Horizontal layout: gutter | editor
             var row = new FlowLayoutWidget(FlowDirection.LeftToRight)
@@ -557,7 +647,7 @@ namespace CSharpCAD
                 HAnchor = HAnchor.Stretch,
                 VAnchor = VAnchor.Stretch,
             };
-            row.AddChild(gutter);
+            row.AddChild(_gutter);
             row.AddChild(Editor);
             AddChild(row);
 
@@ -743,6 +833,54 @@ namespace CSharpCAD
             Editor.InternalTextEditWidget.CharIndexToInsertBefore = start + selected.Length;
             _autocomplete.Visible = false;
             Editor.InternalTextEditWidget.Focus();
+        }
+
+        /// <summary>Updates compilation/runtime diagnostics for squiggly highlights and gutter markers.</summary>
+        public void SetDiagnostics(List<EditorDiagnostic> diagnostics)
+        {
+            if (Editor.InternalTextEditWidget is SyntaxHighlightInternalTextEditWidget syn)
+            {
+                syn.SetDiagnostics(diagnostics);
+            }
+            _gutter?.SetDiagnostics(diagnostics);
+            Editor.Invalidate();
+            InvalidateGutter();
+        }
+
+        /// <summary>
+        /// Selects the exact error span in the editor, positions the cursor, and scrolls it into view.
+        /// </summary>
+        public void NavigateTo(int line, int col, int startIndex, int length)
+        {
+            string text = Editor.Text ?? "";
+            if (startIndex < 0 || startIndex > text.Length)
+            {
+                int curLine = 0;
+                int i = 0;
+                while (i < text.Length && curLine < line)
+                {
+                    if (text[i] == '\n') curLine++;
+                    i++;
+                }
+                startIndex = Math.Min(text.Length, i + Math.Max(0, col));
+            }
+
+            int end = Math.Min(text.Length, startIndex + Math.Max(1, length));
+
+            // Set selection on the exact error range
+            Editor.InternalTextEditWidget.SetSelection(startIndex, end - 1);
+            Editor.InternalTextEditWidget.CharIndexToInsertBefore = startIndex;
+
+            // Scroll so the error line is centered/visible in the editor
+            var printer = Editor.InternalTextEditWidget.Printer;
+            var off = printer.GetOffsetLeftOfCharacterIndex(startIndex);
+            double targetScrollY = Math.Max(0, -off.Y - Editor.Height / 3);
+            Editor.TopLeftOffset = new Vector2(0, targetScrollY);
+
+            // Focus the editor
+            Editor.InternalTextEditWidget.Focus();
+            Editor.Invalidate();
+            InvalidateGutter();
         }
 
         /// <summary>Called externally when the parent scrolls, to keep the gutter in sync.</summary>
