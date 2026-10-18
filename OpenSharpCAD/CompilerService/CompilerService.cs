@@ -29,29 +29,48 @@ namespace CSharpCAD
             sb.AppendLine("{");
             sb.AppendLine("      public class RenderTest");
             sb.AppendLine("      {");
+            sb.AppendLine("            private readonly List<System.ValueTuple<MatterHackers.PolygonMesh.Mesh, Color>> _cachedMeshes = new();");
+            sb.AppendLine("            private bool _isBuilt = false;");
+            sb.AppendLine("            public string LastError { get; set; }");
+            sb.AppendLine();
+            sb.AppendLine("            public void Build()");
+            sb.AppendLine("            {");
+            sb.AppendLine("                _cachedMeshes.Clear();");
+            sb.AppendLine("                LastError = null;");
+            sb.AppendLine("                try {");
+            sb.AppendLine("#line 1 \"script\"");
+            sb.AppendLine(scriptSource);
+            sb.AppendLine("                } catch (Exception ex) {");
+            sb.AppendLine("                    LastError = ex.Message;");
+            sb.AppendLine("                    System.Console.WriteLine(\"Error in script execution: \" + ex.Message);");
+            sb.AppendLine("                }");
+            sb.AppendLine("                _isBuilt = true;");
+            sb.AppendLine("            }");
+            sb.AppendLine();
             sb.AppendLine("            public void Render()");
             sb.AppendLine("            {");
-            sb.AppendLine("                try {");
-            sb.AppendLine(scriptSource);
-            sb.AppendLine("                } catch (Exception ex) { System.Console.WriteLine(\"Error in Render(): \" + ex.Message); }");
+            sb.AppendLine("                if (!_isBuilt) { Build(); }");
+            sb.AppendLine("                for (int i = 0; i < _cachedMeshes.Count; i++)");
+            sb.AppendLine("                {");
+            sb.AppendLine("                    var item = _cachedMeshes[i];");
+            sb.AppendLine("                    if (item.Item1 != null)");
+            sb.AppendLine("                    {");
+            sb.AppendLine("                        GLHelper.Render(item.Item1, item.Item2);");
+            sb.AppendLine("                    }");
+            sb.AppendLine("                }");
             sb.AppendLine("            }");
 
             sb.AppendLine("            public void Draw(CsgObject objectToProcess)");
             sb.AppendLine("            {");
-            sb.AppendLine("                if (objectToProcess == null) { System.Console.WriteLine(\"Draw: objectToProcess is null\"); return; }");
-            sb.AppendLine("                var mesh = MatterHackers.RenderOpenGl.CsgToMesh.Convert(objectToProcess);");
-            sb.AppendLine("                if (mesh == null) { System.Console.WriteLine(\"Draw: mesh is null\"); return; }");
-            sb.AppendLine("                if (GL.Instance == null) { System.Console.WriteLine(\"Draw: GL.Instance is NULL!\"); }");
-            sb.AppendLine("                GLHelper.Render(mesh, new Color(150, 150, 150, 255));");
+            sb.AppendLine("                Draw(objectToProcess, new Color(150, 150, 150, 255));");
             sb.AppendLine("            }");
-
+            sb.AppendLine();
             // Draw with explicit color
             sb.AppendLine("            public void Draw(CsgObject objectToProcess, Color color)");
             sb.AppendLine("            {");
-            sb.AppendLine("                if (objectToProcess == null) { System.Console.WriteLine(\"Draw: objectToProcess is null\"); return; }");
+            sb.AppendLine("                if (objectToProcess == null) return;");
             sb.AppendLine("                var mesh = MatterHackers.RenderOpenGl.CsgToMesh.Convert(objectToProcess);");
-            sb.AppendLine("                if (mesh == null) { System.Console.WriteLine(\"Draw: mesh is null\"); return; }");
-            sb.AppendLine("                GLHelper.Render(mesh, color);");
+            sb.AppendLine("                if (mesh != null) { _cachedMeshes.Add(new System.ValueTuple<MatterHackers.PolygonMesh.Mesh, Color>(mesh, color)); }");
             sb.AppendLine("            }");
 
             // Convenience color constructors available in scripts

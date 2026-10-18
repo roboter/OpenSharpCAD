@@ -74,6 +74,13 @@ namespace CSharpCAD
                 SetBoundsToEncloseChildren();
             }
 
+            public void SetText(string text)
+            {
+                _labelWidget.Text = text;
+                SetBoundsToEncloseChildren();
+                Invalidate();
+            }
+
             public void SetColors(Color normalBg, Color hoverBg, Color? textColor = null)
             {
                 _normalBg = normalBg;
@@ -101,6 +108,87 @@ namespace CSharpCAD
             }
         }
 
+        private enum ResizeEdge
+        {
+            Left,
+            Right,
+            Top,
+            Bottom,
+            TopLeft,
+            TopRight,
+            BottomLeft,
+            BottomRight
+        }
+
+        private class ResizeHandleWidget : GuiWidget
+        {
+            private readonly ResizeEdge _edge;
+            private readonly Action<ResizeEdge, Vector2> _onResize;
+            private readonly Action _onStartDrag;
+            private readonly Action _onEndDrag;
+            private Vector2 _startScreenPos;
+            private bool _isDragging;
+
+            public ResizeHandleWidget(
+                ResizeEdge edge,
+                Action<ResizeEdge, Vector2> onResize,
+                Action onStartDrag,
+                Action onEndDrag,
+                Cursors cursor)
+            {
+                _edge = edge;
+                _onResize = onResize;
+                _onStartDrag = onStartDrag;
+                _onEndDrag = onEndDrag;
+                Cursor = cursor;
+                BackgroundColor = Color.Transparent;
+            }
+
+            public override void OnMouseDown(MouseEventArgs mouseEvent)
+            {
+                if (mouseEvent.Button == MouseButtons.Left)
+                {
+                    _isDragging = true;
+                    _startScreenPos = this.TransformToScreenSpace(new Vector2(mouseEvent.X, mouseEvent.Y));
+                    _onStartDrag?.Invoke();
+                }
+                base.OnMouseDown(mouseEvent);
+            }
+
+            public override void OnMouseMove(MouseEventArgs mouseEvent)
+            {
+                if (_isDragging)
+                {
+                    var curScreen = this.TransformToScreenSpace(new Vector2(mouseEvent.X, mouseEvent.Y));
+                    var delta = curScreen - _startScreenPos;
+                    _onResize?.Invoke(_edge, delta);
+                }
+                base.OnMouseMove(mouseEvent);
+            }
+
+            public override void OnMouseUp(MouseEventArgs mouseEvent)
+            {
+                _isDragging = false;
+                _onEndDrag?.Invoke();
+                base.OnMouseUp(mouseEvent);
+            }
+
+            public override void OnDraw(Graphics2D g)
+            {
+                base.OnDraw(g);
+                if (_edge == ResizeEdge.BottomRight)
+                {
+                    // Draw 3 diagonal grip lines in the bottom-right corner
+                    var gripColor = new Color(120, 138, 190, 180);
+                    for (int i = 0; i < 3; i++)
+                    {
+                        double offset = 4 + i * 4;
+                        g.Line(Width - offset, 3, Width - 3, offset, gripColor, 1.5);
+                    }
+                }
+            }
+        }
+
         private record HelpItem(
             string Title,
             string Badge,
@@ -123,9 +211,9 @@ namespace CSharpCAD
             {
                 if (e is MouseEventArgs me)
                 {
-                    // Check if click was outside the center dialog
+                    if (_isResizing || _isDraggingHeader) return;
                     var localPos = new Vector2(me.X, me.Y);
-                    if (!_dialogCard.LocalBounds.Contains(this.TransformFromScreenSpace(this.TransformToScreenSpace(localPos)) - _dialogCard.OriginRelativeParent))
+                    if (!_dialogCard.BoundsRelativeToParent.Contains(localPos))
                     {
                         _onClose?.Invoke();
                     }
@@ -136,15 +224,28 @@ namespace CSharpCAD
         }
 
         private GuiWidget _dialogCard;
+        public GuiWidget DialogCard => _dialogCard;
+
+        private StyledButton _maxButton;
+        private bool _isResizing;
+        private bool _isDraggingHeader;
+        private bool _hasUserMovedOrResized;
+        private bool _isMaximized;
+        private Vector2 _dragStartPos;
+        private Vector2 _dragStartSize;
+        private Vector2 _restorePos;
+        private Vector2 _restoreSize;
 
         private void BuildUi()
         {
-            // Center dialog container (780 x 560)
+            // Resizable dialog container with minimum dimensions
             _dialogCard = new GuiWidget(780, 560)
             {
-                HAnchor = HAnchor.Center,
-                VAnchor = VAnchor.Center,
+                HAnchor = HAnchor.Absolute,
+                VAnchor = VAnchor.Absolute,
                 BackgroundColor = DialogBg,
+                MinimumSize = new Vector2(520, 380),
+                Position = new Vector2(100, 50)
             };
             AddChild(_dialogCard);
 
@@ -155,13 +256,51 @@ namespace CSharpCAD
             };
             _dialogCard.AddChild(dialogLayout);
 
-            // 1. Top Header Bar
+            // 1. Top Header Bar (Draggable to move dialog, double-click to maximize/restore)
             var header = new FlowLayoutWidget(FlowDirection.LeftToRight)
             {
                 HAnchor = HAnchor.Stretch,
                 Height = 44,
                 BackgroundColor = HeaderBg,
                 Padding = new BorderDouble(14, 6),
+                Cursor = Cursors.Hand,
+            };
+
+            Vector2 headerStartMouseScreen = Vector2.Zero;
+            header.MouseDown += (s, e) =>
+            {
+                if (e.Clicks >= 2)
+                {
+                    _isDraggingHeader = false;
+                    ToggleMaximize();
+                    return;
+                }
+
+                if (e.Button == MouseButtons.Left && !_isMaximized)
+                {
+                    _isDraggingHeader = true;
+                    _hasUserMovedOrResized = true;
+                    headerStartMouseScreen = header.TransformToScreenSpace(new Vector2(e.X, e.Y));
+                    _dragStartPos = _dialogCard.Position;
+                }
+            };
+
+            header.MouseMove += (s, e) =>
+            {
+                if (_isDraggingHeader && !_isMaximized)
+                {
+                    var curScreen = header.TransformToScreenSpace(new Vector2(e.X, e.Y));
+                    var delta = curScreen - headerStartMouseScreen;
+                    double newX = Math.Clamp(_dragStartPos.X + delta.X, 0, Math.Max(0, Width - _dialogCard.Width));
+                    double newY = Math.Clamp(_dragStartPos.Y + delta.Y, 0, Math.Max(0, Height - _dialogCard.Height));
+                    _dialogCard.Position = new Vector2(newX, newY);
+                    _dialogCard.Invalidate();
+                }
+            };
+
+            header.MouseUp += (s, e) =>
+            {
+                _isDraggingHeader = false;
             };
 
             var titleText = new TextWidget("OpenSharpCAD — Shapes, Transformations & CSG Reference", pointSize: 13, textColor: TextWhite, bold: true, ellipsisIfClipped: false)
@@ -176,10 +315,19 @@ namespace CSharpCAD
             var hintText = new TextWidget("Press ESC to close", pointSize: 10, textColor: TextMuted, ellipsisIfClipped: false)
             {
                 VAnchor = VAnchor.Center,
-                Margin = new BorderDouble(0, 0, 12, 0),
+                Margin = new BorderDouble(0, 0, 10, 0),
                 AutoExpandBoundsToText = true,
             };
             header.AddChild(hintText);
+
+            // Maximize / Restore Button
+            _maxButton = new StyledButton("[ ]", TextWhite, new Color(68, 71, 90, 180), new Color(120, 138, 190), pointSize: 10, padding: new BorderDouble(8, 5))
+            {
+                VAnchor = VAnchor.Center,
+                Margin = new BorderDouble(0, 0, 6, 0),
+            };
+            _maxButton.Click += (s, e) => ToggleMaximize();
+            header.AddChild(_maxButton);
 
             var closeButton = new StyledButton("X", TextWhite, new Color(68, 71, 90, 180), new Color(255, 85, 85), pointSize: 11, padding: new BorderDouble(10, 5))
             {
@@ -262,8 +410,158 @@ namespace CSharpCAD
             _scrollableContent.AddChild(_contentFlow);
             dialogLayout.AddChild(_scrollableContent);
 
+            // 4. Resize Handles (All 4 borders and 4 corners)
+            const double handleThickness = 6;
+            const double cornerSize = 16;
+
+            void AddResizeHandle(ResizeEdge edge, Cursors cursor, HAnchor hAnchor, VAnchor vAnchor, double w, double h)
+            {
+                var handle = new ResizeHandleWidget(
+                    edge,
+                    HandleResize,
+                    () =>
+                    {
+                        _isResizing = true;
+                        _hasUserMovedOrResized = true;
+                        _dragStartPos = _dialogCard.Position;
+                        _dragStartSize = _dialogCard.Size;
+                    },
+                    () => _isResizing = false,
+                    cursor)
+                {
+                    HAnchor = hAnchor,
+                    VAnchor = vAnchor,
+                    Width = w,
+                    Height = h
+                };
+                _dialogCard.AddChild(handle);
+            }
+
+            // Edges
+            AddResizeHandle(ResizeEdge.Right,  Cursors.SizeWE, HAnchor.Right,   VAnchor.Stretch, handleThickness, 0);
+            AddResizeHandle(ResizeEdge.Left,   Cursors.SizeWE, HAnchor.Left,    VAnchor.Stretch, handleThickness, 0);
+            AddResizeHandle(ResizeEdge.Top,    Cursors.SizeNS, HAnchor.Stretch, VAnchor.Top,     0, handleThickness);
+            AddResizeHandle(ResizeEdge.Bottom, Cursors.SizeNS, HAnchor.Stretch, VAnchor.Bottom,  0, handleThickness);
+
+            // Corners
+            AddResizeHandle(ResizeEdge.TopRight,    Cursors.SizeNESW, HAnchor.Right, VAnchor.Top,    cornerSize, cornerSize);
+            AddResizeHandle(ResizeEdge.TopLeft,     Cursors.SizeNWSE, HAnchor.Left,  VAnchor.Top,    cornerSize, cornerSize);
+            AddResizeHandle(ResizeEdge.BottomLeft,  Cursors.SizeNESW, HAnchor.Left,  VAnchor.Bottom, cornerSize, cornerSize);
+            AddResizeHandle(ResizeEdge.BottomRight, Cursors.SizeNWSE, HAnchor.Right, VAnchor.Bottom, cornerSize + 2, cornerSize + 2);
+
             // Load initial tab
             SelectTab(0);
+        }
+
+        public void ToggleMaximize()
+        {
+            if (!_isMaximized)
+            {
+                _restorePos = _dialogCard.Position;
+                _restoreSize = _dialogCard.Size;
+                _dialogCard.Position = new Vector2(16, 16);
+                _dialogCard.Size = new Vector2(Math.Max(520, Width - 32), Math.Max(380, Height - 32));
+                _isMaximized = true;
+                _hasUserMovedOrResized = true;
+                _maxButton?.SetText("[=]");
+            }
+            else
+            {
+                _dialogCard.Position = _restorePos;
+                _dialogCard.Size = _restoreSize;
+                _isMaximized = false;
+                _maxButton?.SetText("[ ]");
+            }
+            _dialogCard.Invalidate();
+        }
+
+        private void HandleResize(ResizeEdge edge, Vector2 deltaScreen)
+        {
+            if (_isMaximized) return;
+
+            double minW = 520;
+            double minH = 380;
+            double maxW = Math.Max(minW, Width - 20);
+            double maxH = Math.Max(minH, Height - 20);
+
+            double newW = _dragStartSize.X;
+            double newH = _dragStartSize.Y;
+            double newX = _dragStartPos.X;
+            double newY = _dragStartPos.Y;
+
+            switch (edge)
+            {
+                case ResizeEdge.Right:
+                case ResizeEdge.BottomRight:
+                case ResizeEdge.TopRight:
+                    newW = Math.Clamp(_dragStartSize.X + deltaScreen.X, minW, maxW);
+                    break;
+                case ResizeEdge.Left:
+                case ResizeEdge.BottomLeft:
+                case ResizeEdge.TopLeft:
+                    double candidateW = Math.Clamp(_dragStartSize.X - deltaScreen.X, minW, maxW);
+                    newX = _dragStartPos.X + (_dragStartSize.X - candidateW);
+                    newW = candidateW;
+                    break;
+            }
+
+            switch (edge)
+            {
+                case ResizeEdge.Top:
+                case ResizeEdge.TopLeft:
+                case ResizeEdge.TopRight:
+                    newH = Math.Clamp(_dragStartSize.Y + deltaScreen.Y, minH, maxH);
+                    break;
+                case ResizeEdge.Bottom:
+                case ResizeEdge.BottomLeft:
+                case ResizeEdge.BottomRight:
+                    double candidateH = Math.Clamp(_dragStartSize.Y - deltaScreen.Y, minH, maxH);
+                    newY = _dragStartPos.Y + (_dragStartSize.Y - candidateH);
+                    newH = candidateH;
+                    break;
+            }
+
+            _dialogCard.Position = new Vector2(newX, newY);
+            _dialogCard.Size = new Vector2(newW, newH);
+            _dialogCard.Invalidate();
+        }
+
+        public override void OnBoundsChanged(EventArgs e)
+        {
+            base.OnBoundsChanged(e);
+            if (!_hasUserMovedOrResized && Width > 0 && Height > 0)
+            {
+                CenterDialog();
+            }
+            else if (_hasUserMovedOrResized && Width > 0 && Height > 0)
+            {
+                ClampDialogToWindow();
+            }
+        }
+
+        private void CenterDialog()
+        {
+            double targetW = Math.Min(_dialogCard.Width, Math.Max(520, Width - 40));
+            double targetH = Math.Min(_dialogCard.Height, Math.Max(380, Height - 40));
+            _dialogCard.Size = new Vector2(targetW, targetH);
+            _dialogCard.Position = new Vector2(
+                Math.Max(10, (Width - targetW) / 2),
+                Math.Max(10, (Height - targetH) / 2)
+            );
+        }
+
+        private void ClampDialogToWindow()
+        {
+            if (_isMaximized)
+            {
+                _dialogCard.Position = new Vector2(16, 16);
+                _dialogCard.Size = new Vector2(Math.Max(520, Width - 32), Math.Max(380, Height - 32));
+                return;
+            }
+
+            double newX = Math.Clamp(_dialogCard.Position.X, 0, Math.Max(0, Width - _dialogCard.Width));
+            double newY = Math.Clamp(_dialogCard.Position.Y, 0, Math.Max(0, Height - _dialogCard.Height));
+            _dialogCard.Position = new Vector2(newX, newY);
         }
 
         private void SelectTab(int index)
@@ -513,7 +811,7 @@ namespace CSharpCAD
                 "Boolean CSG",
                 AccentGreen,
                 "Subtracts (cuts) the second shape from the first solid to carve holes and notches.\nSyntax: baseShape - cuttingShape  OR  new Difference(baseShape, cuttingShape)",
-                "var solidBlock = new Box(30, 30, 20);\nvar hole = new Cylinder(7, 30, 32);\nvar boredBlock = solidBlock - hole;\nDraw(boredBlock, RGB(80, 180, 255));"),
+                "var solidBlock = new Box(30, 30, 20);\nvar hole = new Cylinder(7, 30, 24);\nvar boredBlock = solidBlock - hole;\nDraw(boredBlock, RGB(80, 180, 255));"),
 
             new HelpItem(
                 "Intersection",
@@ -527,7 +825,7 @@ namespace CSharpCAD
                 "Composite CSG",
                 AccentGreen,
                 "Combine operators in mathematical expressions with parentheses for complex designs.",
-                "var plate = new Box(50, 50, 6);\nvar boss = new Cylinder(16, 12, 32);\nvar bore = new Cylinder(8, 25, 32);\nvar composite = (plate + boss) - bore;\nDraw(composite, RGB(100, 200, 255));")
+                "var plate = new Box(50, 50, 6);\nvar boss = new Cylinder(16, 12, 24);\nvar bore = new Cylinder(8, 25, 24);\nvar composite = (plate + boss) - bore;\nDraw(composite, RGB(100, 200, 255));")
         };
 
         private List<HelpItem> GetColorItems() => new()
@@ -606,7 +904,7 @@ namespace CSharpCAD
                 "Full Model",
                 AccentGreen,
                 "Circular flange with a center hub, central through-bore, and 6 radial mounting bolt holes.",
-                "// 1. Base Disk & Center Hub\nvar baseDisk = new Cylinder(radius: 35, height: 8, sides: 48);\nvar hub = new Cylinder(radius: 18, height: 22, sides: 36);\n\n// 2. Center Through-Bore\nvar centerBore = new Cylinder(radius: 10, height: 35, sides: 36);\n\n// 3. Circular array of 6 bolt holes\nCsgObject boltHoles = null;\nfor (int i = 0; i < 6; i++) {\n    double angle = i * MathHelper.Tau / 6;\n    var hole = new Translate(new Cylinder(3, 20, 24), Math.Cos(angle) * 26, Math.Sin(angle) * 26, 0);\n    boltHoles = (boltHoles == null) ? hole : boltHoles + hole;\n}\n\n// 4. CSG combine and draw\nvar flange = (baseDisk + hub) - (centerBore + boltHoles);\nDraw(flange, RGB(80, 180, 255));",
+                "// 1. Base Disk & Center Hub\nvar baseDisk = new Cylinder(radius: 35, height: 8, sides: 28);\nvar hub = new Cylinder(radius: 18, height: 22, sides: 20);\n\n// 2. Center Through-Bore\nvar centerBore = new Cylinder(radius: 10, height: 35, sides: 20);\n\n// 3. Circular array of 6 bolt holes\nCsgObject boltHoles = null;\nfor (int i = 0; i < 6; i++) {\n    double angle = i * MathHelper.Tau / 6;\n    var hole = new Translate(new Cylinder(3, 20, 16), Math.Cos(angle) * 26, Math.Sin(angle) * 26, 0);\n    boltHoles = (boltHoles == null) ? hole : boltHoles + hole;\n}\n\n// 4. CSG combine and draw\nvar flange = (baseDisk + hub) - (centerBore + boltHoles);\nDraw(flange, RGB(80, 180, 255));",
                 IsFullExample: true),
 
             new HelpItem(
@@ -622,7 +920,7 @@ namespace CSharpCAD
                 "Full Model",
                 AccentGreen,
                 "Hollow box container with cross-drilled ventilation and drainage ports.",
-                "// Outer body minus inner hollow\nvar outer = new Box(40, 40, 30);\nvar inner = new Translate(new Box(35, 35, 28), 0, 0, 2);\n\n// Vent holes\nvar vent1 = new Cylinder(4, 50, 24);\nvar vent2 = new Rotate(vent1, x: MathHelper.DegreesToRadians(90));\n\nvar container = outer - inner - vent1 - vent2;\nDraw(container, RGB(60, 220, 140));",
+                "// Outer body minus inner hollow\nvar outer = new Box(40, 40, 30);\nvar inner = new Translate(new Box(35, 35, 28), 0, 0, 2);\n\n// Vent holes\nvar vent1 = new Cylinder(4, 50, 16);\nvar vent2 = new Rotate(vent1, x: MathHelper.DegreesToRadians(90));\n\nvar container = outer - inner - vent1 - vent2;\nDraw(container, RGB(60, 220, 140));",
                 IsFullExample: true),
 
             new HelpItem(

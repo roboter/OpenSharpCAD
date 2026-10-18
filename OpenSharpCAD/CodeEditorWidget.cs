@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using MatterHackers.Agg;
 using MatterHackers.Agg.Font;
 using MatterHackers.Agg.UI;
@@ -307,48 +308,136 @@ namespace CSharpCAD
     // ────────────────────────────────────────────────────────────────────────────
     // 3.5. Autocomplete Popup Widget
     // ────────────────────────────────────────────────────────────────────────────
+    // ────────────────────────────────────────────────────────────────────────────
+    // 3.5. Autocomplete Item & Popup Widget
+    // ────────────────────────────────────────────────────────────────────────────
+    public class AutocompleteListItem : ListBoxTextItem
+    {
+        public RoslynCompletionItem RoslynItem { get; }
+
+        public AutocompleteListItem(RoslynCompletionItem item)
+            : base(FormatLabel(item), item.InsertionText ?? item.DisplayText)
+        {
+            RoslynItem = item;
+            TextColor = Color.White;
+            Height = 20;
+        }
+
+        private static string FormatLabel(RoslynCompletionItem item)
+        {
+            string tag = item.Kind switch
+            {
+                "method" => " [m] ",
+                "property" => " [p] ",
+                "field" => " [f] ",
+                "class" => " [c] ",
+                "struct" => " [s] ",
+                "enum" => " [e] ",
+                "interface" => " [i] ",
+                "keyword" => " [k] ",
+                "local" or "variable" => " [v] ",
+                "parameter" => " [a] ",
+                _ => " [ ] "
+            };
+
+            if (!string.IsNullOrEmpty(item.InlineDescription))
+                return tag + item.DisplayText + "  (" + item.InlineDescription + ")";
+
+            return tag + item.DisplayText;
+        }
+    }
+
     public class AutocompleteWidget : GuiWidget
     {
-        private ListBox _listBox;
-        private List<string> _allSuggestions;
-        private SyntaxTextEditWidget _editor;
+        private readonly ListBox _listBox;
+        private readonly TextWidget _descriptionWidget;
+        private readonly SyntaxTextEditWidget _editor;
+        private List<RoslynCompletionItem> _currentItems = new();
 
-        public AutocompleteWidget(SyntaxTextEditWidget editor, List<string> suggestions)
+        public AutocompleteWidget(SyntaxTextEditWidget editor)
         {
             _editor = editor;
-            _allSuggestions = suggestions;
-
+            Width = 280;
+            Height = 175;
             BackgroundColor = new Color(40, 42, 54);
-
-            _listBox = new ListBox(new RectangleDouble(0, 0, 180, 120));
-            AddChild(_listBox);
-            
-            Width = 180;
-            Height = 120;
             Visible = false;
+
+            var mainLayout = new FlowLayoutWidget(FlowDirection.TopToBottom)
+            {
+                HAnchor = HAnchor.Stretch,
+                VAnchor = VAnchor.Stretch
+            };
+
+            // Suggestions List
+            _listBox = new ListBox(new RectangleDouble(0, 0, 280, 145))
+            {
+                HAnchor = HAnchor.Stretch,
+                VAnchor = VAnchor.Stretch
+            };
+            _listBox.SelectedValueChanged += (s, e) => UpdateDescription();
+            mainLayout.AddChild(_listBox);
+
+            // Description footer bar
+            var footer = new FlowLayoutWidget(FlowDirection.LeftToRight)
+            {
+                HAnchor = HAnchor.Stretch,
+                Height = 24,
+                BackgroundColor = new Color(30, 31, 41),
+                Padding = new BorderDouble(6, 2)
+            };
+            _descriptionWidget = new TextWidget("", pointSize: 9, textColor: new Color(139, 233, 253))
+            {
+                VAnchor = VAnchor.Center,
+                AutoExpandBoundsToText = true
+            };
+            footer.AddChild(_descriptionWidget);
+            mainLayout.AddChild(footer);
+
+            AddChild(mainLayout);
         }
 
         public override void OnDraw(Graphics2D g)
         {
             base.OnDraw(g);
-            g.Rectangle(LocalBounds, new Color(68, 71, 90));
+            // Draw crisp popup border
+            g.Rectangle(LocalBounds, new Color(68, 71, 90), 1);
         }
 
-        public void Filter(string prefix)
+        public void Populate(List<RoslynCompletionItem> items, string prefix)
         {
+            _currentItems.Clear();
             if (_listBox.ScrollArea.Children.Count > 0)
             {
                 _listBox.ScrollArea.Children[0].CloseChildren();
             }
-            
-            var matches = new List<string>();
-            foreach (var s in _allSuggestions)
+
+            prefix ??= string.Empty;
+
+            // Filter & prioritize exact prefix matches
+            var matches = new List<RoslynCompletionItem>();
+            var secondaryMatches = new List<RoslynCompletionItem>();
+
+            foreach (var item in items)
             {
-                if (s.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                if (string.IsNullOrEmpty(prefix))
                 {
-                    matches.Add(s);
-                    if (matches.Count >= 20) break;
+                    matches.Add(item);
                 }
+                else if (item.DisplayText.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                {
+                    matches.Add(item);
+                }
+                else if (item.DisplayText.IndexOf(prefix, StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    secondaryMatches.Add(item);
+                }
+
+                if (matches.Count >= 30) break;
+            }
+
+            if (matches.Count < 30)
+            {
+                matches.AddRange(secondaryMatches.Take(30 - matches.Count));
             }
 
             if (matches.Count == 0)
@@ -357,36 +446,54 @@ namespace CSharpCAD
                 return;
             }
 
+            _currentItems = matches;
             foreach (var match in matches)
             {
-                _listBox.AddChild(new ListBoxTextItem(match, match) { 
-                    TextColor = Color.White,
-                    Height = 20
-                });
+                var listItem = new AutocompleteListItem(match);
+                _listBox.AddChild(listItem);
             }
 
             _listBox.SelectedIndex = 0;
+            UpdateDescription();
             Visible = true;
             Invalidate();
         }
 
+        private void UpdateDescription()
+        {
+            var item = GetSelectedItem();
+            if (item == null)
+            {
+                _descriptionWidget.Text = "";
+                return;
+            }
+
+            string text = item.Kind.ToUpperInvariant() + ": " + item.DisplayText;
+            if (!string.IsNullOrEmpty(item.InlineDescription))
+            {
+                text += " — " + item.InlineDescription;
+            }
+            _descriptionWidget.Text = text;
+        }
+
         public void SelectNext() 
         { 
-            if (_listBox.SelectedIndex < _listBox.Count - 1) _listBox.SelectedIndex++; 
+            if (_listBox.SelectedIndex < _listBox.Count - 1) 
+                _listBox.SelectedIndex++; 
         }
         
         public void SelectPrev() 
         { 
-            if (_listBox.SelectedIndex > 0) _listBox.SelectedIndex--; 
+            if (_listBox.SelectedIndex > 0) 
+                _listBox.SelectedIndex--; 
         }
 
-        public string GetSelected()
+        public RoslynCompletionItem GetSelectedItem()
         {
-            var item = _listBox.SelectedItem as FlowLayoutWidget;
-            if (item != null && item.Children.Count > 0)
+            int idx = _listBox.SelectedIndex;
+            if (idx >= 0 && idx < _currentItems.Count)
             {
-                var textItem = item.Children[0] as ListBoxTextItem;
-                return textItem?.ItemValue;
+                return _currentItems[idx];
             }
             return null;
         }
@@ -398,36 +505,28 @@ namespace CSharpCAD
     public class CodeEditorWidget : GuiWidget
     {
         public SyntaxTextEditWidget Editor { get; }
-        private AutocompleteWidget _autocomplete;
+        private readonly AutocompleteWidget _autocomplete;
+        private readonly RoslynCompletionEngine _completionEngine;
+        private System.Threading.CancellationTokenSource _cts;
 
-        private static readonly string[] Keywords = {
-            "abstract", "as", "base", "bool", "break", "byte", "case", "catch", "char", "checked",
-            "class", "const", "continue", "decimal", "default", "delegate", "do", "double", "else",
-            "enum", "event", "explicit", "extern", "false", "finally", "fixed", "float", "for",
-            "foreach", "goto", "if", "implicit", "in", "int", "interface", "internal", "is", "lock",
-            "long", "namespace", "new", "null", "object", "operator", "out", "override", "params",
-            "private", "protected", "public", "readonly", "ref", "return", "sbyte", "sealed",
-            "short", "sizeof", "stackalloc", "static", "string", "struct", "switch", "this", "throw",
-            "true", "try", "typeof", "uint", "ulong", "unchecked", "unsafe", "ushort", "using",
-            "virtual", "void", "volatile", "while",
-            // CAD Specific
-            "Draw", "Box", "Sphere", "Cylinder", "Union", "Difference", "Intersection",
-            "Rotate", "Translate", "Scale", "RGB", "RGBA", "RGBf", "Color", "Vector3", "CsgObject"
-        };
-
-        public string Text
+        public new string Text
         {
             get => Editor.Text;
             set => Editor.Text = value;
         }
 
-        public event EventHandler TextChanged;
+        public new event EventHandler TextChanged;
 
         public CodeEditorWidget(string initialText = "", double fontSize = 16)
         {
             HAnchor         = HAnchor.Stretch;
             VAnchor         = VAnchor.Stretch;
             BackgroundColor = EditorPalette.Background;
+
+            _completionEngine = new RoslynCompletionEngine();
+
+            // Pre-warm the Roslyn MEF engine in background
+            System.Threading.Tasks.Task.Run(() => _completionEngine.GetCompletionsAsync("", 0));
 
             Editor = new SyntaxTextEditWidget(initialText, fontSize)
             {
@@ -463,9 +562,7 @@ namespace CSharpCAD
             AddChild(row);
 
             // Add autocomplete popup as a top-level overlay
-            var sortedKeywords = new List<string>(Keywords);
-            sortedKeywords.Sort();
-            _autocomplete = new AutocompleteWidget(Editor, sortedKeywords);
+            _autocomplete = new AutocompleteWidget(Editor);
             AddChild(_autocomplete);
 
             // Hook events for autocomplete
@@ -480,10 +577,22 @@ namespace CSharpCAD
 
         private void Editor_KeyDown(object sender, KeyEventArgs e)
         {
+            // Ctrl+Space manual trigger for autocomplete
+            bool isCtrl = (e.Modifiers & Keys.Control) != 0 || (e.Modifiers & Keys.Alt) != 0;
+            if (isCtrl && e.KeyCode == Keys.Space)
+            {
+                TriggerAutocomplete(force: true);
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+                return;
+            }
+
             if (_autocomplete.Visible)
             {
                 if (e.KeyCode == Keys.Down) { _autocomplete.SelectNext(); e.Handled = true; }
                 else if (e.KeyCode == Keys.Up) { _autocomplete.SelectPrev(); e.Handled = true; }
+                else if (e.KeyCode == Keys.PageDown) { for (int i = 0; i < 5; i++) _autocomplete.SelectNext(); e.Handled = true; }
+                else if (e.KeyCode == Keys.PageUp) { for (int i = 0; i < 5; i++) _autocomplete.SelectPrev(); e.Handled = true; }
                 else if (e.KeyCode == Keys.Enter || e.KeyCode == Keys.Tab)
                 {
                     ApplyAutocomplete();
@@ -502,19 +611,69 @@ namespace CSharpCAD
         {
             if (e.Handled) return;
 
-            // Simple word-based trigger
-            string text = Editor.Text;
+            // Don't trigger on pure navigation keys
+            if (e.KeyCode == Keys.Up || e.KeyCode == Keys.Down ||
+                e.KeyCode == Keys.Left || e.KeyCode == Keys.Right ||
+                e.KeyCode == Keys.Home || e.KeyCode == Keys.End ||
+                e.KeyCode == Keys.PageUp || e.KeyCode == Keys.PageDown ||
+                e.KeyCode == Keys.Escape || e.KeyCode == Keys.Enter || e.KeyCode == Keys.Tab)
+            {
+                return;
+            }
+
+            TriggerAutocomplete(force: false);
+        }
+
+        private async void TriggerAutocomplete(bool force)
+        {
+            string text = Editor.Text ?? "";
             int pos = Editor.InternalTextEditWidget.CharIndexToInsertBefore;
 
-            if (pos > 0 && char.IsLetterOrDigit(text[pos - 1]))
-            {
-                int start = pos - 1;
-                while (start > 0 && char.IsLetterOrDigit(text[start - 1])) start--;
-                string prefix = text.Substring(start, pos - start);
+            string prefix = "";
+            bool shouldTrigger = force;
 
-                if (prefix.Length >= 1)
+            if (pos > 0 && pos <= text.Length)
+            {
+                char prev = text[pos - 1];
+                if (prev == '.')
                 {
-                    _autocomplete.Filter(prefix);
+                    // Member access trigger (e.g. "myBox.")
+                    shouldTrigger = true;
+                    prefix = "";
+                }
+                else if (char.IsLetterOrDigit(prev) || prev == '_')
+                {
+                    // Identifier trigger (e.g. "Bo", "myVa")
+                    int start = pos - 1;
+                    while (start > 0 && (char.IsLetterOrDigit(text[start - 1]) || text[start - 1] == '_'))
+                        start--;
+
+                    prefix = text.Substring(start, pos - start);
+                    if (prefix.Length >= 1)
+                    {
+                        shouldTrigger = true;
+                    }
+                }
+            }
+
+            if (!shouldTrigger)
+            {
+                _autocomplete.Visible = false;
+                return;
+            }
+
+            _cts?.Cancel();
+            _cts = new System.Threading.CancellationTokenSource();
+            var token = _cts.Token;
+
+            try
+            {
+                var completions = await _completionEngine.GetCompletionsAsync(text, pos, token);
+                if (token.IsCancellationRequested) return;
+
+                if (completions != null && completions.Count > 0)
+                {
+                    _autocomplete.Populate(completions, prefix);
                     if (_autocomplete.Visible)
                     {
                         UpdateAutocompletePos();
@@ -525,7 +684,11 @@ namespace CSharpCAD
                     _autocomplete.Visible = false;
                 }
             }
-            else
+            catch (System.OperationCanceledException)
+            {
+                // Request superseded by newer keystroke
+            }
+            catch
             {
                 _autocomplete.Visible = false;
             }
@@ -539,25 +702,47 @@ namespace CSharpCAD
             // Map editor-local cursor position to CodeEditorWidget coordinates
             Vector2 editorPos = ite.TransformToParentSpace(this, pos);
             
-            // Offset to show below the cursor line
-            _autocomplete.OriginRelativeParent = new Vector2(editorPos.X, editorPos.Y - _autocomplete.Height - 5);
+            double targetX = editorPos.X;
+            double targetY = editorPos.Y - _autocomplete.Height - 5;
+
+            // If popup would extend below the bottom boundary, place it above the cursor line
+            if (targetY < 0)
+            {
+                double lineH = ite.Printer.TypeFaceStyle.EmSizeInPixels;
+                targetY = editorPos.Y + lineH + 5;
+            }
+
+            // Keep within horizontal bounds
+            if (targetX + _autocomplete.Width > Width)
+            {
+                targetX = Math.Max(0, Width - _autocomplete.Width - 10);
+            }
+
+            _autocomplete.OriginRelativeParent = new Vector2(targetX, targetY);
             _autocomplete.BringToFront();
         }
 
         private void ApplyAutocomplete()
         {
-            string selected = _autocomplete.GetSelected();
+            var item = _autocomplete.GetSelectedItem();
+            if (item == null) return;
+
+            string selected = item.InsertionText ?? item.DisplayText;
             if (string.IsNullOrEmpty(selected)) return;
 
-            string text = Editor.Text;
+            string text = Editor.Text ?? "";
             int pos = Editor.InternalTextEditWidget.CharIndexToInsertBefore;
             int start = pos;
-            while (start > 0 && char.IsLetterOrDigit(text[start - 1])) start--;
+
+            // Replace preceding identifier characters if typing a prefix
+            while (start > 0 && (char.IsLetterOrDigit(text[start - 1]) || text[start - 1] == '_'))
+                start--;
 
             string newText = text.Substring(0, start) + selected + text.Substring(pos);
             Editor.Text = newText;
             Editor.InternalTextEditWidget.CharIndexToInsertBefore = start + selected.Length;
             _autocomplete.Visible = false;
+            Editor.InternalTextEditWidget.Focus();
         }
 
         /// <summary>Called externally when the parent scrolls, to keep the gutter in sync.</summary>

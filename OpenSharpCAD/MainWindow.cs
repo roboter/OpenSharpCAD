@@ -160,7 +160,7 @@ namespace CSharpCAD
                 code.AppendLine("// draw a box");
                 code.AppendLine("var box = new Box(12, 20, 20);");
                 code.AppendLine("var rotated = new Rotate(box, x: MathHelper.DegreesToRadians(45));");
-                code.AppendLine("var cylinder = new Cylinder(6,20,60);");
+                code.AppendLine("var cylinder = new Cylinder(6, 20, 24);");
                 code.AppendLine("// draw with default grey");
                 code.AppendLine("Draw(box + rotated - cylinder);");
                 code.AppendLine("// draw with a color: RGB(r, g, b)  or  RGBA(r, g, b, a)  or  RGBf(0.0-1.0, ...)");
@@ -233,11 +233,17 @@ namespace CSharpCAD
             Compile();
         }
 
+        private System.Threading.Timer _compileDebounceTimer;
+
         private void Hello_TextChanged(object sender, EventArgs e)
         {
             // Clear error lines tracking
             errorLines.Clear();
-            Compile();
+            _compileDebounceTimer?.Dispose();
+            _compileDebounceTimer = new System.Threading.Timer(_ =>
+            {
+                UiThread.RunOnIdle(() => Compile());
+            }, null, 250, System.Threading.Timeout.Infinite);
         }
 
         private void ErrorListBox_SelectedValueChanged(object sender, EventArgs e)
@@ -338,7 +344,8 @@ namespace CSharpCAD
                 foreach (var error in errors)
                 {
                     var lineSpan = error.Location.GetLineSpan();
-                    int line = lineSpan.StartLinePosition.Line - 17; // offset from preamble
+                    int line = lineSpan.StartLinePosition.Line; // #line 1 "script" makes this directly 0-indexed relative to user script
+                    if (line < 0) line = 0;
                     string message = $"{line + 1}: {error.GetMessage()}";
                     errorListBox.AddChild(new ListBoxTextItem(message, line.ToString()));
                     // Store the error line for potential highlighting
@@ -347,6 +354,23 @@ namespace CSharpCAD
                 _codeEditor.InvalidateGutter();
                 return;
             }
+
+            try
+            {
+                // Pre-compute & cache meshes once during compile so 3D camera tumbling runs at 60+ FPS
+                classRef?.Build();
+                if (classRef != null && !string.IsNullOrEmpty((string)classRef.LastError))
+                {
+                    errorListBox.AddChild(new ListBoxTextItem($"Runtime Error: {classRef.LastError}", "0"));
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error during script Build: " + ex.Message);
+                errorListBox.AddChild(new ListBoxTextItem($"Runtime Error: {ex.Message}", "0"));
+            }
+
+            _codeEditor.InvalidateGutter();
             trackBallWidget.Invalidate();
             axisWidget?.Invalidate();
         }
