@@ -81,6 +81,7 @@ namespace CSharpCAD
         private CodeEditorWidget _codeEditor;
         private ListBox errorListBox;
         private Union rootUnion = new Union("root");
+        private HelpWindow _helpWindow;
         dynamic classRef;
 
         // Keep track of error lines for highlighting
@@ -88,8 +89,7 @@ namespace CSharpCAD
 
         public MainWindow(bool renderRayTrace) : base(800, 600)
         {
-
-            var testUnion = new Translate(new Box(10, 10, 20) - new Box(8, 20, 10), 5, 5, 5); //new Difference(
+            var testUnion = new Translate(new Box(10, 10, 20) - new Box(8, 20, 10), 5, 5, 5);
 
             rootUnion.Box(8, 20, 40);
             rootUnion.Add(new Translate(new BoxPrimitive(10, 10, 20), 5, 10, 5));
@@ -99,21 +99,61 @@ namespace CSharpCAD
             {
                 HAnchor = HAnchor.Stretch,
                 VAnchor = VAnchor.Stretch,
-                SplitterDistance = 400,
-                SplitterBackground = Color.Red,
+                SplitterDistance = 420,
+                SplitterBackground = new Color(50, 52, 68),
             };
-            verticalSplitter.Panel1.BackgroundColor = new Color(173, 216, 230);
-            verticalSplitter.Panel2.BackgroundColor = new Color(144, 238, 144);
+            verticalSplitter.Panel1.BackgroundColor = new Color(30, 32, 44);
+            verticalSplitter.Panel2.BackgroundColor = new Color(20, 22, 30);
             AddChild(verticalSplitter);
 
             {
-                // panel 1 stuff
+                // panel 1: Editor & Toolbar
                 textSide = new FlowLayoutWidget(FlowDirection.TopToBottom)
                 {
                     HAnchor = HAnchor.Stretch,
                     VAnchor = VAnchor.Stretch,
-                    BackgroundColor = Color.Cyan,
+                    BackgroundColor = new Color(30, 32, 44),
                 };
+
+                // Top toolbar above editor
+                var toolBar = new FlowLayoutWidget(FlowDirection.LeftToRight)
+                {
+                    HAnchor = HAnchor.Stretch,
+                    Height = 36,
+                    BackgroundColor = new Color(26, 27, 38),
+                    Padding = new BorderDouble(10, 4),
+                };
+
+                var editorTitle = new TextWidget("C# CAD Script", pointSize: 11, textColor: new Color(180, 185, 205), bold: true)
+                {
+                    VAnchor = VAnchor.Center,
+                };
+                toolBar.AddChild(editorTitle);
+
+                toolBar.AddChild(new GuiWidget { HAnchor = HAnchor.Stretch });
+
+                var helpBtn = new GuiWidget()
+                {
+                    VAnchor = VAnchor.Center,
+                    BackgroundColor = new Color(68, 71, 90),
+                    Cursor = Cursors.Hand,
+                    Padding = new BorderDouble(10, 4),
+                };
+                var helpText = new TextWidget("Cheat Sheet & Reference [F1]", pointSize: 10, textColor: Color.White, bold: true, ellipsisIfClipped: false)
+                {
+                    VAnchor = VAnchor.Center,
+                    HAnchor = HAnchor.Center,
+                    AutoExpandBoundsToText = true,
+                    Selectable = false,
+                };
+                helpBtn.AddChild(helpText);
+                helpBtn.SetBoundsToEncloseChildren();
+                helpBtn.MouseEnterBounds += (s, e) => { helpBtn.BackgroundColor = new Color(98, 114, 164); helpBtn.Invalidate(); };
+                helpBtn.MouseLeaveBounds += (s, e) => { helpBtn.BackgroundColor = new Color(68, 71, 90); helpBtn.Invalidate(); };
+                helpBtn.Click += (s, e) => ToggleHelp();
+                toolBar.AddChild(helpBtn);
+
+                textSide.AddChild(toolBar);
 
                 var code = new StringBuilder();
                 code.AppendLine("var holesize =4;");
@@ -133,6 +173,19 @@ namespace CSharpCAD
                     VAnchor = VAnchor.Stretch,
                 };
                 _codeEditor.TextChanged += Hello_TextChanged;
+                _codeEditor.Editor.KeyDown += (s, e) =>
+                {
+                    if (e.KeyCode == Keys.F1)
+                    {
+                        ToggleHelp();
+                        e.Handled = true;
+                    }
+                    else if (e.KeyCode == Keys.Escape && _helpWindow != null && _helpWindow.Visible)
+                    {
+                        _helpWindow.Visible = false;
+                        e.Handled = true;
+                    }
+                };
                 textSide.AddChild(_codeEditor);
                 verticalSplitter.Panel1.AddChild(textSide);
             }
@@ -197,6 +250,73 @@ namespace CSharpCAD
                     _codeEditor.Editor.Focus();
                 }
             }
+        }
+
+        public void ToggleHelp()
+        {
+            if (_helpWindow == null)
+            {
+                _helpWindow = new HelpWindow(
+                    onInsertCode: (snippet, replaceWhole) =>
+                    {
+                        if (replaceWhole)
+                        {
+                            _codeEditor.Text = snippet;
+                        }
+                        else
+                        {
+                            string current = _codeEditor.Text ?? "";
+                            if (string.IsNullOrWhiteSpace(current))
+                            {
+                                _codeEditor.Text = snippet;
+                            }
+                            else
+                            {
+                                _codeEditor.Text = current.TrimEnd() + "\n\n" + snippet;
+                            }
+                        }
+                        _helpWindow.Visible = false;
+                        _codeEditor.Editor.Focus();
+                    },
+                    onClose: () =>
+                    {
+                        _helpWindow.Visible = false;
+                        _codeEditor.Editor.Focus();
+                    }
+                );
+                AddChild(_helpWindow);
+            }
+            else
+            {
+                _helpWindow.Visible = !_helpWindow.Visible;
+                if (_helpWindow.Visible)
+                {
+                    _helpWindow.BringToFront();
+                }
+                else
+                {
+                    _codeEditor.Editor.Focus();
+                }
+            }
+        }
+
+        public override void OnKeyDown(KeyEventArgs keyEvent)
+        {
+            if (keyEvent.KeyCode == Keys.F1)
+            {
+                ToggleHelp();
+                keyEvent.Handled = true;
+                return;
+            }
+
+            if (keyEvent.KeyCode == Keys.Escape && _helpWindow != null && _helpWindow.Visible)
+            {
+                _helpWindow.Visible = false;
+                keyEvent.Handled = true;
+                return;
+            }
+
+            base.OnKeyDown(keyEvent);
         }
 
         private void Compile()

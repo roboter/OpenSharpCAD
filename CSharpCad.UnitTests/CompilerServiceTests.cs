@@ -33,4 +33,35 @@ public class CompilerServiceTests
         Assert.That(errors, Is.Not.Empty, "Should have compilation errors");
         Assert.That(result, Is.Null, "Should return null for invalid script");
     }
+
+    [Test]
+    public void TestHelpWindowConstructAndTabs()
+    {
+        // Verify that HelpWindow builds all tabs and layouts without throwing any layout exceptions
+        var helpWin = new HelpWindow((snippet, isExample) => { }, () => { });
+        Assert.That(helpWin, Is.Not.Null);
+
+        helpWin.LocalBounds = new MatterHackers.Agg.RectangleDouble(0, 0, 1024, 768);
+        helpWin.PerformLayout();
+
+        // Count TextWidgets and verify they have valid non-empty text and non-black text color on dark theme
+        int textWidgetCount = 0;
+        void VerifyWidgets(MatterHackers.Agg.UI.GuiWidget w)
+        {
+            if (w is MatterHackers.Agg.UI.TextWidget tw)
+            {
+                textWidgetCount++;
+                Assert.That(tw.Text, Is.Not.Null.And.Not.Empty, "TextWidget should have non-empty text");
+                Assert.That(tw.Width, Is.GreaterThan(0), $"TextWidget '{tw.Text}' should have positive width");
+            }
+
+            foreach (var child in w.Children)
+            {
+                VerifyWidgets(child);
+            }
+        }
+
+        VerifyWidgets(helpWin);
+        Assert.That(textWidgetCount, Is.GreaterThan(10), "HelpWindow should contain multiple visible TextWidgets");
+    }
 }

@@ -25,6 +25,11 @@ class Program
     {
         var candidatePaths = new[]
         {
+            Path.Combine(AppContext.BaseDirectory, "MatterHackers.GlfwProvider.dll"),
+            Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "Submodules", "agg-sharp", "Glfw", "bin", "Debug", "net8.0", "MatterHackers.GlfwProvider.dll"),
+            Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "Submodules", "agg-sharp", "Glfw", "bin", "Release", "net8.0", "MatterHackers.GlfwProvider.dll"),
+            Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "Submodules", "agg-sharp", "Glfw", "bin", "Debug", "net10.0", "MatterHackers.GlfwProvider.dll"),
+            Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "Submodules", "agg-sharp", "Glfw", "bin", "Release", "net10.0", "MatterHackers.GlfwProvider.dll"),
             Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "Submodules", "agg-sharp", "Glfw", "bin", "Debug", "net6.0", "MatterHackers.GlfwProvider.dll"),
             Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "Submodules", "agg-sharp", "Glfw", "bin", "Release", "net6.0", "MatterHackers.GlfwProvider.dll"),
             Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "Submodules", "agg-sharp", "Glfw", "bin", "Debug", "net6.0-windows", "MatterHackers.GlfwProvider.dll"),
@@ -49,7 +54,15 @@ class Program
         {
             AggContext.Config.ProviderTypes.SystemWindowProvider = "MatterHackers.Agg.UI.OpenGLWinformsWindowProvider, agg_platform_win32";
             AggContext.Config.ProviderTypes.OsInformationProvider = "MatterHackers.Agg.Platform.WinformsInformationProvider, agg_platform_win32";
+#if WINDOWS
             Clipboard.SetSystemClipboard(new WindowsFormsClipboard());
+#else
+            var clipboard = AggContext.CreateInstanceFrom<ISystemClipboard>("MatterHackers.Agg.UI.WindowsFormsClipboard, agg_platform_win32");
+            if (clipboard != null)
+            {
+                Clipboard.SetSystemClipboard(clipboard);
+            }
+#endif
         }
         else
         {

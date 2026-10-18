@@ -1,4 +1,4 @@
-﻿using MatterHackers.Agg;
+using MatterHackers.Agg;
 using MatterHackers.Agg.UI;
 using System;
 using System.Diagnostics;
@@ -53,8 +53,6 @@ class MatterCadGuiWidget : SystemWindow
 
     public void SetStartupTraits()
     {
-        string version = "2.0";
-
         this.MinimumSize = minSize;
 
         this.Title = $"1223";
