@@ -55,8 +55,8 @@ namespace CSharpCAD
                 () => new List<(Mesh, Color)> { (new Box(20, 20, 20, createCentered: true).ToMesh(), new Color(65, 105, 225)) }));
 
             list.Add(DocumentType(typeof(Cylinder), "3D Solid",
-                "// Cylinder of radius 10 and height 30 centered\nvar cyl = new Cylinder(radius: 10, height: 30);\nDraw(cyl, RGB(46, 204, 113));",
-                () => new List<(Mesh, Color)> { (new Cylinder(10, 30).ToMesh(), new Color(46, 204, 113)) }));
+                "// Cylinder of radius 10 and height 30 centered\nvar cyl = new Cylinder(radius: 10, height: 30, sides: 36);\nDraw(cyl, RGB(46, 204, 113));",
+                () => new List<(Mesh, Color)> { (new Cylinder(10, 30, 36).ToMesh(), new Color(46, 204, 113)) }));
 
             list.Add(DocumentType(typeof(Sphere), "3D Solid",
                 "// Sphere of radius 15\nvar ball = new Sphere(radius: 15);\nDraw(ball, RGB(231, 76, 60));",
@@ -438,6 +438,250 @@ namespace CSharpCAD
                 Directory.CreateDirectory(dir);
             }
             File.WriteAllText(filePath, md, Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Generates a comprehensive HTML API Reference page with dark theme styling,
+        /// interactive sidebar navigation, live search filtering, and copyable code snippets.
+        /// </summary>
+        public static string GenerateHtml()
+        {
+            var items = GetDocumentedItems();
+            var categories = items.GroupBy(i => i.Category).ToList();
+
+            var sb = new StringBuilder();
+            sb.AppendLine("<!DOCTYPE html>");
+            sb.AppendLine("<html lang=\"en\">");
+            sb.AppendLine("<head>");
+            sb.AppendLine("  <meta charset=\"UTF-8\">");
+            sb.AppendLine("  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">");
+            sb.AppendLine("  <title>OpenSharpCAD — API Reference</title>");
+            sb.AppendLine("  <meta name=\"description\" content=\"Comprehensive API Reference documentation for OpenSharpCAD: 3D Solids, 2D Primitives, Transformations, CSG Booleans, and Script Globals.\">");
+            sb.AppendLine("  <link rel=\"icon\" href=\"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💎</text></svg>\">");
+            sb.AppendLine("  <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">");
+            sb.AppendLine("  <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>");
+            sb.AppendLine("  <link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap\" rel=\"stylesheet\">");
+            sb.AppendLine("  <link rel=\"stylesheet\" href=\"styles.css\">");
+            sb.AppendLine("</head>");
+            sb.AppendLine("<body>");
+
+            // Top Header
+            sb.AppendLine("  <header class=\"app-header\">");
+            sb.AppendLine("    <div class=\"header-top\">");
+            sb.AppendLine("      <a href=\"index.html\" class=\"brand\">");
+            sb.AppendLine("        <div class=\"brand-logo\">#</div>");
+            sb.AppendLine("        <span class=\"brand-title\">OpenSharpCAD</span>");
+            sb.AppendLine("        <span class=\"brand-badge\">API Reference</span>");
+            sb.AppendLine("      </a>");
+            sb.AppendLine("      <div class=\"header-actions\">");
+            sb.AppendLine("        <a href=\"index.html\" class=\"nav-link\">");
+            sb.AppendLine("          <span>🎮 Interactive 3D Examples</span>");
+            sb.AppendLine("        </a>");
+            sb.AppendLine("        <a href=\"api.html\" class=\"nav-link\" style=\"color: var(--accent-cyan); font-weight: 700;\">");
+            sb.AppendLine("          <span>📖 API Reference</span>");
+            sb.AppendLine("        </a>");
+            sb.AppendLine("        <a href=\"https://github.com/roboter/OpenSharpCAD\" class=\"nav-link\" target=\"_blank\" rel=\"noopener\">");
+            sb.AppendLine("          <span>🐙 GitHub</span>");
+            sb.AppendLine("        </a>");
+            sb.AppendLine("      </div>");
+            sb.AppendLine("    </div>");
+            sb.AppendLine("  </header>");
+
+            // Hero section
+            sb.AppendLine("  <section class=\"hero-section\" style=\"padding: 2rem 1.5rem 1rem;\">");
+            sb.AppendLine("    <h1 class=\"hero-title\">OpenSharpCAD API Reference</h1>");
+            sb.AppendLine("    <p class=\"hero-subtitle\">Complete programmatic reference for all 3D Solids, 2D Primitives, Transformations, CSG Boolean Operations, and Script Globals.</p>");
+            sb.AppendLine("  </section>");
+
+            // Two-column layout: Sidebar + Main Content
+            sb.AppendLine("  <div class=\"api-layout\">");
+
+            // Sidebar
+            sb.AppendLine("    <aside class=\"api-sidebar\">");
+            sb.AppendLine("      <div class=\"api-sidebar-search\">");
+            sb.AppendLine("        <input type=\"text\" id=\"api-filter-input\" class=\"api-sidebar-input\" placeholder=\"Filter API classes...\">");
+            sb.AppendLine("      </div>");
+            sb.AppendLine("      <nav id=\"api-nav\">");
+            foreach (var group in categories)
+            {
+                sb.AppendLine("        <div class=\"api-nav-group\">");
+                sb.AppendLine($"          <div class=\"api-nav-group-title\">{EscapeHtml(group.Key)}</div>");
+                foreach (var item in group)
+                {
+                    string anchor = GetHtmlAnchor(item.Name);
+                    sb.AppendLine($"          <a href=\"#{anchor}\" class=\"api-nav-link\" data-name=\"{EscapeHtml(item.Name.ToLowerInvariant())}\">");
+                    sb.AppendLine($"            <span>{EscapeHtml(item.Name)}</span>");
+                    sb.AppendLine("          </a>");
+                }
+                sb.AppendLine("        </div>");
+            }
+            sb.AppendLine("      </nav>");
+            sb.AppendLine("    </aside>");
+
+            // Main Content Column
+            sb.AppendLine("    <main class=\"api-main-content\" id=\"api-main-content\">");
+            foreach (var item in items)
+            {
+                string anchor = GetHtmlAnchor(item.Name);
+                string badgeColor = item.Category switch
+                {
+                    "3D Solid" => "var(--accent-cyan)",
+                    "2D Primitive" => "var(--accent-green)",
+                    "Transformation" => "var(--accent-purple)",
+                    "CSG Boolean" => "var(--accent-pink)",
+                    "Script Global" => "var(--accent-yellow)",
+                    _ => "var(--accent-cyan)"
+                };
+
+                sb.AppendLine($"      <article class=\"api-entry-card\" id=\"{anchor}\" data-name=\"{EscapeHtml(item.Name.ToLowerInvariant())}\">");
+                sb.AppendLine("        <header class=\"api-entry-header\">");
+                sb.AppendLine("          <div class=\"api-entry-title-row\">");
+                sb.AppendLine($"            <h2 class=\"api-entry-title\">{EscapeHtml(item.Name)}</h2>");
+                sb.AppendLine($"            <span class=\"card-badge\" style=\"background: rgba(139, 233, 253, 0.15); color: {badgeColor}; border: 1px solid rgba(139, 233, 253, 0.3);\">{EscapeHtml(item.Category)}</span>");
+                if (!string.IsNullOrEmpty(item.FullTypeName))
+                {
+                    sb.AppendLine($"            <span class=\"api-entry-namespace\">{EscapeHtml(item.FullTypeName)}</span>");
+                }
+                sb.AppendLine("          </div>");
+                sb.AppendLine($"          <p class=\"api-entry-summary\">{EscapeHtml(item.Summary)}</p>");
+                sb.AppendLine("        </header>");
+
+                sb.AppendLine("        <div class=\"api-entry-body\">");
+
+                // Constructors
+                if (item.Constructors.Count > 0)
+                {
+                    sb.AppendLine("          <section>");
+                    sb.AppendLine("            <h3 class=\"api-section-heading\">Constructors & Signatures</h3>");
+                    sb.AppendLine("            <div class=\"api-code-block\">");
+                    foreach (var ctor in item.Constructors)
+                    {
+                        sb.AppendLine($"              <div class=\"api-code-item\">{EscapeHtml(ctor)}</div>");
+                    }
+                    sb.AppendLine("            </div>");
+                    sb.AppendLine("          </section>");
+                }
+
+                // Properties
+                if (item.Properties.Count > 0)
+                {
+                    sb.AppendLine("          <section>");
+                    sb.AppendLine("            <h3 class=\"api-section-heading\">Properties</h3>");
+                    sb.AppendLine("            <div class=\"api-code-block\">");
+                    foreach (var prop in item.Properties)
+                    {
+                        sb.AppendLine($"              <div class=\"api-code-item\">{EscapeHtml(prop)}</div>");
+                    }
+                    sb.AppendLine("            </div>");
+                    sb.AppendLine("          </section>");
+                }
+
+                // Methods
+                if (item.Methods.Count > 0)
+                {
+                    sb.AppendLine("          <section>");
+                    sb.AppendLine("            <h3 class=\"api-section-heading\">Methods</h3>");
+                    sb.AppendLine("            <div class=\"api-code-block\">");
+                    foreach (var m in item.Methods)
+                    {
+                        sb.AppendLine($"              <div class=\"api-code-item\">{EscapeHtml(m)}</div>");
+                    }
+                    sb.AppendLine("            </div>");
+                    sb.AppendLine("          </section>");
+                }
+
+                // Example
+                if (!string.IsNullOrWhiteSpace(item.ExampleSnippet))
+                {
+                    sb.AppendLine("          <section>");
+                    sb.AppendLine("            <div style=\"display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;\">");
+                    sb.AppendLine("              <h3 class=\"api-section-heading\" style=\"margin-bottom: 0;\">Example Usage</h3>");
+                    sb.AppendLine($"              <button class=\"copy-btn\" data-code=\"{System.Uri.EscapeDataString(item.ExampleSnippet)}\">");
+                    sb.AppendLine("                <span>Copy</span>");
+                    sb.AppendLine("              </button>");
+                    sb.AppendLine("            </div>");
+                    sb.AppendLine("            <div class=\"api-code-block\" style=\"color: var(--accent-yellow);\">");
+                    sb.AppendLine($"              <pre><code>{EscapeHtml(item.ExampleSnippet)}</code></pre>");
+                    sb.AppendLine("            </div>");
+                    sb.AppendLine("          </section>");
+                }
+
+                sb.AppendLine("        </div>");
+                sb.AppendLine("      </article>");
+            }
+            sb.AppendLine("    </main>");
+            sb.AppendLine("  </div>");
+
+            // Footer
+            sb.AppendLine("  <footer class=\"app-footer\">");
+            sb.AppendLine("    <div class=\"footer-links\">");
+            sb.AppendLine("      <a href=\"index.html\">Interactive 3D Examples</a>");
+            sb.AppendLine("      <a href=\"https://github.com/roboter/OpenSharpCAD\">Repository</a>");
+            sb.AppendLine("      <a href=\"#top\">Back to top ↑</a>");
+            sb.AppendLine("    </div>");
+            sb.AppendLine("    <p>© OpenSharpCAD. Built with Three.js and C# CAD engine.</p>");
+            sb.AppendLine("  </footer>");
+
+            // Client script for filter and copy
+            sb.AppendLine("  <script>");
+            sb.AppendLine("    const filterInput = document.getElementById('api-filter-input');");
+            sb.AppendLine("    const navLinks = document.querySelectorAll('.api-nav-link');");
+            sb.AppendLine("    const cards = document.querySelectorAll('.api-entry-card');");
+            sb.AppendLine("    if (filterInput) {");
+            sb.AppendLine("      filterInput.addEventListener('input', (e) => {");
+            sb.AppendLine("        const q = e.target.value.toLowerCase().trim();");
+            sb.AppendLine("        cards.forEach(c => {");
+            sb.AppendLine("          const match = !q || c.dataset.name.includes(q) || c.textContent.toLowerCase().includes(q);");
+            sb.AppendLine("          c.style.display = match ? 'flex' : 'none';");
+            sb.AppendLine("        });");
+            sb.AppendLine("        navLinks.forEach(l => {");
+            sb.AppendLine("          const match = !q || l.dataset.name.includes(q);");
+            sb.AppendLine("          l.style.display = match ? 'flex' : 'none';");
+            sb.AppendLine("        });");
+            sb.AppendLine("      });");
+            sb.AppendLine("    }");
+            sb.AppendLine("    document.querySelectorAll('.copy-btn').forEach(btn => {");
+            sb.AppendLine("      btn.addEventListener('click', async () => {");
+            sb.AppendLine("        const code = decodeURIComponent(btn.dataset.code);");
+            sb.AppendLine("        try {");
+            sb.AppendLine("          await navigator.clipboard.writeText(code);");
+            sb.AppendLine("          const prev = btn.innerHTML;");
+            sb.AppendLine("          btn.innerHTML = '<span>Copied!</span>';");
+            sb.AppendLine("          setTimeout(() => btn.innerHTML = prev, 1500);");
+            sb.AppendLine("        } catch (err) {}");
+            sb.AppendLine("      });");
+            sb.AppendLine("    });");
+            sb.AppendLine("  </script>");
+
+            sb.AppendLine("</body>");
+            sb.AppendLine("</html>");
+
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Writes the generated HTML API Reference documentation to the specified file path.
+        /// </summary>
+        public static void ExportHtmlFile(string filePath)
+        {
+            string html = GenerateHtml();
+            string dir = System.IO.Path.GetDirectoryName(filePath);
+            if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+            File.WriteAllText(filePath, html, Encoding.UTF8);
+        }
+
+        private static string GetHtmlAnchor(string name)
+        {
+            return (name ?? "").ToLowerInvariant().Replace(" ", "-").Replace("/", "").Replace("(", "").Replace(")", "").Replace("&", "");
+        }
+
+        private static string EscapeHtml(string str)
+        {
+            if (string.IsNullOrEmpty(str)) return "";
+            return str.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;").Replace("\"", "&quot;");
         }
 
         #region Reflection & XML Formatting Helpers

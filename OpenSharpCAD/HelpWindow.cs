@@ -1028,13 +1028,8 @@ namespace CSharpCAD
                 "Solid Primitive",
                 AccentCyan,
                 "Creates a cylindrical solid centered along the Z axis (or X/Y via Alignment).\nParameters: radius, height, sides = 30, alignment = Alignment.z\nExposed Properties: Radius, Radius1, Radius2, Height, Alignment, Center, TopCenter, BottomCenter, Min, Max\nHelper Method: CylinderBetween(startPoint, endPoint, radius, sides = 16)",
-                "// Cylinder(radius, height, sides = 30)\nvar cyl = new Cylinder(radius: 8, height: 26);\n// Place a dome cap at the cylinder's TopCenter point\nvar cap = new Sphere(radius: 8).Translate(cyl.TopCenter);\nDraw(cyl + cap, Color.Orange);",
-                BuildMeshes: () =>
-                {
-                    var cyl = new Cylinder(radius: 8, height: 26);
-                    var cap = new Sphere(radius: 8).Translate(cyl.TopCenter);
-                    return new() { (CsgToMesh.Convert(cyl + cap), Color.Orange) };
-                }),
+                "// Cylinder(radius, height, sides = 30)\nvar cyl = new Cylinder(radius: 10, height: 28, sides: 36);\nDraw(cyl, Color.Orange);",
+                BuildMeshes: () => new() { (CsgToMesh.Convert(new Cylinder(10, 28, 36)), Color.Orange) }),
 
             new HelpItem(
                 "Cone / Tapered Cylinder",

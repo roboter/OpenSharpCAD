@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenSharpCAD — Interactive 3D Documentation & Examples</title>
+  <meta name="description" content="Interactive 3D documentation and examples for OpenSharpCAD. Explore 3D solids, 2D primitives, CSG booleans, and procedural assemblies with live Three.js rendering and highlighted C# code.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💎</text></svg>">
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- Three.js ES Modules via Importmap -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+
+  <!-- Top Sticky Header -->
+  <header class="app-header">
+    <div class="header-top">
+      <a href="#" class="brand">
+        <div class="brand-logo">#</div>
+        <span class="brand-title">OpenSharpCAD</span>
+        <span class="brand-badge">Interactive 3D Reference</span>
+      </a>
+
+      <div class="header-actions">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="search-input" class="search-input" placeholder="Search shapes, operations, code..." aria-label="Search documentation">
+        </div>
+        <a href="api.html" class="nav-link">
+          <span>📖 API Reference</span>
+        </a>
+        <a href="https://github.com/roboter/OpenSharpCAD" class="nav-link" target="_blank" rel="noopener">
+          <span>🐙 GitHub</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Category Filter Tabs -->
+    <nav class="category-tabs" aria-label="Documentation categories">
+      <button class="tab-btn active" data-category="All">All Examples</button>
+      <button class="tab-btn" data-category="3D Shapes">3D Shapes</button>
+      <button class="tab-btn" data-category="2D Primitives">2D Primitives</button>
+      <button class="tab-btn" data-category="2D => 3D">2D => 3D Operations</button>
+      <button class="tab-btn" data-category="CSG Booleans">CSG Booleans</button>
+      <button class="tab-btn" data-category="Complex Assemblies">Complex Assemblies</button>
+    </nav>
+  </header>
+
+  <!-- Hero Header -->
+  <section class="hero-section">
+    <h1 class="hero-title">Programmatic 3D CAD in Modern C#</h1>
+    <p class="hero-subtitle">
+      Explore interactive 3D geometry alongside read-only, syntax-highlighted C# code snippets.
+      Drag with your mouse to tumble and inspect models from any angle.
+    </p>
+    <div class="stats-bar">
+      <div class="stat-item">
+        <strong>18+</strong> Interactive 3D Examples
+      </div>
+      <div class="stat-item">
+        <strong>Three.js</strong> WebGL Viewports
+      </div>
+      <div class="stat-item">
+        <strong>Dracula</strong> Dark Theme
+      </div>
+      <div class="stat-item">
+        <strong>1-Click</strong> Code Copy
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content Area with Side-by-Side Cards -->
+  <main class="main-content">
+    <div class="examples-container" id="examples-container">
+      <!-- Dynamic example cards will be inserted here by app.js -->
+    </div>
+
+    <div class="empty-state" id="empty-state" style="display: none;">
+      <h2>No matching examples found</h2>
+      <p>Try searching for a different shape name like <code>Box</code>, <code>Cylinder</code>, <code>Sphere</code>, or <code>Extrude</code>.</p>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div class="footer-links">
+      <a href="../API_DOCUMENTATION.md">API Documentation (Markdown)</a>
+      <a href="https://github.com/roboter/OpenSharpCAD">Repository</a>
+      <a href="#top">Back to top ↑</a>
+    </div>
+    <p>© OpenSharpCAD. Built with Three.js and C# CAD engine.</p>
+  </footer>
+
+  <!-- Application script -->
+  <script type="module" src="app.js"></script>
+</body>
+</html>

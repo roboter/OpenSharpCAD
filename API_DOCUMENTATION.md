@@ -96,7 +96,7 @@ double Height { get; }  // Total height of the cylinder along its alignment axis
 #### Example Code
 ```csharp
 // Cylinder of radius 10 and height 30 centered
-var cyl = new Cylinder(radius: 10, height: 30);
+var cyl = new Cylinder(radius: 10, height: 30, sides: 36);
 Draw(cyl, RGB(46, 204, 113));
 ```
 
@@ -179,12 +179,12 @@ void ValidateClosed(string operationName = "extrude")
 IVertexSource ToVertexSource()
 CsgObject Extrude(double height, bool centered = false, Alignment alignment = z)
 CsgObject Revolve(double angleDegrees = 360, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)
-CsgObject RevolveRadians(double angleStart = 0, double angleEnd = 6.2831854820251465, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)
+CsgObject RevolveRadians(double angleStart = 0, double angleEnd = 6,2831854820251465, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)
 CsgObject Loft(I2DPrimitive top, double height, double twistDegrees = 0, int resolution = 60, bool capped = true, bool centered = false, Alignment alignment = z)
 CsgObject Extrude(double height, double twistDegrees, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)
 CsgObject TwistExtrude(double height, double twistDegrees = 360, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)
 Mesh ToMesh()
-Mesh ToWireMesh(double width = 0.5)
+Mesh ToWireMesh(double width = 0,5)
 string ToString()
 ```
 
@@ -222,12 +222,12 @@ void ValidateClosed(string operationName = "extrude")
 IVertexSource ToVertexSource()
 CsgObject Extrude(double height, bool centered = false, Alignment alignment = z)
 CsgObject Revolve(double angleDegrees = 360, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)
-CsgObject RevolveRadians(double angleStart = 0, double angleEnd = 6.2831854820251465, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)
+CsgObject RevolveRadians(double angleStart = 0, double angleEnd = 6,2831854820251465, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)
 CsgObject Loft(I2DPrimitive top, double height, double twistDegrees = 0, int resolution = 60, bool capped = true, bool centered = false, Alignment alignment = z)
 CsgObject Extrude(double height, double twistDegrees, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)
 CsgObject TwistExtrude(double height, double twistDegrees = 360, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)
 Mesh ToMesh()
-Mesh ToWireMesh(double width = 0.5)
+Mesh ToWireMesh(double width = 0,5)
 string ToString()
 ```
 
@@ -312,12 +312,12 @@ void ValidateClosed(string operationName = "extrude")
 IVertexSource ToVertexSource()
 CsgObject Extrude(double height, bool centered = false, Alignment alignment = z)
 CsgObject Revolve(double angleDegrees = 360, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)
-CsgObject RevolveRadians(double angleStart = 0, double angleEnd = 6.2831854820251465, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)
+CsgObject RevolveRadians(double angleStart = 0, double angleEnd = 6,2831854820251465, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)
 CsgObject Loft(I2DPrimitive top, double height, double twistDegrees = 0, int resolution = 60, bool capped = true, bool centered = false, Alignment alignment = z)
 CsgObject Extrude(double height, double twistDegrees, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)
 CsgObject TwistExtrude(double height, double twistDegrees = 360, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)
 Mesh ToMesh()
-Mesh ToWireMesh(double width = 0.5)
+Mesh ToWireMesh(double width = 0,5)
 CsgObject ToCylinder(double radius, int sides = 16)
 Path ToPath()
 string ToString()
@@ -372,12 +372,12 @@ void ValidateClosed(string operationName = "extrude")
 IVertexSource ToVertexSource()
 CsgObject Extrude(double height, bool centered = false, Alignment alignment = z)
 CsgObject Revolve(double angleDegrees = 360, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)
-CsgObject RevolveRadians(double angleStart = 0, double angleEnd = 6.2831854820251465, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)
+CsgObject RevolveRadians(double angleStart = 0, double angleEnd = 6,2831854820251465, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)
 CsgObject Loft(I2DPrimitive top, double height, double twistDegrees = 0, int resolution = 60, bool capped = true, bool centered = false, Alignment alignment = z)
 CsgObject Extrude(double height, double twistDegrees, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)
 CsgObject TwistExtrude(double height, double twistDegrees = 360, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)
 Mesh ToMesh()
-Mesh ToWireMesh(double width = 0.5)
+Mesh ToWireMesh(double width = 0,5)
 Circle ToCircle(double radius)
 CsgObject ToSphere(double radius)
 Path ToPath()
@@ -386,9 +386,17 @@ string ToString()
 
 #### Example Code
 ```csharp
-// Point coordinate (X, Y, Z)
+// 1. Create a 3D coordinate point (X, Y, Z)
 var pt = new Point(10, 15, 20);
-Draw(new Sphere(radius: 3), RGB(255, 85, 85));
+
+// 2. Position a solid at the point coordinates (or call pt.ToSphere(3)):
+var sphere = new Translate(new Sphere(3), pt);
+
+// 3. Connect the point to origin with a 3D line:
+var line = pt.LineTo(new Point(0, 0, 0));
+
+Draw(sphere, RGB(255, 85, 85));
+Draw(line, RGB(80, 200, 255));
 ```
 
 ### Path
@@ -425,12 +433,12 @@ void ValidateClosed(string operationName = "extrude")
 IVertexSource ToVertexSource()
 CsgObject Extrude(double height, bool centered = false, Alignment alignment = z)
 CsgObject Revolve(double angleDegrees = 360, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)
-CsgObject RevolveRadians(double angleStart = 0, double angleEnd = 6.2831854820251465, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)
+CsgObject RevolveRadians(double angleStart = 0, double angleEnd = 6,2831854820251465, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)
 CsgObject Loft(I2DPrimitive top, double height, double twistDegrees = 0, int resolution = 60, bool capped = true, bool centered = false, Alignment alignment = z)
 CsgObject Extrude(double height, double twistDegrees, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)
 CsgObject TwistExtrude(double height, double twistDegrees = 360, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)
 Mesh ToMesh()
-Mesh ToWireMesh(double width = 0.5)
+Mesh ToWireMesh(double width = 0,5)
 string ToString()
 ```
 
