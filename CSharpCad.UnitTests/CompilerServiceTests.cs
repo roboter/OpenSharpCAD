@@ -571,11 +571,20 @@ Draw(ring2, Color.Indigo);
         Assert.That(html, Does.Contain("Union"));
         Assert.That(html, Does.Contain("Draw"));
 
+        Assert.That(html, Does.Contain("token-keyword"));
+        Assert.That(html, Does.Contain("token-type"));
+        Assert.That(html, Does.Contain("token-method"));
+        Assert.That(html, Does.Contain("token-number"));
+        Assert.That(html, Does.Contain("token-operator"));
+
         string repoRoot = System.IO.Path.GetFullPath(System.IO.Path.Combine(TestContext.CurrentContext.TestDirectory, "../../../.."));
         string apiHtmlPath = System.IO.Path.Combine(repoRoot, "doc/api.html");
         AutoDocumentationService.ExportHtmlFile(apiHtmlPath);
         Assert.That(System.IO.File.Exists(apiHtmlPath), Is.True);
         Assert.That(new System.IO.FileInfo(apiHtmlPath).Length, Is.GreaterThan(1000));
+        string savedHtml = System.IO.File.ReadAllText(apiHtmlPath);
+        Assert.That(savedHtml, Does.Contain("token-keyword"));
+        Assert.That(savedHtml, Does.Contain("token-type"));
     }
 
     private static T? FindChild<T>(GuiWidget widget) where T : GuiWidget

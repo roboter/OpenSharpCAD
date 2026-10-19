@@ -139,31 +139,31 @@
           <section>
             <h3 class="api-section-heading">Constructors & Signatures</h3>
             <div class="api-code-block">
-              <div class="api-code-item">new Box(double sizeX, double sizeY, double sizeZ, string name = &quot;&quot;, bool createCentered = true)  // Creates a new 3D box solid with dimensions specified along X, Y, and Z.</div>
-              <div class="api-code-item">new Box(Vector3 size, string name = &quot;&quot;, bool createCentered = true)  // Creates a new 3D box solid with dimensions specified by a Vector3 size.</div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Box</span>(<span class="token-keyword">double</span> <span class="token-variable">sizeX</span>, <span class="token-keyword">double</span> <span class="token-variable">sizeY</span>, <span class="token-keyword">double</span> <span class="token-variable">sizeZ</span>, <span class="token-keyword">string</span> <span class="token-variable">name</span> <span class="token-operator">=</span> <span class="token-string">&quot;&quot;</span>, <span class="token-keyword">bool</span> <span class="token-variable">createCentered</span> <span class="token-operator">=</span> <span class="token-keyword">true</span>)  <span class="token-comment">// Creates a new 3D box solid with dimensions specified along X, Y, and Z.</span></div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Box</span>(<span class="token-type">Vector3</span> <span class="token-variable">size</span>, <span class="token-keyword">string</span> <span class="token-variable">name</span> <span class="token-operator">=</span> <span class="token-string">&quot;&quot;</span>, <span class="token-keyword">bool</span> <span class="token-variable">createCentered</span> <span class="token-operator">=</span> <span class="token-keyword">true</span>)  <span class="token-comment">// Creates a new 3D box solid with dimensions specified by a Vector3 size.</span></div>
             </div>
           </section>
           <section>
             <h3 class="api-section-heading">Properties</h3>
             <div class="api-code-block">
-              <div class="api-code-item">double Width { get; }  // Width of the box along the X axis.</div>
-              <div class="api-code-item">double Depth { get; }  // Depth of the box along the Y axis.</div>
-              <div class="api-code-item">double Height { get; }  // Height of the box along the Z axis.</div>
-              <div class="api-code-item">Vector3[] Corners { get; }  // Gets the 8 3D corner vertex positions of the box.</div>
-              <div class="api-code-item">ValueTuple`2[] BoundingEdges { get; }  // Gets the 12 bounding edges of the box as (Start, End) coordinate pairs.</div>
-              <div class="api-code-item">Point[] Points { get; }  // Gets the 8 corner vertices as compatible 2D/3D Point primitive objects for LINQ queries.</div>
-              <div class="api-code-item">Line[] Lines { get; }  // Gets the 12 bounding edges as compatible Line primitive objects for LINQ queries.</div>
+              <div class="api-code-item"><span class="token-keyword">double</span> <span class="token-property">Width</span> { <span class="token-keyword">get</span>; }  <span class="token-comment">// Width of the box along the X axis.</span></div>
+              <div class="api-code-item"><span class="token-keyword">double</span> <span class="token-property">Depth</span> { <span class="token-keyword">get</span>; }  <span class="token-comment">// Depth of the box along the Y axis.</span></div>
+              <div class="api-code-item"><span class="token-keyword">double</span> <span class="token-property">Height</span> { <span class="token-keyword">get</span>; }  <span class="token-comment">// Height of the box along the Z axis.</span></div>
+              <div class="api-code-item"><span class="token-type">Vector3</span>[] <span class="token-property">Corners</span> { <span class="token-keyword">get</span>; }  <span class="token-comment">// Gets the 8 3D corner vertex positions of the box.</span></div>
+              <div class="api-code-item"><span class="token-type">ValueTuple</span>`<span class="token-number">2</span>[] <span class="token-property">BoundingEdges</span> { <span class="token-keyword">get</span>; }  <span class="token-comment">// Gets the 12 bounding edges of the box as (Start, End) coordinate pairs.</span></div>
+              <div class="api-code-item"><span class="token-type">Point</span>[] <span class="token-property">Points</span> { <span class="token-keyword">get</span>; }  <span class="token-comment">// Gets the 8 corner vertices as compatible 2D/3D Point primitive objects for LINQ queries.</span></div>
+              <div class="api-code-item"><span class="token-type">Line</span>[] <span class="token-variable">Lines</span> { <span class="token-keyword">get</span>; }  <span class="token-comment">// Gets the 12 bounding edges as compatible Line primitive objects for LINQ queries.</span></div>
             </div>
           </section>
           <section>
             <h3 class="api-section-heading">Methods</h3>
             <div class="api-code-block">
-              <div class="api-code-item">void CutAlongDiagonal(Face facesToKeepWhole)  // Cut along the diagonal of a give edge to the opposite edge.  The edge is chosen by saying which 2 faces are to be kept solid, and or-ing them together.</div>
-              <div class="api-code-item">void BevelEdge(Face facesThatShareEdge, double radius)  // Bevel a give edge.  The edge is chosen by saying which 2 faces are to be used, and or-ing them together</div>
-              <div class="api-code-item">void BevelEdge(Edge edgeToBevel, double radius)</div>
-              <div class="api-code-item">void BevelFace(Face face, double radius)</div>
-              <div class="api-code-item">void BevelAll(double radius)</div>
-              <div class="api-code-item">void ChamferEdge(Face facesThatShareEdge, double cutDepth)  // Will cause a chamfered flat to be applied to the given edge.</div>
+              <div class="api-code-item"><span class="token-keyword">void</span> <span class="token-variable">CutAlongDiagonal</span>(<span class="token-type">Face</span> <span class="token-variable">facesToKeepWhole</span>)  <span class="token-comment">// Cut along the diagonal of a give edge to the opposite edge.  The edge is chosen by saying which 2 faces are to be kept solid, and or-ing them together.</span></div>
+              <div class="api-code-item"><span class="token-keyword">void</span> <span class="token-variable">BevelEdge</span>(<span class="token-type">Face</span> <span class="token-variable">facesThatShareEdge</span>, <span class="token-keyword">double</span> <span class="token-variable">radius</span>)  <span class="token-comment">// Bevel a give edge.  The edge is chosen by saying which 2 faces are to be used, and or-ing them together</span></div>
+              <div class="api-code-item"><span class="token-keyword">void</span> <span class="token-variable">BevelEdge</span>(<span class="token-type">Edge</span> <span class="token-variable">edgeToBevel</span>, <span class="token-keyword">double</span> <span class="token-variable">radius</span>)</div>
+              <div class="api-code-item"><span class="token-keyword">void</span> <span class="token-variable">BevelFace</span>(<span class="token-type">Face</span> <span class="token-variable">face</span>, <span class="token-keyword">double</span> <span class="token-variable">radius</span>)</div>
+              <div class="api-code-item"><span class="token-keyword">void</span> <span class="token-variable">BevelAll</span>(<span class="token-keyword">double</span> <span class="token-variable">radius</span>)</div>
+              <div class="api-code-item"><span class="token-keyword">void</span> <span class="token-variable">ChamferEdge</span>(<span class="token-type">Face</span> <span class="token-variable">facesThatShareEdge</span>, <span class="token-keyword">double</span> <span class="token-variable">cutDepth</span>)  <span class="token-comment">// Will cause a chamfered flat to be applied to the given edge.</span></div>
             </div>
           </section>
           <section>
@@ -173,10 +173,10 @@
                 <span>Copy</span>
               </button>
             </div>
-            <div class="api-code-block" style="color: var(--accent-yellow);">
-              <pre><code>// Cube of 20x20x20 centered at origin
-var cube = new Box(20, 20, 20, createCentered: true);
-Draw(cube, RGB(65, 105, 225));</code></pre>
+            <div class="api-code-block">
+              <pre><code><span class="token-comment">// Cube of 20x20x20 centered at origin</span>
+<span class="token-keyword">var</span> <span class="token-variable">cube</span> <span class="token-operator">=</span> <span class="token-keyword">new</span> <span class="token-type">Box</span>(<span class="token-number">20</span>, <span class="token-number">20</span>, <span class="token-number">20</span>, <span class="token-variable">createCentered</span>: <span class="token-keyword">true</span>);
+<span class="token-method">Draw</span>(<span class="token-variable">cube</span>, <span class="token-method">RGB</span>(<span class="token-number">65</span>, <span class="token-number">105</span>, <span class="token-number">225</span>));</code></pre>
             </div>
           </section>
         </div>
@@ -194,18 +194,18 @@ Draw(cube, RGB(65, 105, 225));</code></pre>
           <section>
             <h3 class="api-section-heading">Constructors & Signatures</h3>
             <div class="api-code-block">
-              <div class="api-code-item">new Cylinder(double radius, double height, int sides = 30, Alignment alignment = z, string name = &quot;&quot;)  // Creates a uniform 3D cylinder solid with equal top and bottom radius.</div>
-              <div class="api-code-item">new Cylinder(Line line, double radius, int sides = 30)  // Creates a 3D cylinder using the length/height of a Line primitive.</div>
-              <div class="api-code-item">new Cylinder(double radius1, double radius2, double height, int sides = 30, Alignment alignment = z, string name = &quot;&quot;)  // Creates a tapered 3D cylinder or cone with different bottom (radius1) and top (radius2) radii.</div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Cylinder</span>(<span class="token-keyword">double</span> <span class="token-variable">radius</span>, <span class="token-keyword">double</span> <span class="token-variable">height</span>, <span class="token-keyword">int</span> <span class="token-variable">sides</span> <span class="token-operator">=</span> <span class="token-number">30</span>, <span class="token-type">Alignment</span> <span class="token-variable">alignment</span> <span class="token-operator">=</span> <span class="token-variable">z</span>, <span class="token-keyword">string</span> <span class="token-variable">name</span> <span class="token-operator">=</span> <span class="token-string">&quot;&quot;</span>)  <span class="token-comment">// Creates a uniform 3D cylinder solid with equal top and bottom radius.</span></div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Cylinder</span>(<span class="token-type">Line</span> <span class="token-variable">line</span>, <span class="token-keyword">double</span> <span class="token-variable">radius</span>, <span class="token-keyword">int</span> <span class="token-variable">sides</span> <span class="token-operator">=</span> <span class="token-number">30</span>)  <span class="token-comment">// Creates a 3D cylinder using the length/height of a Line primitive.</span></div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Cylinder</span>(<span class="token-keyword">double</span> <span class="token-variable">radius1</span>, <span class="token-keyword">double</span> <span class="token-variable">radius2</span>, <span class="token-keyword">double</span> <span class="token-variable">height</span>, <span class="token-keyword">int</span> <span class="token-variable">sides</span> <span class="token-operator">=</span> <span class="token-number">30</span>, <span class="token-type">Alignment</span> <span class="token-variable">alignment</span> <span class="token-operator">=</span> <span class="token-variable">z</span>, <span class="token-keyword">string</span> <span class="token-variable">name</span> <span class="token-operator">=</span> <span class="token-string">&quot;&quot;</span>)  <span class="token-comment">// Creates a tapered 3D cylinder or cone with different bottom (radius1) and top (radius2) radii.</span></div>
             </div>
           </section>
           <section>
             <h3 class="api-section-heading">Properties</h3>
             <div class="api-code-block">
-              <div class="api-code-item">double Radius1 { get; }  // Bottom (or start) radius of the cylinder or truncated cone.</div>
-              <div class="api-code-item">double Radius2 { get; }  // Top (or end) radius of the cylinder or truncated cone.</div>
-              <div class="api-code-item">double Radius { get; }  // Radius of the cylinder (equals Radius1).</div>
-              <div class="api-code-item">double Height { get; }  // Total height of the cylinder along its alignment axis.</div>
+              <div class="api-code-item"><span class="token-keyword">double</span> <span class="token-variable">Radius1</span> { <span class="token-keyword">get</span>; }  <span class="token-comment">// Bottom (or start) radius of the cylinder or truncated cone.</span></div>
+              <div class="api-code-item"><span class="token-keyword">double</span> <span class="token-variable">Radius2</span> { <span class="token-keyword">get</span>; }  <span class="token-comment">// Top (or end) radius of the cylinder or truncated cone.</span></div>
+              <div class="api-code-item"><span class="token-keyword">double</span> <span class="token-property">Radius</span> { <span class="token-keyword">get</span>; }  <span class="token-comment">// Radius of the cylinder (equals Radius1).</span></div>
+              <div class="api-code-item"><span class="token-keyword">double</span> <span class="token-property">Height</span> { <span class="token-keyword">get</span>; }  <span class="token-comment">// Total height of the cylinder along its alignment axis.</span></div>
             </div>
           </section>
           <section>
@@ -215,10 +215,10 @@ Draw(cube, RGB(65, 105, 225));</code></pre>
                 <span>Copy</span>
               </button>
             </div>
-            <div class="api-code-block" style="color: var(--accent-yellow);">
-              <pre><code>// Cylinder of radius 10 and height 30 centered
-var cyl = new Cylinder(radius: 10, height: 30, sides: 36);
-Draw(cyl, RGB(46, 204, 113));</code></pre>
+            <div class="api-code-block">
+              <pre><code><span class="token-comment">// Cylinder of radius 10 and height 30 centered</span>
+<span class="token-keyword">var</span> <span class="token-variable">cyl</span> <span class="token-operator">=</span> <span class="token-keyword">new</span> <span class="token-type">Cylinder</span>(<span class="token-variable">radius</span>: <span class="token-number">10</span>, <span class="token-variable">height</span>: <span class="token-number">30</span>, <span class="token-variable">sides</span>: <span class="token-number">36</span>);
+<span class="token-method">Draw</span>(<span class="token-variable">cyl</span>, <span class="token-method">RGB</span>(<span class="token-number">46</span>, <span class="token-number">204</span>, <span class="token-number">113</span>));</code></pre>
             </div>
           </section>
         </div>
@@ -236,20 +236,20 @@ Draw(cyl, RGB(46, 204, 113));</code></pre>
           <section>
             <h3 class="api-section-heading">Constructors & Signatures</h3>
             <div class="api-code-block">
-              <div class="api-code-item">new Sphere(double radius, string name = &quot;&quot;)  // Creates a new 3D sphere solid with specified radius.</div>
-              <div class="api-code-item">new Sphere(Sphere objectToCopy)  // Creates a copy of an existing 3D sphere solid.</div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Sphere</span>(<span class="token-keyword">double</span> <span class="token-variable">radius</span>, <span class="token-keyword">string</span> <span class="token-variable">name</span> <span class="token-operator">=</span> <span class="token-string">&quot;&quot;</span>)  <span class="token-comment">// Creates a new 3D sphere solid with specified radius.</span></div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Sphere</span>(<span class="token-type">Sphere</span> <span class="token-variable">objectToCopy</span>)  <span class="token-comment">// Creates a copy of an existing 3D sphere solid.</span></div>
             </div>
           </section>
           <section>
             <h3 class="api-section-heading">Properties</h3>
             <div class="api-code-block">
-              <div class="api-code-item">double Radius { get; }  // Radius of the sphere.</div>
+              <div class="api-code-item"><span class="token-keyword">double</span> <span class="token-property">Radius</span> { <span class="token-keyword">get</span>; }  <span class="token-comment">// Radius of the sphere.</span></div>
             </div>
           </section>
           <section>
             <h3 class="api-section-heading">Methods</h3>
             <div class="api-code-block">
-              <div class="api-code-item">AxisAlignedBoundingBox GetAxisAlignedBoundingBox()</div>
+              <div class="api-code-item"><span class="token-variable">AxisAlignedBoundingBox</span> <span class="token-variable">GetAxisAlignedBoundingBox</span>()</div>
             </div>
           </section>
           <section>
@@ -259,10 +259,10 @@ Draw(cyl, RGB(46, 204, 113));</code></pre>
                 <span>Copy</span>
               </button>
             </div>
-            <div class="api-code-block" style="color: var(--accent-yellow);">
-              <pre><code>// Sphere of radius 15
-var ball = new Sphere(radius: 15);
-Draw(ball, RGB(231, 76, 60));</code></pre>
+            <div class="api-code-block">
+              <pre><code><span class="token-comment">// Sphere of radius 15</span>
+<span class="token-keyword">var</span> <span class="token-variable">ball</span> <span class="token-operator">=</span> <span class="token-keyword">new</span> <span class="token-type">Sphere</span>(<span class="token-variable">radius</span>: <span class="token-number">15</span>);
+<span class="token-method">Draw</span>(<span class="token-variable">ball</span>, <span class="token-method">RGB</span>(<span class="token-number">231</span>, <span class="token-number">76</span>, <span class="token-number">60</span>));</code></pre>
             </div>
           </section>
         </div>
@@ -280,15 +280,15 @@ Draw(ball, RGB(231, 76, 60));</code></pre>
           <section>
             <h3 class="api-section-heading">Constructors & Signatures</h3>
             <div class="api-code-block">
-              <div class="api-code-item">new Torus(double innerRadius, double outerRadius, Alignment alignment = z, string name = &quot;&quot;)  // Creates a new 3D torus solid with specified inner and outer radii and axis alignment.</div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Torus</span>(<span class="token-keyword">double</span> <span class="token-variable">innerRadius</span>, <span class="token-keyword">double</span> <span class="token-variable">outerRadius</span>, <span class="token-type">Alignment</span> <span class="token-variable">alignment</span> <span class="token-operator">=</span> <span class="token-variable">z</span>, <span class="token-keyword">string</span> <span class="token-variable">name</span> <span class="token-operator">=</span> <span class="token-string">&quot;&quot;</span>)  <span class="token-comment">// Creates a new 3D torus solid with specified inner and outer radii and axis alignment.</span></div>
             </div>
           </section>
           <section>
             <h3 class="api-section-heading">Properties</h3>
             <div class="api-code-block">
-              <div class="api-code-item">double InnerRadius { get; }  // Radius from the center of the hole to the inner edge of the tube.</div>
-              <div class="api-code-item">double OuterRadius { get; }  // Radius from the center of the hole to the outermost edge of the tube.</div>
-              <div class="api-code-item">Alignment Alignment { get; }  // Orientation axis of revolution (default: Alignment.z).</div>
+              <div class="api-code-item"><span class="token-keyword">double</span> <span class="token-variable">InnerRadius</span> { <span class="token-keyword">get</span>; }  <span class="token-comment">// Radius from the center of the hole to the inner edge of the tube.</span></div>
+              <div class="api-code-item"><span class="token-keyword">double</span> <span class="token-variable">OuterRadius</span> { <span class="token-keyword">get</span>; }  <span class="token-comment">// Radius from the center of the hole to the outermost edge of the tube.</span></div>
+              <div class="api-code-item"><span class="token-type">Alignment</span> <span class="token-type">Alignment</span> { <span class="token-keyword">get</span>; }  <span class="token-comment">// Orientation axis of revolution (default: Alignment.z).</span></div>
             </div>
           </section>
           <section>
@@ -298,10 +298,10 @@ Draw(ball, RGB(231, 76, 60));</code></pre>
                 <span>Copy</span>
               </button>
             </div>
-            <div class="api-code-block" style="color: var(--accent-yellow);">
-              <pre><code>// Torus with outer ring radius 20, tube inner radius 5
-var ring = new Torus(innerRadius: 5, outerRadius: 20);
-Draw(ring, RGB(241, 196, 15));</code></pre>
+            <div class="api-code-block">
+              <pre><code><span class="token-comment">// Torus with outer ring radius 20, tube inner radius 5</span>
+<span class="token-keyword">var</span> <span class="token-variable">ring</span> <span class="token-operator">=</span> <span class="token-keyword">new</span> <span class="token-type">Torus</span>(<span class="token-variable">innerRadius</span>: <span class="token-number">5</span>, <span class="token-variable">outerRadius</span>: <span class="token-number">20</span>);
+<span class="token-method">Draw</span>(<span class="token-variable">ring</span>, <span class="token-method">RGB</span>(<span class="token-number">241</span>, <span class="token-number">196</span>, <span class="token-number">15</span>));</code></pre>
             </div>
           </section>
         </div>
@@ -319,35 +319,35 @@ Draw(ring, RGB(241, 196, 15));</code></pre>
           <section>
             <h3 class="api-section-heading">Constructors & Signatures</h3>
             <div class="api-code-block">
-              <div class="api-code-item">new Circle(double radius, int sides = 0)</div>
-              <div class="api-code-item">new Circle(double x, double y, double radius, int sides = 0)</div>
-              <div class="api-code-item">new Circle(Vector2 center, double radius, int sides = 0)</div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Circle</span>(<span class="token-keyword">double</span> <span class="token-variable">radius</span>, <span class="token-keyword">int</span> <span class="token-variable">sides</span> <span class="token-operator">=</span> <span class="token-number">0</span>)</div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Circle</span>(<span class="token-keyword">double</span> <span class="token-variable">x</span>, <span class="token-keyword">double</span> <span class="token-variable">y</span>, <span class="token-keyword">double</span> <span class="token-variable">radius</span>, <span class="token-keyword">int</span> <span class="token-variable">sides</span> <span class="token-operator">=</span> <span class="token-number">0</span>)</div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Circle</span>(<span class="token-type">Vector2</span> <span class="token-variable">center</span>, <span class="token-keyword">double</span> <span class="token-variable">radius</span>, <span class="token-keyword">int</span> <span class="token-variable">sides</span> <span class="token-operator">=</span> <span class="token-number">0</span>)</div>
             </div>
           </section>
           <section>
             <h3 class="api-section-heading">Properties</h3>
             <div class="api-code-block">
-              <div class="api-code-item">Vector2 Center { get; set; }</div>
-              <div class="api-code-item">double Radius { get; set; }</div>
-              <div class="api-code-item">int Sides { get; set; }</div>
-              <div class="api-code-item">double Diameter { get; set; }</div>
-              <div class="api-code-item">bool IsClosed { get; }</div>
+              <div class="api-code-item"><span class="token-type">Vector2</span> <span class="token-property">Center</span> { <span class="token-keyword">get</span>; <span class="token-keyword">set</span>; }</div>
+              <div class="api-code-item"><span class="token-keyword">double</span> <span class="token-property">Radius</span> { <span class="token-keyword">get</span>; <span class="token-keyword">set</span>; }</div>
+              <div class="api-code-item"><span class="token-keyword">int</span> <span class="token-variable">Sides</span> { <span class="token-keyword">get</span>; <span class="token-keyword">set</span>; }</div>
+              <div class="api-code-item"><span class="token-keyword">double</span> <span class="token-variable">Diameter</span> { <span class="token-keyword">get</span>; <span class="token-keyword">set</span>; }</div>
+              <div class="api-code-item"><span class="token-keyword">bool</span> <span class="token-variable">IsClosed</span> { <span class="token-keyword">get</span>; }</div>
             </div>
           </section>
           <section>
             <h3 class="api-section-heading">Methods</h3>
             <div class="api-code-block">
-              <div class="api-code-item">void ValidateClosed(string operationName = &quot;extrude&quot;)</div>
-              <div class="api-code-item">IVertexSource ToVertexSource()</div>
-              <div class="api-code-item">CsgObject Extrude(double height, bool centered = false, Alignment alignment = z)</div>
-              <div class="api-code-item">CsgObject Revolve(double angleDegrees = 360, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)</div>
-              <div class="api-code-item">CsgObject RevolveRadians(double angleStart = 0, double angleEnd = 6,2831854820251465, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)</div>
-              <div class="api-code-item">CsgObject Loft(I2DPrimitive top, double height, double twistDegrees = 0, int resolution = 60, bool capped = true, bool centered = false, Alignment alignment = z)</div>
-              <div class="api-code-item">CsgObject Extrude(double height, double twistDegrees, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)</div>
-              <div class="api-code-item">CsgObject TwistExtrude(double height, double twistDegrees = 360, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)</div>
-              <div class="api-code-item">Mesh ToMesh()</div>
-              <div class="api-code-item">Mesh ToWireMesh(double width = 0,5)</div>
-              <div class="api-code-item">string ToString()</div>
+              <div class="api-code-item"><span class="token-keyword">void</span> <span class="token-variable">ValidateClosed</span>(<span class="token-keyword">string</span> <span class="token-variable">operationName</span> <span class="token-operator">=</span> <span class="token-string">&quot;extrude&quot;</span>)</div>
+              <div class="api-code-item"><span class="token-variable">IVertexSource</span> <span class="token-variable">ToVertexSource</span>()</div>
+              <div class="api-code-item"><span class="token-type">CsgObject</span> <span class="token-method">Extrude</span>(<span class="token-keyword">double</span> <span class="token-variable">height</span>, <span class="token-keyword">bool</span> <span class="token-variable">centered</span> <span class="token-operator">=</span> <span class="token-keyword">false</span>, <span class="token-type">Alignment</span> <span class="token-variable">alignment</span> <span class="token-operator">=</span> <span class="token-variable">z</span>)</div>
+              <div class="api-code-item"><span class="token-type">CsgObject</span> <span class="token-method">Revolve</span>(<span class="token-keyword">double</span> <span class="token-variable">angleDegrees</span> <span class="token-operator">=</span> <span class="token-number">360</span>, <span class="token-keyword">int</span> <span class="token-variable">angleSteps</span> <span class="token-operator">=</span> <span class="token-number">30</span>, <span class="token-keyword">double</span> <span class="token-variable">axisOffset</span> <span class="token-operator">=</span> <span class="token-number">0</span>, <span class="token-keyword">bool</span> <span class="token-variable">revolveAroundZ</span> <span class="token-operator">=</span> <span class="token-keyword">true</span>)</div>
+              <div class="api-code-item"><span class="token-type">CsgObject</span> <span class="token-variable">RevolveRadians</span>(<span class="token-keyword">double</span> <span class="token-variable">angleStart</span> <span class="token-operator">=</span> <span class="token-number">0</span>, <span class="token-keyword">double</span> <span class="token-variable">angleEnd</span> <span class="token-operator">=</span> <span class="token-number">6</span>,<span class="token-number">2831854820251465</span>, <span class="token-keyword">int</span> <span class="token-variable">angleSteps</span> <span class="token-operator">=</span> <span class="token-number">30</span>, <span class="token-keyword">double</span> <span class="token-variable">axisOffset</span> <span class="token-operator">=</span> <span class="token-number">0</span>, <span class="token-keyword">bool</span> <span class="token-variable">revolveAroundZ</span> <span class="token-operator">=</span> <span class="token-keyword">true</span>)</div>
+              <div class="api-code-item"><span class="token-type">CsgObject</span> <span class="token-method">Loft</span>(<span class="token-type">I2DPrimitive</span> <span class="token-variable">top</span>, <span class="token-keyword">double</span> <span class="token-variable">height</span>, <span class="token-keyword">double</span> <span class="token-variable">twistDegrees</span> <span class="token-operator">=</span> <span class="token-number">0</span>, <span class="token-keyword">int</span> <span class="token-variable">resolution</span> <span class="token-operator">=</span> <span class="token-number">60</span>, <span class="token-keyword">bool</span> <span class="token-variable">capped</span> <span class="token-operator">=</span> <span class="token-keyword">true</span>, <span class="token-keyword">bool</span> <span class="token-variable">centered</span> <span class="token-operator">=</span> <span class="token-keyword">false</span>, <span class="token-type">Alignment</span> <span class="token-variable">alignment</span> <span class="token-operator">=</span> <span class="token-variable">z</span>)</div>
+              <div class="api-code-item"><span class="token-type">CsgObject</span> <span class="token-method">Extrude</span>(<span class="token-keyword">double</span> <span class="token-variable">height</span>, <span class="token-keyword">double</span> <span class="token-variable">twistDegrees</span>, <span class="token-keyword">int</span> <span class="token-variable">slices</span> <span class="token-operator">=</span> <span class="token-number">30</span>, <span class="token-keyword">double</span> <span class="token-variable">scale</span> <span class="token-operator">=</span> <span class="token-number">1</span>, <span class="token-keyword">bool</span> <span class="token-variable">centered</span> <span class="token-operator">=</span> <span class="token-keyword">false</span>, <span class="token-type">Alignment</span> <span class="token-variable">alignment</span> <span class="token-operator">=</span> <span class="token-variable">z</span>)</div>
+              <div class="api-code-item"><span class="token-type">CsgObject</span> <span class="token-method">TwistExtrude</span>(<span class="token-keyword">double</span> <span class="token-variable">height</span>, <span class="token-keyword">double</span> <span class="token-variable">twistDegrees</span> <span class="token-operator">=</span> <span class="token-number">360</span>, <span class="token-keyword">int</span> <span class="token-variable">slices</span> <span class="token-operator">=</span> <span class="token-number">30</span>, <span class="token-keyword">double</span> <span class="token-variable">scale</span> <span class="token-operator">=</span> <span class="token-number">1</span>, <span class="token-keyword">bool</span> <span class="token-variable">centered</span> <span class="token-operator">=</span> <span class="token-keyword">false</span>, <span class="token-type">Alignment</span> <span class="token-variable">alignment</span> <span class="token-operator">=</span> <span class="token-variable">z</span>)</div>
+              <div class="api-code-item"><span class="token-type">Mesh</span> <span class="token-method">ToMesh</span>()</div>
+              <div class="api-code-item"><span class="token-type">Mesh</span> <span class="token-method">ToWireMesh</span>(<span class="token-keyword">double</span> <span class="token-variable">width</span> <span class="token-operator">=</span> <span class="token-number">0</span>,<span class="token-number">5</span>)</div>
+              <div class="api-code-item"><span class="token-keyword">string</span> <span class="token-variable">ToString</span>()</div>
             </div>
           </section>
           <section>
@@ -357,10 +357,10 @@ Draw(ring, RGB(241, 196, 15));</code></pre>
                 <span>Copy</span>
               </button>
             </div>
-            <div class="api-code-block" style="color: var(--accent-yellow);">
-              <pre><code>// Circle of radius 15
-var c = new Circle(radius: 15);
-Draw(c, RGB(80, 250, 123));</code></pre>
+            <div class="api-code-block">
+              <pre><code><span class="token-comment">// Circle of radius 15</span>
+<span class="token-keyword">var</span> <span class="token-variable">c</span> <span class="token-operator">=</span> <span class="token-keyword">new</span> <span class="token-type">Circle</span>(<span class="token-variable">radius</span>: <span class="token-number">15</span>);
+<span class="token-method">Draw</span>(<span class="token-variable">c</span>, <span class="token-method">RGB</span>(<span class="token-number">80</span>, <span class="token-number">250</span>, <span class="token-number">123</span>));</code></pre>
             </div>
           </section>
         </div>
@@ -378,36 +378,36 @@ Draw(c, RGB(80, 250, 123));</code></pre>
           <section>
             <h3 class="api-section-heading">Constructors & Signatures</h3>
             <div class="api-code-block">
-              <div class="api-code-item">new Rectangle(double width, double height, bool centered = true)</div>
-              <div class="api-code-item">new Rectangle(double x, double y, double width, double height, bool centered = false)</div>
-              <div class="api-code-item">new Rectangle(Vector2 size, bool centered = true)</div>
-              <div class="api-code-item">new Rectangle(double width, double height, double cornerRadius, bool centered = true)</div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Rectangle</span>(<span class="token-keyword">double</span> <span class="token-variable">width</span>, <span class="token-keyword">double</span> <span class="token-variable">height</span>, <span class="token-keyword">bool</span> <span class="token-variable">centered</span> <span class="token-operator">=</span> <span class="token-keyword">true</span>)</div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Rectangle</span>(<span class="token-keyword">double</span> <span class="token-variable">x</span>, <span class="token-keyword">double</span> <span class="token-variable">y</span>, <span class="token-keyword">double</span> <span class="token-variable">width</span>, <span class="token-keyword">double</span> <span class="token-variable">height</span>, <span class="token-keyword">bool</span> <span class="token-variable">centered</span> <span class="token-operator">=</span> <span class="token-keyword">false</span>)</div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Rectangle</span>(<span class="token-type">Vector2</span> <span class="token-variable">size</span>, <span class="token-keyword">bool</span> <span class="token-variable">centered</span> <span class="token-operator">=</span> <span class="token-keyword">true</span>)</div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Rectangle</span>(<span class="token-keyword">double</span> <span class="token-variable">width</span>, <span class="token-keyword">double</span> <span class="token-variable">height</span>, <span class="token-keyword">double</span> <span class="token-variable">cornerRadius</span>, <span class="token-keyword">bool</span> <span class="token-variable">centered</span> <span class="token-operator">=</span> <span class="token-keyword">true</span>)</div>
             </div>
           </section>
           <section>
             <h3 class="api-section-heading">Properties</h3>
             <div class="api-code-block">
-              <div class="api-code-item">double Width { get; set; }</div>
-              <div class="api-code-item">double Height { get; set; }</div>
-              <div class="api-code-item">Vector2 Center { get; set; }</div>
-              <div class="api-code-item">double CornerRadius { get; set; }</div>
-              <div class="api-code-item">bool IsClosed { get; }</div>
+              <div class="api-code-item"><span class="token-keyword">double</span> <span class="token-property">Width</span> { <span class="token-keyword">get</span>; <span class="token-keyword">set</span>; }</div>
+              <div class="api-code-item"><span class="token-keyword">double</span> <span class="token-property">Height</span> { <span class="token-keyword">get</span>; <span class="token-keyword">set</span>; }</div>
+              <div class="api-code-item"><span class="token-type">Vector2</span> <span class="token-property">Center</span> { <span class="token-keyword">get</span>; <span class="token-keyword">set</span>; }</div>
+              <div class="api-code-item"><span class="token-keyword">double</span> <span class="token-variable">CornerRadius</span> { <span class="token-keyword">get</span>; <span class="token-keyword">set</span>; }</div>
+              <div class="api-code-item"><span class="token-keyword">bool</span> <span class="token-variable">IsClosed</span> { <span class="token-keyword">get</span>; }</div>
             </div>
           </section>
           <section>
             <h3 class="api-section-heading">Methods</h3>
             <div class="api-code-block">
-              <div class="api-code-item">void ValidateClosed(string operationName = &quot;extrude&quot;)</div>
-              <div class="api-code-item">IVertexSource ToVertexSource()</div>
-              <div class="api-code-item">CsgObject Extrude(double height, bool centered = false, Alignment alignment = z)</div>
-              <div class="api-code-item">CsgObject Revolve(double angleDegrees = 360, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)</div>
-              <div class="api-code-item">CsgObject RevolveRadians(double angleStart = 0, double angleEnd = 6,2831854820251465, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)</div>
-              <div class="api-code-item">CsgObject Loft(I2DPrimitive top, double height, double twistDegrees = 0, int resolution = 60, bool capped = true, bool centered = false, Alignment alignment = z)</div>
-              <div class="api-code-item">CsgObject Extrude(double height, double twistDegrees, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)</div>
-              <div class="api-code-item">CsgObject TwistExtrude(double height, double twistDegrees = 360, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)</div>
-              <div class="api-code-item">Mesh ToMesh()</div>
-              <div class="api-code-item">Mesh ToWireMesh(double width = 0,5)</div>
-              <div class="api-code-item">string ToString()</div>
+              <div class="api-code-item"><span class="token-keyword">void</span> <span class="token-variable">ValidateClosed</span>(<span class="token-keyword">string</span> <span class="token-variable">operationName</span> <span class="token-operator">=</span> <span class="token-string">&quot;extrude&quot;</span>)</div>
+              <div class="api-code-item"><span class="token-variable">IVertexSource</span> <span class="token-variable">ToVertexSource</span>()</div>
+              <div class="api-code-item"><span class="token-type">CsgObject</span> <span class="token-method">Extrude</span>(<span class="token-keyword">double</span> <span class="token-variable">height</span>, <span class="token-keyword">bool</span> <span class="token-variable">centered</span> <span class="token-operator">=</span> <span class="token-keyword">false</span>, <span class="token-type">Alignment</span> <span class="token-variable">alignment</span> <span class="token-operator">=</span> <span class="token-variable">z</span>)</div>
+              <div class="api-code-item"><span class="token-type">CsgObject</span> <span class="token-method">Revolve</span>(<span class="token-keyword">double</span> <span class="token-variable">angleDegrees</span> <span class="token-operator">=</span> <span class="token-number">360</span>, <span class="token-keyword">int</span> <span class="token-variable">angleSteps</span> <span class="token-operator">=</span> <span class="token-number">30</span>, <span class="token-keyword">double</span> <span class="token-variable">axisOffset</span> <span class="token-operator">=</span> <span class="token-number">0</span>, <span class="token-keyword">bool</span> <span class="token-variable">revolveAroundZ</span> <span class="token-operator">=</span> <span class="token-keyword">true</span>)</div>
+              <div class="api-code-item"><span class="token-type">CsgObject</span> <span class="token-variable">RevolveRadians</span>(<span class="token-keyword">double</span> <span class="token-variable">angleStart</span> <span class="token-operator">=</span> <span class="token-number">0</span>, <span class="token-keyword">double</span> <span class="token-variable">angleEnd</span> <span class="token-operator">=</span> <span class="token-number">6</span>,<span class="token-number">2831854820251465</span>, <span class="token-keyword">int</span> <span class="token-variable">angleSteps</span> <span class="token-operator">=</span> <span class="token-number">30</span>, <span class="token-keyword">double</span> <span class="token-variable">axisOffset</span> <span class="token-operator">=</span> <span class="token-number">0</span>, <span class="token-keyword">bool</span> <span class="token-variable">revolveAroundZ</span> <span class="token-operator">=</span> <span class="token-keyword">true</span>)</div>
+              <div class="api-code-item"><span class="token-type">CsgObject</span> <span class="token-method">Loft</span>(<span class="token-type">I2DPrimitive</span> <span class="token-variable">top</span>, <span class="token-keyword">double</span> <span class="token-variable">height</span>, <span class="token-keyword">double</span> <span class="token-variable">twistDegrees</span> <span class="token-operator">=</span> <span class="token-number">0</span>, <span class="token-keyword">int</span> <span class="token-variable">resolution</span> <span class="token-operator">=</span> <span class="token-number">60</span>, <span class="token-keyword">bool</span> <span class="token-variable">capped</span> <span class="token-operator">=</span> <span class="token-keyword">true</span>, <span class="token-keyword">bool</span> <span class="token-variable">centered</span> <span class="token-operator">=</span> <span class="token-keyword">false</span>, <span class="token-type">Alignment</span> <span class="token-variable">alignment</span> <span class="token-operator">=</span> <span class="token-variable">z</span>)</div>
+              <div class="api-code-item"><span class="token-type">CsgObject</span> <span class="token-method">Extrude</span>(<span class="token-keyword">double</span> <span class="token-variable">height</span>, <span class="token-keyword">double</span> <span class="token-variable">twistDegrees</span>, <span class="token-keyword">int</span> <span class="token-variable">slices</span> <span class="token-operator">=</span> <span class="token-number">30</span>, <span class="token-keyword">double</span> <span class="token-variable">scale</span> <span class="token-operator">=</span> <span class="token-number">1</span>, <span class="token-keyword">bool</span> <span class="token-variable">centered</span> <span class="token-operator">=</span> <span class="token-keyword">false</span>, <span class="token-type">Alignment</span> <span class="token-variable">alignment</span> <span class="token-operator">=</span> <span class="token-variable">z</span>)</div>
+              <div class="api-code-item"><span class="token-type">CsgObject</span> <span class="token-method">TwistExtrude</span>(<span class="token-keyword">double</span> <span class="token-variable">height</span>, <span class="token-keyword">double</span> <span class="token-variable">twistDegrees</span> <span class="token-operator">=</span> <span class="token-number">360</span>, <span class="token-keyword">int</span> <span class="token-variable">slices</span> <span class="token-operator">=</span> <span class="token-number">30</span>, <span class="token-keyword">double</span> <span class="token-variable">scale</span> <span class="token-operator">=</span> <span class="token-number">1</span>, <span class="token-keyword">bool</span> <span class="token-variable">centered</span> <span class="token-operator">=</span> <span class="token-keyword">false</span>, <span class="token-type">Alignment</span> <span class="token-variable">alignment</span> <span class="token-operator">=</span> <span class="token-variable">z</span>)</div>
+              <div class="api-code-item"><span class="token-type">Mesh</span> <span class="token-method">ToMesh</span>()</div>
+              <div class="api-code-item"><span class="token-type">Mesh</span> <span class="token-method">ToWireMesh</span>(<span class="token-keyword">double</span> <span class="token-variable">width</span> <span class="token-operator">=</span> <span class="token-number">0</span>,<span class="token-number">5</span>)</div>
+              <div class="api-code-item"><span class="token-keyword">string</span> <span class="token-variable">ToString</span>()</div>
             </div>
           </section>
           <section>
@@ -417,10 +417,10 @@ Draw(c, RGB(80, 250, 123));</code></pre>
                 <span>Copy</span>
               </button>
             </div>
-            <div class="api-code-block" style="color: var(--accent-yellow);">
-              <pre><code>// Rectangle 30 wide x 16 tall with 3mm rounded corners
-var rect = new Rectangle(30, 16, cornerRadius: 3, centered: true);
-Draw(rect, RGB(139, 233, 253));</code></pre>
+            <div class="api-code-block">
+              <pre><code><span class="token-comment">// Rectangle 30 wide x 16 tall with 3mm rounded corners</span>
+<span class="token-keyword">var</span> <span class="token-variable">rect</span> <span class="token-operator">=</span> <span class="token-keyword">new</span> <span class="token-type">Rectangle</span>(<span class="token-number">30</span>, <span class="token-number">16</span>, <span class="token-variable">cornerRadius</span>: <span class="token-number">3</span>, <span class="token-variable">centered</span>: <span class="token-keyword">true</span>);
+<span class="token-method">Draw</span>(<span class="token-variable">rect</span>, <span class="token-method">RGB</span>(<span class="token-number">139</span>, <span class="token-number">233</span>, <span class="token-number">253</span>));</code></pre>
             </div>
           </section>
         </div>
@@ -438,21 +438,21 @@ Draw(rect, RGB(139, 233, 253));</code></pre>
           <section>
             <h3 class="api-section-heading">Constructors & Signatures</h3>
             <div class="api-code-block">
-              <div class="api-code-item">new Square(double size, bool centered = true)</div>
-              <div class="api-code-item">new Square(double x, double y, double size, bool centered = false)</div>
-              <div class="api-code-item">new Square(double size, double cornerRadius, bool centered = true)</div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Square</span>(<span class="token-keyword">double</span> <span class="token-variable">size</span>, <span class="token-keyword">bool</span> <span class="token-variable">centered</span> <span class="token-operator">=</span> <span class="token-keyword">true</span>)</div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Square</span>(<span class="token-keyword">double</span> <span class="token-variable">x</span>, <span class="token-keyword">double</span> <span class="token-variable">y</span>, <span class="token-keyword">double</span> <span class="token-variable">size</span>, <span class="token-keyword">bool</span> <span class="token-variable">centered</span> <span class="token-operator">=</span> <span class="token-keyword">false</span>)</div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Square</span>(<span class="token-keyword">double</span> <span class="token-variable">size</span>, <span class="token-keyword">double</span> <span class="token-variable">cornerRadius</span>, <span class="token-keyword">bool</span> <span class="token-variable">centered</span> <span class="token-operator">=</span> <span class="token-keyword">true</span>)</div>
             </div>
           </section>
           <section>
             <h3 class="api-section-heading">Properties</h3>
             <div class="api-code-block">
-              <div class="api-code-item">double Size { get; set; }</div>
+              <div class="api-code-item"><span class="token-keyword">double</span> <span class="token-property">Size</span> { <span class="token-keyword">get</span>; <span class="token-keyword">set</span>; }</div>
             </div>
           </section>
           <section>
             <h3 class="api-section-heading">Methods</h3>
             <div class="api-code-block">
-              <div class="api-code-item">string ToString()</div>
+              <div class="api-code-item"><span class="token-keyword">string</span> <span class="token-variable">ToString</span>()</div>
             </div>
           </section>
           <section>
@@ -462,10 +462,10 @@ Draw(rect, RGB(139, 233, 253));</code></pre>
                 <span>Copy</span>
               </button>
             </div>
-            <div class="api-code-block" style="color: var(--accent-yellow);">
-              <pre><code>// Square with side 24 and rounded corners
-var sq = new Square(size: 24, cornerRadius: 3, centered: true);
-Draw(sq, RGB(189, 147, 249));</code></pre>
+            <div class="api-code-block">
+              <pre><code><span class="token-comment">// Square with side 24 and rounded corners</span>
+<span class="token-keyword">var</span> <span class="token-variable">sq</span> <span class="token-operator">=</span> <span class="token-keyword">new</span> <span class="token-type">Square</span>(<span class="token-variable">size</span>: <span class="token-number">24</span>, <span class="token-variable">cornerRadius</span>: <span class="token-number">3</span>, <span class="token-variable">centered</span>: <span class="token-keyword">true</span>);
+<span class="token-method">Draw</span>(<span class="token-variable">sq</span>, <span class="token-method">RGB</span>(<span class="token-number">189</span>, <span class="token-number">147</span>, <span class="token-number">249</span>));</code></pre>
             </div>
           </section>
         </div>
@@ -483,57 +483,57 @@ Draw(sq, RGB(189, 147, 249));</code></pre>
           <section>
             <h3 class="api-section-heading">Constructors & Signatures</h3>
             <div class="api-code-block">
-              <div class="api-code-item">new Line(Point start, Point end)</div>
-              <div class="api-code-item">new Line(Vector3 start, Vector3 end)</div>
-              <div class="api-code-item">new Line(Vector2 start, Vector2 end)</div>
-              <div class="api-code-item">new Line(double x1, double y1, double x2, double y2)</div>
-              <div class="api-code-item">new Line(double x1, double y1, double z1, double x2, double y2, double z2)</div>
-              <div class="api-code-item">new Line(double length, double angleRadians = 0)</div>
-              <div class="api-code-item">new Line()</div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Line</span>(<span class="token-type">Point</span> <span class="token-variable">start</span>, <span class="token-type">Point</span> <span class="token-variable">end</span>)</div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Line</span>(<span class="token-type">Vector3</span> <span class="token-variable">start</span>, <span class="token-type">Vector3</span> <span class="token-variable">end</span>)</div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Line</span>(<span class="token-type">Vector2</span> <span class="token-variable">start</span>, <span class="token-type">Vector2</span> <span class="token-variable">end</span>)</div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Line</span>(<span class="token-keyword">double</span> <span class="token-variable">x1</span>, <span class="token-keyword">double</span> <span class="token-variable">y1</span>, <span class="token-keyword">double</span> <span class="token-variable">x2</span>, <span class="token-keyword">double</span> <span class="token-variable">y2</span>)</div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Line</span>(<span class="token-keyword">double</span> <span class="token-variable">x1</span>, <span class="token-keyword">double</span> <span class="token-variable">y1</span>, <span class="token-keyword">double</span> <span class="token-variable">z1</span>, <span class="token-keyword">double</span> <span class="token-variable">x2</span>, <span class="token-keyword">double</span> <span class="token-variable">y2</span>, <span class="token-keyword">double</span> <span class="token-variable">z2</span>)</div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Line</span>(<span class="token-keyword">double</span> <span class="token-variable">length</span>, <span class="token-keyword">double</span> <span class="token-variable">angleRadians</span> <span class="token-operator">=</span> <span class="token-number">0</span>)</div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Line</span>()</div>
             </div>
           </section>
           <section>
             <h3 class="api-section-heading">Properties</h3>
             <div class="api-code-block">
-              <div class="api-code-item">Vector3 Start3D { get; set; }</div>
-              <div class="api-code-item">Vector3 End3D { get; set; }</div>
-              <div class="api-code-item">Point StartPoint { get; set; }</div>
-              <div class="api-code-item">Point EndPoint { get; set; }</div>
-              <div class="api-code-item">Vector2 Start { get; set; }</div>
-              <div class="api-code-item">Vector2 End { get; set; }</div>
-              <div class="api-code-item">double X1 { get; }</div>
-              <div class="api-code-item">double Y1 { get; }</div>
-              <div class="api-code-item">double Z1 { get; }</div>
-              <div class="api-code-item">double X2 { get; }</div>
-              <div class="api-code-item">double Y2 { get; }</div>
-              <div class="api-code-item">double Z2 { get; }</div>
-              <div class="api-code-item">double Dx { get; }</div>
-              <div class="api-code-item">double Dy { get; }</div>
-              <div class="api-code-item">double Dz { get; }</div>
-              <div class="api-code-item">double Length { get; }</div>
-              <div class="api-code-item">double Height { get; }  // The height/length of this line segment. Directly compatible with Cylinder height.</div>
-              <div class="api-code-item">Vector3 MidPoint3D { get; }</div>
-              <div class="api-code-item">Point MidPoint { get; }</div>
-              <div class="api-code-item">Vector3 Direction { get; }</div>
-              <div class="api-code-item">bool IsClosed { get; }</div>
+              <div class="api-code-item"><span class="token-type">Vector3</span> <span class="token-variable">Start3D</span> { <span class="token-keyword">get</span>; <span class="token-keyword">set</span>; }</div>
+              <div class="api-code-item"><span class="token-type">Vector3</span> <span class="token-variable">End3D</span> { <span class="token-keyword">get</span>; <span class="token-keyword">set</span>; }</div>
+              <div class="api-code-item"><span class="token-type">Point</span> <span class="token-variable">StartPoint</span> { <span class="token-keyword">get</span>; <span class="token-keyword">set</span>; }</div>
+              <div class="api-code-item"><span class="token-type">Point</span> <span class="token-variable">EndPoint</span> { <span class="token-keyword">get</span>; <span class="token-keyword">set</span>; }</div>
+              <div class="api-code-item"><span class="token-type">Vector2</span> <span class="token-property">Start</span> { <span class="token-keyword">get</span>; <span class="token-keyword">set</span>; }</div>
+              <div class="api-code-item"><span class="token-type">Vector2</span> <span class="token-property">End</span> { <span class="token-keyword">get</span>; <span class="token-keyword">set</span>; }</div>
+              <div class="api-code-item"><span class="token-keyword">double</span> <span class="token-variable">X1</span> { <span class="token-keyword">get</span>; }</div>
+              <div class="api-code-item"><span class="token-keyword">double</span> <span class="token-variable">Y1</span> { <span class="token-keyword">get</span>; }</div>
+              <div class="api-code-item"><span class="token-keyword">double</span> <span class="token-variable">Z1</span> { <span class="token-keyword">get</span>; }</div>
+              <div class="api-code-item"><span class="token-keyword">double</span> <span class="token-variable">X2</span> { <span class="token-keyword">get</span>; }</div>
+              <div class="api-code-item"><span class="token-keyword">double</span> <span class="token-variable">Y2</span> { <span class="token-keyword">get</span>; }</div>
+              <div class="api-code-item"><span class="token-keyword">double</span> <span class="token-variable">Z2</span> { <span class="token-keyword">get</span>; }</div>
+              <div class="api-code-item"><span class="token-keyword">double</span> <span class="token-variable">Dx</span> { <span class="token-keyword">get</span>; }</div>
+              <div class="api-code-item"><span class="token-keyword">double</span> <span class="token-variable">Dy</span> { <span class="token-keyword">get</span>; }</div>
+              <div class="api-code-item"><span class="token-keyword">double</span> <span class="token-variable">Dz</span> { <span class="token-keyword">get</span>; }</div>
+              <div class="api-code-item"><span class="token-keyword">double</span> <span class="token-property">Length</span> { <span class="token-keyword">get</span>; }</div>
+              <div class="api-code-item"><span class="token-keyword">double</span> <span class="token-property">Height</span> { <span class="token-keyword">get</span>; }  <span class="token-comment">// The height/length of this line segment. Directly compatible with Cylinder height.</span></div>
+              <div class="api-code-item"><span class="token-type">Vector3</span> <span class="token-variable">MidPoint3D</span> { <span class="token-keyword">get</span>; }</div>
+              <div class="api-code-item"><span class="token-type">Point</span> <span class="token-variable">MidPoint</span> { <span class="token-keyword">get</span>; }</div>
+              <div class="api-code-item"><span class="token-type">Vector3</span> <span class="token-variable">Direction</span> { <span class="token-keyword">get</span>; }</div>
+              <div class="api-code-item"><span class="token-keyword">bool</span> <span class="token-variable">IsClosed</span> { <span class="token-keyword">get</span>; }</div>
             </div>
           </section>
           <section>
             <h3 class="api-section-heading">Methods</h3>
             <div class="api-code-block">
-              <div class="api-code-item">void ValidateClosed(string operationName = &quot;extrude&quot;)</div>
-              <div class="api-code-item">IVertexSource ToVertexSource()</div>
-              <div class="api-code-item">CsgObject Extrude(double height, bool centered = false, Alignment alignment = z)</div>
-              <div class="api-code-item">CsgObject Revolve(double angleDegrees = 360, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)</div>
-              <div class="api-code-item">CsgObject RevolveRadians(double angleStart = 0, double angleEnd = 6,2831854820251465, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)</div>
-              <div class="api-code-item">CsgObject Loft(I2DPrimitive top, double height, double twistDegrees = 0, int resolution = 60, bool capped = true, bool centered = false, Alignment alignment = z)</div>
-              <div class="api-code-item">CsgObject Extrude(double height, double twistDegrees, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)</div>
-              <div class="api-code-item">CsgObject TwistExtrude(double height, double twistDegrees = 360, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)</div>
-              <div class="api-code-item">Mesh ToMesh()</div>
-              <div class="api-code-item">Mesh ToWireMesh(double width = 0,5)</div>
-              <div class="api-code-item">CsgObject ToCylinder(double radius, int sides = 16)</div>
-              <div class="api-code-item">Path ToPath()</div>
-              <div class="api-code-item">string ToString()</div>
+              <div class="api-code-item"><span class="token-keyword">void</span> <span class="token-variable">ValidateClosed</span>(<span class="token-keyword">string</span> <span class="token-variable">operationName</span> <span class="token-operator">=</span> <span class="token-string">&quot;extrude&quot;</span>)</div>
+              <div class="api-code-item"><span class="token-variable">IVertexSource</span> <span class="token-variable">ToVertexSource</span>()</div>
+              <div class="api-code-item"><span class="token-type">CsgObject</span> <span class="token-method">Extrude</span>(<span class="token-keyword">double</span> <span class="token-variable">height</span>, <span class="token-keyword">bool</span> <span class="token-variable">centered</span> <span class="token-operator">=</span> <span class="token-keyword">false</span>, <span class="token-type">Alignment</span> <span class="token-variable">alignment</span> <span class="token-operator">=</span> <span class="token-variable">z</span>)</div>
+              <div class="api-code-item"><span class="token-type">CsgObject</span> <span class="token-method">Revolve</span>(<span class="token-keyword">double</span> <span class="token-variable">angleDegrees</span> <span class="token-operator">=</span> <span class="token-number">360</span>, <span class="token-keyword">int</span> <span class="token-variable">angleSteps</span> <span class="token-operator">=</span> <span class="token-number">30</span>, <span class="token-keyword">double</span> <span class="token-variable">axisOffset</span> <span class="token-operator">=</span> <span class="token-number">0</span>, <span class="token-keyword">bool</span> <span class="token-variable">revolveAroundZ</span> <span class="token-operator">=</span> <span class="token-keyword">true</span>)</div>
+              <div class="api-code-item"><span class="token-type">CsgObject</span> <span class="token-variable">RevolveRadians</span>(<span class="token-keyword">double</span> <span class="token-variable">angleStart</span> <span class="token-operator">=</span> <span class="token-number">0</span>, <span class="token-keyword">double</span> <span class="token-variable">angleEnd</span> <span class="token-operator">=</span> <span class="token-number">6</span>,<span class="token-number">2831854820251465</span>, <span class="token-keyword">int</span> <span class="token-variable">angleSteps</span> <span class="token-operator">=</span> <span class="token-number">30</span>, <span class="token-keyword">double</span> <span class="token-variable">axisOffset</span> <span class="token-operator">=</span> <span class="token-number">0</span>, <span class="token-keyword">bool</span> <span class="token-variable">revolveAroundZ</span> <span class="token-operator">=</span> <span class="token-keyword">true</span>)</div>
+              <div class="api-code-item"><span class="token-type">CsgObject</span> <span class="token-method">Loft</span>(<span class="token-type">I2DPrimitive</span> <span class="token-variable">top</span>, <span class="token-keyword">double</span> <span class="token-variable">height</span>, <span class="token-keyword">double</span> <span class="token-variable">twistDegrees</span> <span class="token-operator">=</span> <span class="token-number">0</span>, <span class="token-keyword">int</span> <span class="token-variable">resolution</span> <span class="token-operator">=</span> <span class="token-number">60</span>, <span class="token-keyword">bool</span> <span class="token-variable">capped</span> <span class="token-operator">=</span> <span class="token-keyword">true</span>, <span class="token-keyword">bool</span> <span class="token-variable">centered</span> <span class="token-operator">=</span> <span class="token-keyword">false</span>, <span class="token-type">Alignment</span> <span class="token-variable">alignment</span> <span class="token-operator">=</span> <span class="token-variable">z</span>)</div>
+              <div class="api-code-item"><span class="token-type">CsgObject</span> <span class="token-method">Extrude</span>(<span class="token-keyword">double</span> <span class="token-variable">height</span>, <span class="token-keyword">double</span> <span class="token-variable">twistDegrees</span>, <span class="token-keyword">int</span> <span class="token-variable">slices</span> <span class="token-operator">=</span> <span class="token-number">30</span>, <span class="token-keyword">double</span> <span class="token-variable">scale</span> <span class="token-operator">=</span> <span class="token-number">1</span>, <span class="token-keyword">bool</span> <span class="token-variable">centered</span> <span class="token-operator">=</span> <span class="token-keyword">false</span>, <span class="token-type">Alignment</span> <span class="token-variable">alignment</span> <span class="token-operator">=</span> <span class="token-variable">z</span>)</div>
+              <div class="api-code-item"><span class="token-type">CsgObject</span> <span class="token-method">TwistExtrude</span>(<span class="token-keyword">double</span> <span class="token-variable">height</span>, <span class="token-keyword">double</span> <span class="token-variable">twistDegrees</span> <span class="token-operator">=</span> <span class="token-number">360</span>, <span class="token-keyword">int</span> <span class="token-variable">slices</span> <span class="token-operator">=</span> <span class="token-number">30</span>, <span class="token-keyword">double</span> <span class="token-variable">scale</span> <span class="token-operator">=</span> <span class="token-number">1</span>, <span class="token-keyword">bool</span> <span class="token-variable">centered</span> <span class="token-operator">=</span> <span class="token-keyword">false</span>, <span class="token-type">Alignment</span> <span class="token-variable">alignment</span> <span class="token-operator">=</span> <span class="token-variable">z</span>)</div>
+              <div class="api-code-item"><span class="token-type">Mesh</span> <span class="token-method">ToMesh</span>()</div>
+              <div class="api-code-item"><span class="token-type">Mesh</span> <span class="token-method">ToWireMesh</span>(<span class="token-keyword">double</span> <span class="token-variable">width</span> <span class="token-operator">=</span> <span class="token-number">0</span>,<span class="token-number">5</span>)</div>
+              <div class="api-code-item"><span class="token-type">CsgObject</span> <span class="token-variable">ToCylinder</span>(<span class="token-keyword">double</span> <span class="token-variable">radius</span>, <span class="token-keyword">int</span> <span class="token-variable">sides</span> <span class="token-operator">=</span> <span class="token-number">16</span>)</div>
+              <div class="api-code-item"><span class="token-type">Path</span> <span class="token-method">ToPath</span>()</div>
+              <div class="api-code-item"><span class="token-keyword">string</span> <span class="token-variable">ToString</span>()</div>
             </div>
           </section>
           <section>
@@ -543,10 +543,10 @@ Draw(sq, RGB(189, 147, 249));</code></pre>
                 <span>Copy</span>
               </button>
             </div>
-            <div class="api-code-block" style="color: var(--accent-yellow);">
-              <pre><code>// 3D Line between two coordinate points
-var line = new Line(new Point(0, 0, 0), new Point(25, 20, 15));
-Draw(line, RGB(255, 121, 198));</code></pre>
+            <div class="api-code-block">
+              <pre><code><span class="token-comment">// 3D Line between two coordinate points</span>
+<span class="token-keyword">var</span> <span class="token-variable">line</span> <span class="token-operator">=</span> <span class="token-keyword">new</span> <span class="token-type">Line</span>(<span class="token-keyword">new</span> <span class="token-type">Point</span>(<span class="token-number">0</span>, <span class="token-number">0</span>, <span class="token-number">0</span>), <span class="token-keyword">new</span> <span class="token-type">Point</span>(<span class="token-number">25</span>, <span class="token-number">20</span>, <span class="token-number">15</span>));
+<span class="token-method">Draw</span>(<span class="token-variable">line</span>, <span class="token-method">RGB</span>(<span class="token-number">255</span>, <span class="token-number">121</span>, <span class="token-number">198</span>));</code></pre>
             </div>
           </section>
         </div>
@@ -564,54 +564,54 @@ Draw(line, RGB(255, 121, 198));</code></pre>
           <section>
             <h3 class="api-section-heading">Constructors & Signatures</h3>
             <div class="api-code-block">
-              <div class="api-code-item">new Point(double x, double y, double z = 0)</div>
-              <div class="api-code-item">new Point(double x, double y)</div>
-              <div class="api-code-item">new Point(Vector2 pos)</div>
-              <div class="api-code-item">new Point(Vector3 pos)</div>
-              <div class="api-code-item">new Point()</div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Point</span>(<span class="token-keyword">double</span> <span class="token-variable">x</span>, <span class="token-keyword">double</span> <span class="token-variable">y</span>, <span class="token-keyword">double</span> <span class="token-variable">z</span> <span class="token-operator">=</span> <span class="token-number">0</span>)</div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Point</span>(<span class="token-keyword">double</span> <span class="token-variable">x</span>, <span class="token-keyword">double</span> <span class="token-variable">y</span>)</div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Point</span>(<span class="token-type">Vector2</span> <span class="token-variable">pos</span>)</div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Point</span>(<span class="token-type">Vector3</span> <span class="token-variable">pos</span>)</div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Point</span>()</div>
             </div>
           </section>
           <section>
             <h3 class="api-section-heading">Properties</h3>
             <div class="api-code-block">
-              <div class="api-code-item">double X { get; set; }</div>
-              <div class="api-code-item">double Y { get; set; }</div>
-              <div class="api-code-item">double Z { get; set; }</div>
-              <div class="api-code-item">Vector2 Position2D { get; set; }</div>
-              <div class="api-code-item">Vector3 Position3D { get; set; }</div>
-              <div class="api-code-item">Vector2 Position { get; set; }</div>
-              <div class="api-code-item">bool IsClosed { get; }</div>
+              <div class="api-code-item"><span class="token-keyword">double</span> <span class="token-property">X</span> { <span class="token-keyword">get</span>; <span class="token-keyword">set</span>; }</div>
+              <div class="api-code-item"><span class="token-keyword">double</span> <span class="token-property">Y</span> { <span class="token-keyword">get</span>; <span class="token-keyword">set</span>; }</div>
+              <div class="api-code-item"><span class="token-keyword">double</span> <span class="token-property">Z</span> { <span class="token-keyword">get</span>; <span class="token-keyword">set</span>; }</div>
+              <div class="api-code-item"><span class="token-type">Vector2</span> <span class="token-variable">Position2D</span> { <span class="token-keyword">get</span>; <span class="token-keyword">set</span>; }</div>
+              <div class="api-code-item"><span class="token-type">Vector3</span> <span class="token-variable">Position3D</span> { <span class="token-keyword">get</span>; <span class="token-keyword">set</span>; }</div>
+              <div class="api-code-item"><span class="token-type">Vector2</span> <span class="token-variable">Position</span> { <span class="token-keyword">get</span>; <span class="token-keyword">set</span>; }</div>
+              <div class="api-code-item"><span class="token-keyword">bool</span> <span class="token-variable">IsClosed</span> { <span class="token-keyword">get</span>; }</div>
             </div>
           </section>
           <section>
             <h3 class="api-section-heading">Methods</h3>
             <div class="api-code-block">
-              <div class="api-code-item">double DistanceTo(Point other)</div>
-              <div class="api-code-item">double DistanceTo(Vector3 other)</div>
-              <div class="api-code-item">double DistanceTo(Vector2 other)</div>
-              <div class="api-code-item">Line LineTo(Point other)</div>
-              <div class="api-code-item">Line LineTo(Vector3 other)</div>
-              <div class="api-code-item">Line LineTo(Vector2 other)</div>
-              <div class="api-code-item">Line LineTo(double x, double y, double z = 0)</div>
-              <div class="api-code-item">void Deconstruct(Double&amp; x, Double&amp; y)</div>
-              <div class="api-code-item">void Deconstruct(Double&amp; x, Double&amp; y, Double&amp; z)</div>
-              <div class="api-code-item">bool Equals(Object obj)</div>
-              <div class="api-code-item">bool Equals(Point other)</div>
-              <div class="api-code-item">int GetHashCode()</div>
-              <div class="api-code-item">void ValidateClosed(string operationName = &quot;extrude&quot;)</div>
-              <div class="api-code-item">IVertexSource ToVertexSource()</div>
-              <div class="api-code-item">CsgObject Extrude(double height, bool centered = false, Alignment alignment = z)</div>
-              <div class="api-code-item">CsgObject Revolve(double angleDegrees = 360, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)</div>
-              <div class="api-code-item">CsgObject RevolveRadians(double angleStart = 0, double angleEnd = 6,2831854820251465, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)</div>
-              <div class="api-code-item">CsgObject Loft(I2DPrimitive top, double height, double twistDegrees = 0, int resolution = 60, bool capped = true, bool centered = false, Alignment alignment = z)</div>
-              <div class="api-code-item">CsgObject Extrude(double height, double twistDegrees, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)</div>
-              <div class="api-code-item">CsgObject TwistExtrude(double height, double twistDegrees = 360, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)</div>
-              <div class="api-code-item">Mesh ToMesh()</div>
-              <div class="api-code-item">Mesh ToWireMesh(double width = 0,5)</div>
-              <div class="api-code-item">Circle ToCircle(double radius)</div>
-              <div class="api-code-item">CsgObject ToSphere(double radius)</div>
-              <div class="api-code-item">Path ToPath()</div>
-              <div class="api-code-item">string ToString()</div>
+              <div class="api-code-item"><span class="token-keyword">double</span> <span class="token-method">DistanceTo</span>(<span class="token-type">Point</span> <span class="token-variable">other</span>)</div>
+              <div class="api-code-item"><span class="token-keyword">double</span> <span class="token-method">DistanceTo</span>(<span class="token-type">Vector3</span> <span class="token-variable">other</span>)</div>
+              <div class="api-code-item"><span class="token-keyword">double</span> <span class="token-method">DistanceTo</span>(<span class="token-type">Vector2</span> <span class="token-variable">other</span>)</div>
+              <div class="api-code-item"><span class="token-type">Line</span> <span class="token-method">LineTo</span>(<span class="token-type">Point</span> <span class="token-variable">other</span>)</div>
+              <div class="api-code-item"><span class="token-type">Line</span> <span class="token-method">LineTo</span>(<span class="token-type">Vector3</span> <span class="token-variable">other</span>)</div>
+              <div class="api-code-item"><span class="token-type">Line</span> <span class="token-method">LineTo</span>(<span class="token-type">Vector2</span> <span class="token-variable">other</span>)</div>
+              <div class="api-code-item"><span class="token-type">Line</span> <span class="token-method">LineTo</span>(<span class="token-keyword">double</span> <span class="token-variable">x</span>, <span class="token-keyword">double</span> <span class="token-variable">y</span>, <span class="token-keyword">double</span> <span class="token-variable">z</span> <span class="token-operator">=</span> <span class="token-number">0</span>)</div>
+              <div class="api-code-item"><span class="token-keyword">void</span> <span class="token-variable">Deconstruct</span>(<span class="token-variable">Double</span><span class="token-operator">&amp;</span> <span class="token-variable">x</span>, <span class="token-variable">Double</span><span class="token-operator">&amp;</span> <span class="token-variable">y</span>)</div>
+              <div class="api-code-item"><span class="token-keyword">void</span> <span class="token-variable">Deconstruct</span>(<span class="token-variable">Double</span><span class="token-operator">&amp;</span> <span class="token-variable">x</span>, <span class="token-variable">Double</span><span class="token-operator">&amp;</span> <span class="token-variable">y</span>, <span class="token-variable">Double</span><span class="token-operator">&amp;</span> <span class="token-variable">z</span>)</div>
+              <div class="api-code-item"><span class="token-keyword">bool</span> <span class="token-variable">Equals</span>(<span class="token-variable">Object</span> <span class="token-variable">obj</span>)</div>
+              <div class="api-code-item"><span class="token-keyword">bool</span> <span class="token-variable">Equals</span>(<span class="token-type">Point</span> <span class="token-variable">other</span>)</div>
+              <div class="api-code-item"><span class="token-keyword">int</span> <span class="token-variable">GetHashCode</span>()</div>
+              <div class="api-code-item"><span class="token-keyword">void</span> <span class="token-variable">ValidateClosed</span>(<span class="token-keyword">string</span> <span class="token-variable">operationName</span> <span class="token-operator">=</span> <span class="token-string">&quot;extrude&quot;</span>)</div>
+              <div class="api-code-item"><span class="token-variable">IVertexSource</span> <span class="token-variable">ToVertexSource</span>()</div>
+              <div class="api-code-item"><span class="token-type">CsgObject</span> <span class="token-method">Extrude</span>(<span class="token-keyword">double</span> <span class="token-variable">height</span>, <span class="token-keyword">bool</span> <span class="token-variable">centered</span> <span class="token-operator">=</span> <span class="token-keyword">false</span>, <span class="token-type">Alignment</span> <span class="token-variable">alignment</span> <span class="token-operator">=</span> <span class="token-variable">z</span>)</div>
+              <div class="api-code-item"><span class="token-type">CsgObject</span> <span class="token-method">Revolve</span>(<span class="token-keyword">double</span> <span class="token-variable">angleDegrees</span> <span class="token-operator">=</span> <span class="token-number">360</span>, <span class="token-keyword">int</span> <span class="token-variable">angleSteps</span> <span class="token-operator">=</span> <span class="token-number">30</span>, <span class="token-keyword">double</span> <span class="token-variable">axisOffset</span> <span class="token-operator">=</span> <span class="token-number">0</span>, <span class="token-keyword">bool</span> <span class="token-variable">revolveAroundZ</span> <span class="token-operator">=</span> <span class="token-keyword">true</span>)</div>
+              <div class="api-code-item"><span class="token-type">CsgObject</span> <span class="token-variable">RevolveRadians</span>(<span class="token-keyword">double</span> <span class="token-variable">angleStart</span> <span class="token-operator">=</span> <span class="token-number">0</span>, <span class="token-keyword">double</span> <span class="token-variable">angleEnd</span> <span class="token-operator">=</span> <span class="token-number">6</span>,<span class="token-number">2831854820251465</span>, <span class="token-keyword">int</span> <span class="token-variable">angleSteps</span> <span class="token-operator">=</span> <span class="token-number">30</span>, <span class="token-keyword">double</span> <span class="token-variable">axisOffset</span> <span class="token-operator">=</span> <span class="token-number">0</span>, <span class="token-keyword">bool</span> <span class="token-variable">revolveAroundZ</span> <span class="token-operator">=</span> <span class="token-keyword">true</span>)</div>
+              <div class="api-code-item"><span class="token-type">CsgObject</span> <span class="token-method">Loft</span>(<span class="token-type">I2DPrimitive</span> <span class="token-variable">top</span>, <span class="token-keyword">double</span> <span class="token-variable">height</span>, <span class="token-keyword">double</span> <span class="token-variable">twistDegrees</span> <span class="token-operator">=</span> <span class="token-number">0</span>, <span class="token-keyword">int</span> <span class="token-variable">resolution</span> <span class="token-operator">=</span> <span class="token-number">60</span>, <span class="token-keyword">bool</span> <span class="token-variable">capped</span> <span class="token-operator">=</span> <span class="token-keyword">true</span>, <span class="token-keyword">bool</span> <span class="token-variable">centered</span> <span class="token-operator">=</span> <span class="token-keyword">false</span>, <span class="token-type">Alignment</span> <span class="token-variable">alignment</span> <span class="token-operator">=</span> <span class="token-variable">z</span>)</div>
+              <div class="api-code-item"><span class="token-type">CsgObject</span> <span class="token-method">Extrude</span>(<span class="token-keyword">double</span> <span class="token-variable">height</span>, <span class="token-keyword">double</span> <span class="token-variable">twistDegrees</span>, <span class="token-keyword">int</span> <span class="token-variable">slices</span> <span class="token-operator">=</span> <span class="token-number">30</span>, <span class="token-keyword">double</span> <span class="token-variable">scale</span> <span class="token-operator">=</span> <span class="token-number">1</span>, <span class="token-keyword">bool</span> <span class="token-variable">centered</span> <span class="token-operator">=</span> <span class="token-keyword">false</span>, <span class="token-type">Alignment</span> <span class="token-variable">alignment</span> <span class="token-operator">=</span> <span class="token-variable">z</span>)</div>
+              <div class="api-code-item"><span class="token-type">CsgObject</span> <span class="token-method">TwistExtrude</span>(<span class="token-keyword">double</span> <span class="token-variable">height</span>, <span class="token-keyword">double</span> <span class="token-variable">twistDegrees</span> <span class="token-operator">=</span> <span class="token-number">360</span>, <span class="token-keyword">int</span> <span class="token-variable">slices</span> <span class="token-operator">=</span> <span class="token-number">30</span>, <span class="token-keyword">double</span> <span class="token-variable">scale</span> <span class="token-operator">=</span> <span class="token-number">1</span>, <span class="token-keyword">bool</span> <span class="token-variable">centered</span> <span class="token-operator">=</span> <span class="token-keyword">false</span>, <span class="token-type">Alignment</span> <span class="token-variable">alignment</span> <span class="token-operator">=</span> <span class="token-variable">z</span>)</div>
+              <div class="api-code-item"><span class="token-type">Mesh</span> <span class="token-method">ToMesh</span>()</div>
+              <div class="api-code-item"><span class="token-type">Mesh</span> <span class="token-method">ToWireMesh</span>(<span class="token-keyword">double</span> <span class="token-variable">width</span> <span class="token-operator">=</span> <span class="token-number">0</span>,<span class="token-number">5</span>)</div>
+              <div class="api-code-item"><span class="token-type">Circle</span> <span class="token-method">ToCircle</span>(<span class="token-keyword">double</span> <span class="token-variable">radius</span>)</div>
+              <div class="api-code-item"><span class="token-type">CsgObject</span> <span class="token-method">ToSphere</span>(<span class="token-keyword">double</span> <span class="token-variable">radius</span>)</div>
+              <div class="api-code-item"><span class="token-type">Path</span> <span class="token-method">ToPath</span>()</div>
+              <div class="api-code-item"><span class="token-keyword">string</span> <span class="token-variable">ToString</span>()</div>
             </div>
           </section>
           <section>
@@ -621,18 +621,18 @@ Draw(line, RGB(255, 121, 198));</code></pre>
                 <span>Copy</span>
               </button>
             </div>
-            <div class="api-code-block" style="color: var(--accent-yellow);">
-              <pre><code>// 1. Create a 3D coordinate point (X, Y, Z)
-var pt = new Point(10, 15, 20);
+            <div class="api-code-block">
+              <pre><code><span class="token-comment">// 1. Create a 3D coordinate point (X, Y, Z)</span>
+<span class="token-keyword">var</span> <span class="token-variable">pt</span> <span class="token-operator">=</span> <span class="token-keyword">new</span> <span class="token-type">Point</span>(<span class="token-number">10</span>, <span class="token-number">15</span>, <span class="token-number">20</span>);
 
-// 2. Position a solid at the point coordinates (or call pt.ToSphere(3)):
-var sphere = new Translate(new Sphere(3), pt);
+<span class="token-comment">// 2. Position a solid at the point coordinates (or call pt.ToSphere(3)):</span>
+<span class="token-keyword">var</span> <span class="token-variable">sphere</span> <span class="token-operator">=</span> <span class="token-keyword">new</span> <span class="token-type">Translate</span>(<span class="token-keyword">new</span> <span class="token-type">Sphere</span>(<span class="token-number">3</span>), <span class="token-variable">pt</span>);
 
-// 3. Connect the point to origin with a 3D line:
-var line = pt.LineTo(new Point(0, 0, 0));
+<span class="token-comment">// 3. Connect the point to origin with a 3D line:</span>
+<span class="token-keyword">var</span> <span class="token-variable">line</span> <span class="token-operator">=</span> <span class="token-variable">pt</span>.<span class="token-method">LineTo</span>(<span class="token-keyword">new</span> <span class="token-type">Point</span>(<span class="token-number">0</span>, <span class="token-number">0</span>, <span class="token-number">0</span>));
 
-Draw(sphere, RGB(255, 85, 85));
-Draw(line, RGB(80, 200, 255));</code></pre>
+<span class="token-method">Draw</span>(<span class="token-variable">sphere</span>, <span class="token-method">RGB</span>(<span class="token-number">255</span>, <span class="token-number">85</span>, <span class="token-number">85</span>));
+<span class="token-method">Draw</span>(<span class="token-variable">line</span>, <span class="token-method">RGB</span>(<span class="token-number">80</span>, <span class="token-number">200</span>, <span class="token-number">255</span>));</code></pre>
             </div>
           </section>
         </div>
@@ -650,43 +650,43 @@ Draw(line, RGB(80, 200, 255));</code></pre>
           <section>
             <h3 class="api-section-heading">Constructors & Signatures</h3>
             <div class="api-code-block">
-              <div class="api-code-item">new Path()</div>
-              <div class="api-code-item">new Path(IEnumerable`1 points, bool close = false)</div>
-              <div class="api-code-item">new Path(Vector2[] points)</div>
-              <div class="api-code-item">new Path(double[] coordinates, bool close = false)</div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Path</span>()</div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Path</span>(<span class="token-type">IEnumerable</span>`<span class="token-number">1</span> <span class="token-variable">points</span>, <span class="token-keyword">bool</span> <span class="token-variable">close</span> <span class="token-operator">=</span> <span class="token-keyword">false</span>)</div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Path</span>(<span class="token-type">Vector2</span>[] <span class="token-variable">points</span>)</div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Path</span>(<span class="token-keyword">double</span>[] <span class="token-variable">coordinates</span>, <span class="token-keyword">bool</span> <span class="token-variable">close</span> <span class="token-operator">=</span> <span class="token-keyword">false</span>)</div>
             </div>
           </section>
           <section>
             <h3 class="api-section-heading">Properties</h3>
             <div class="api-code-block">
-              <div class="api-code-item">IReadOnlyList`1 Points { get; }</div>
-              <div class="api-code-item">bool IsClosed { get; }</div>
+              <div class="api-code-item"><span class="token-variable">IReadOnlyList</span>`<span class="token-number">1</span> <span class="token-property">Points</span> { <span class="token-keyword">get</span>; }</div>
+              <div class="api-code-item"><span class="token-keyword">bool</span> <span class="token-variable">IsClosed</span> { <span class="token-keyword">get</span>; }</div>
             </div>
           </section>
           <section>
             <h3 class="api-section-heading">Methods</h3>
             <div class="api-code-block">
-              <div class="api-code-item">Path MoveTo(double x, double y)</div>
-              <div class="api-code-item">Path MoveTo(Vector2 point)</div>
-              <div class="api-code-item">Path LineTo(double x, double y)</div>
-              <div class="api-code-item">Path LineTo(Vector2 point)</div>
-              <div class="api-code-item">Path AddPoint(double x, double y)</div>
-              <div class="api-code-item">Path AddPoint(Vector2 point)</div>
-              <div class="api-code-item">Path Add(Line line)</div>
-              <div class="api-code-item">Path CurveTo(double ctrlX, double ctrlY, double endX, double endY)</div>
-              <div class="api-code-item">Path CurveTo(double ctrl1X, double ctrl1Y, double ctrl2X, double ctrl2Y, double endX, double endY)</div>
-              <div class="api-code-item">Path Close()</div>
-              <div class="api-code-item">void ValidateClosed(string operationName = &quot;extrude&quot;)</div>
-              <div class="api-code-item">IVertexSource ToVertexSource()</div>
-              <div class="api-code-item">CsgObject Extrude(double height, bool centered = false, Alignment alignment = z)</div>
-              <div class="api-code-item">CsgObject Revolve(double angleDegrees = 360, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)</div>
-              <div class="api-code-item">CsgObject RevolveRadians(double angleStart = 0, double angleEnd = 6,2831854820251465, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)</div>
-              <div class="api-code-item">CsgObject Loft(I2DPrimitive top, double height, double twistDegrees = 0, int resolution = 60, bool capped = true, bool centered = false, Alignment alignment = z)</div>
-              <div class="api-code-item">CsgObject Extrude(double height, double twistDegrees, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)</div>
-              <div class="api-code-item">CsgObject TwistExtrude(double height, double twistDegrees = 360, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)</div>
-              <div class="api-code-item">Mesh ToMesh()</div>
-              <div class="api-code-item">Mesh ToWireMesh(double width = 0,5)</div>
-              <div class="api-code-item">string ToString()</div>
+              <div class="api-code-item"><span class="token-type">Path</span> <span class="token-variable">MoveTo</span>(<span class="token-keyword">double</span> <span class="token-variable">x</span>, <span class="token-keyword">double</span> <span class="token-variable">y</span>)</div>
+              <div class="api-code-item"><span class="token-type">Path</span> <span class="token-variable">MoveTo</span>(<span class="token-type">Vector2</span> <span class="token-variable">point</span>)</div>
+              <div class="api-code-item"><span class="token-type">Path</span> <span class="token-method">LineTo</span>(<span class="token-keyword">double</span> <span class="token-variable">x</span>, <span class="token-keyword">double</span> <span class="token-variable">y</span>)</div>
+              <div class="api-code-item"><span class="token-type">Path</span> <span class="token-method">LineTo</span>(<span class="token-type">Vector2</span> <span class="token-variable">point</span>)</div>
+              <div class="api-code-item"><span class="token-type">Path</span> <span class="token-method">AddPoint</span>(<span class="token-keyword">double</span> <span class="token-variable">x</span>, <span class="token-keyword">double</span> <span class="token-variable">y</span>)</div>
+              <div class="api-code-item"><span class="token-type">Path</span> <span class="token-method">AddPoint</span>(<span class="token-type">Vector2</span> <span class="token-variable">point</span>)</div>
+              <div class="api-code-item"><span class="token-type">Path</span> <span class="token-variable">Add</span>(<span class="token-type">Line</span> <span class="token-variable">line</span>)</div>
+              <div class="api-code-item"><span class="token-type">Path</span> <span class="token-variable">CurveTo</span>(<span class="token-keyword">double</span> <span class="token-variable">ctrlX</span>, <span class="token-keyword">double</span> <span class="token-variable">ctrlY</span>, <span class="token-keyword">double</span> <span class="token-variable">endX</span>, <span class="token-keyword">double</span> <span class="token-variable">endY</span>)</div>
+              <div class="api-code-item"><span class="token-type">Path</span> <span class="token-variable">CurveTo</span>(<span class="token-keyword">double</span> <span class="token-variable">ctrl1X</span>, <span class="token-keyword">double</span> <span class="token-variable">ctrl1Y</span>, <span class="token-keyword">double</span> <span class="token-variable">ctrl2X</span>, <span class="token-keyword">double</span> <span class="token-variable">ctrl2Y</span>, <span class="token-keyword">double</span> <span class="token-variable">endX</span>, <span class="token-keyword">double</span> <span class="token-variable">endY</span>)</div>
+              <div class="api-code-item"><span class="token-type">Path</span> <span class="token-method">Close</span>()</div>
+              <div class="api-code-item"><span class="token-keyword">void</span> <span class="token-variable">ValidateClosed</span>(<span class="token-keyword">string</span> <span class="token-variable">operationName</span> <span class="token-operator">=</span> <span class="token-string">&quot;extrude&quot;</span>)</div>
+              <div class="api-code-item"><span class="token-variable">IVertexSource</span> <span class="token-variable">ToVertexSource</span>()</div>
+              <div class="api-code-item"><span class="token-type">CsgObject</span> <span class="token-method">Extrude</span>(<span class="token-keyword">double</span> <span class="token-variable">height</span>, <span class="token-keyword">bool</span> <span class="token-variable">centered</span> <span class="token-operator">=</span> <span class="token-keyword">false</span>, <span class="token-type">Alignment</span> <span class="token-variable">alignment</span> <span class="token-operator">=</span> <span class="token-variable">z</span>)</div>
+              <div class="api-code-item"><span class="token-type">CsgObject</span> <span class="token-method">Revolve</span>(<span class="token-keyword">double</span> <span class="token-variable">angleDegrees</span> <span class="token-operator">=</span> <span class="token-number">360</span>, <span class="token-keyword">int</span> <span class="token-variable">angleSteps</span> <span class="token-operator">=</span> <span class="token-number">30</span>, <span class="token-keyword">double</span> <span class="token-variable">axisOffset</span> <span class="token-operator">=</span> <span class="token-number">0</span>, <span class="token-keyword">bool</span> <span class="token-variable">revolveAroundZ</span> <span class="token-operator">=</span> <span class="token-keyword">true</span>)</div>
+              <div class="api-code-item"><span class="token-type">CsgObject</span> <span class="token-variable">RevolveRadians</span>(<span class="token-keyword">double</span> <span class="token-variable">angleStart</span> <span class="token-operator">=</span> <span class="token-number">0</span>, <span class="token-keyword">double</span> <span class="token-variable">angleEnd</span> <span class="token-operator">=</span> <span class="token-number">6</span>,<span class="token-number">2831854820251465</span>, <span class="token-keyword">int</span> <span class="token-variable">angleSteps</span> <span class="token-operator">=</span> <span class="token-number">30</span>, <span class="token-keyword">double</span> <span class="token-variable">axisOffset</span> <span class="token-operator">=</span> <span class="token-number">0</span>, <span class="token-keyword">bool</span> <span class="token-variable">revolveAroundZ</span> <span class="token-operator">=</span> <span class="token-keyword">true</span>)</div>
+              <div class="api-code-item"><span class="token-type">CsgObject</span> <span class="token-method">Loft</span>(<span class="token-type">I2DPrimitive</span> <span class="token-variable">top</span>, <span class="token-keyword">double</span> <span class="token-variable">height</span>, <span class="token-keyword">double</span> <span class="token-variable">twistDegrees</span> <span class="token-operator">=</span> <span class="token-number">0</span>, <span class="token-keyword">int</span> <span class="token-variable">resolution</span> <span class="token-operator">=</span> <span class="token-number">60</span>, <span class="token-keyword">bool</span> <span class="token-variable">capped</span> <span class="token-operator">=</span> <span class="token-keyword">true</span>, <span class="token-keyword">bool</span> <span class="token-variable">centered</span> <span class="token-operator">=</span> <span class="token-keyword">false</span>, <span class="token-type">Alignment</span> <span class="token-variable">alignment</span> <span class="token-operator">=</span> <span class="token-variable">z</span>)</div>
+              <div class="api-code-item"><span class="token-type">CsgObject</span> <span class="token-method">Extrude</span>(<span class="token-keyword">double</span> <span class="token-variable">height</span>, <span class="token-keyword">double</span> <span class="token-variable">twistDegrees</span>, <span class="token-keyword">int</span> <span class="token-variable">slices</span> <span class="token-operator">=</span> <span class="token-number">30</span>, <span class="token-keyword">double</span> <span class="token-variable">scale</span> <span class="token-operator">=</span> <span class="token-number">1</span>, <span class="token-keyword">bool</span> <span class="token-variable">centered</span> <span class="token-operator">=</span> <span class="token-keyword">false</span>, <span class="token-type">Alignment</span> <span class="token-variable">alignment</span> <span class="token-operator">=</span> <span class="token-variable">z</span>)</div>
+              <div class="api-code-item"><span class="token-type">CsgObject</span> <span class="token-method">TwistExtrude</span>(<span class="token-keyword">double</span> <span class="token-variable">height</span>, <span class="token-keyword">double</span> <span class="token-variable">twistDegrees</span> <span class="token-operator">=</span> <span class="token-number">360</span>, <span class="token-keyword">int</span> <span class="token-variable">slices</span> <span class="token-operator">=</span> <span class="token-number">30</span>, <span class="token-keyword">double</span> <span class="token-variable">scale</span> <span class="token-operator">=</span> <span class="token-number">1</span>, <span class="token-keyword">bool</span> <span class="token-variable">centered</span> <span class="token-operator">=</span> <span class="token-keyword">false</span>, <span class="token-type">Alignment</span> <span class="token-variable">alignment</span> <span class="token-operator">=</span> <span class="token-variable">z</span>)</div>
+              <div class="api-code-item"><span class="token-type">Mesh</span> <span class="token-method">ToMesh</span>()</div>
+              <div class="api-code-item"><span class="token-type">Mesh</span> <span class="token-method">ToWireMesh</span>(<span class="token-keyword">double</span> <span class="token-variable">width</span> <span class="token-operator">=</span> <span class="token-number">0</span>,<span class="token-number">5</span>)</div>
+              <div class="api-code-item"><span class="token-keyword">string</span> <span class="token-variable">ToString</span>()</div>
             </div>
           </section>
           <section>
@@ -696,14 +696,14 @@ Draw(line, RGB(80, 200, 255));</code></pre>
                 <span>Copy</span>
               </button>
             </div>
-            <div class="api-code-block" style="color: var(--accent-yellow);">
-              <pre><code>// Polyline / polygon path formed by chained points
-var path = new Path();
-path.AddPoint(0, 0);
-path.AddPoint(20, 0);
-path.AddPoint(10, 18);
-path.Close();
-Draw(path, RGB(241, 250, 140));</code></pre>
+            <div class="api-code-block">
+              <pre><code><span class="token-comment">// Polyline / polygon path formed by chained points</span>
+<span class="token-keyword">var</span> <span class="token-variable">path</span> <span class="token-operator">=</span> <span class="token-keyword">new</span> <span class="token-type">Path</span>();
+<span class="token-variable">path</span>.<span class="token-method">AddPoint</span>(<span class="token-number">0</span>, <span class="token-number">0</span>);
+<span class="token-variable">path</span>.<span class="token-method">AddPoint</span>(<span class="token-number">20</span>, <span class="token-number">0</span>);
+<span class="token-variable">path</span>.<span class="token-method">AddPoint</span>(<span class="token-number">10</span>, <span class="token-number">18</span>);
+<span class="token-variable">path</span>.<span class="token-method">Close</span>();
+<span class="token-method">Draw</span>(<span class="token-variable">path</span>, <span class="token-method">RGB</span>(<span class="token-number">241</span>, <span class="token-number">250</span>, <span class="token-number">140</span>));</code></pre>
             </div>
           </section>
         </div>
@@ -721,14 +721,14 @@ Draw(path, RGB(241, 250, 140));</code></pre>
           <section>
             <h3 class="api-section-heading">Constructors & Signatures</h3>
             <div class="api-code-block">
-              <div class="api-code-item">new Translate(CsgObject objectToTranslate, double x = 0, double y = 0, double z = 0, string name = &quot;&quot;)  // Translates a CSG object by explicit X, Y, and Z offset distances.</div>
-              <div class="api-code-item">new Translate(CsgObject objectToTranslate, Vector3 translation, string name = &quot;&quot;)  // Translates a CSG object by a Vector3 displacement vector.</div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Translate</span>(<span class="token-type">CsgObject</span> <span class="token-variable">objectToTranslate</span>, <span class="token-keyword">double</span> <span class="token-variable">x</span> <span class="token-operator">=</span> <span class="token-number">0</span>, <span class="token-keyword">double</span> <span class="token-variable">y</span> <span class="token-operator">=</span> <span class="token-number">0</span>, <span class="token-keyword">double</span> <span class="token-variable">z</span> <span class="token-operator">=</span> <span class="token-number">0</span>, <span class="token-keyword">string</span> <span class="token-variable">name</span> <span class="token-operator">=</span> <span class="token-string">&quot;&quot;</span>)  <span class="token-comment">// Translates a CSG object by explicit X, Y, and Z offset distances.</span></div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Translate</span>(<span class="token-type">CsgObject</span> <span class="token-variable">objectToTranslate</span>, <span class="token-type">Vector3</span> <span class="token-variable">translation</span>, <span class="token-keyword">string</span> <span class="token-variable">name</span> <span class="token-operator">=</span> <span class="token-string">&quot;&quot;</span>)  <span class="token-comment">// Translates a CSG object by a Vector3 displacement vector.</span></div>
             </div>
           </section>
           <section>
             <h3 class="api-section-heading">Properties</h3>
             <div class="api-code-block">
-              <div class="api-code-item">Vector3 Translation { get; set; }  // The current 3D translation offset vector.</div>
+              <div class="api-code-item"><span class="token-type">Vector3</span> <span class="token-variable">Translation</span> { <span class="token-keyword">get</span>; <span class="token-keyword">set</span>; }  <span class="token-comment">// The current 3D translation offset vector.</span></div>
             </div>
           </section>
           <section>
@@ -738,11 +738,11 @@ Draw(path, RGB(241, 250, 140));</code></pre>
                 <span>Copy</span>
               </button>
             </div>
-            <div class="api-code-block" style="color: var(--accent-yellow);">
-              <pre><code>// Translate solid 15 units along X and 10 along Z
-var b = new Box(16, 16, 16);
-var shifted = new Translate(b, x: 15, y: 0, z: 10);
-Draw(shifted, RGB(80, 200, 255));</code></pre>
+            <div class="api-code-block">
+              <pre><code><span class="token-comment">// Translate solid 15 units along X and 10 along Z</span>
+<span class="token-keyword">var</span> <span class="token-variable">b</span> <span class="token-operator">=</span> <span class="token-keyword">new</span> <span class="token-type">Box</span>(<span class="token-number">16</span>, <span class="token-number">16</span>, <span class="token-number">16</span>);
+<span class="token-keyword">var</span> <span class="token-variable">shifted</span> <span class="token-operator">=</span> <span class="token-keyword">new</span> <span class="token-type">Translate</span>(<span class="token-variable">b</span>, <span class="token-variable">x</span>: <span class="token-number">15</span>, <span class="token-variable">y</span>: <span class="token-number">0</span>, <span class="token-variable">z</span>: <span class="token-number">10</span>);
+<span class="token-method">Draw</span>(<span class="token-variable">shifted</span>, <span class="token-method">RGB</span>(<span class="token-number">80</span>, <span class="token-number">200</span>, <span class="token-number">255</span>));</code></pre>
             </div>
           </section>
         </div>
@@ -760,8 +760,8 @@ Draw(shifted, RGB(80, 200, 255));</code></pre>
           <section>
             <h3 class="api-section-heading">Constructors & Signatures</h3>
             <div class="api-code-block">
-              <div class="api-code-item">new Rotate(CsgObject objectToRotate, Vector3 radians, string name = &quot;&quot;)  // Rotates a CSG object using Euler angles in radians specified in a Vector3 (X, Y, Z).</div>
-              <div class="api-code-item">new Rotate(CsgObject objectToRotate, double x = 0, double y = 0, double z = 0, string name = &quot;&quot;)  // Rotates a CSG object using explicit Euler angles in radians around the X, Y, and Z axes. Tip: Use MathHelper.DegreesToRadians(degrees) to convert degrees to radians.</div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Rotate</span>(<span class="token-type">CsgObject</span> <span class="token-variable">objectToRotate</span>, <span class="token-type">Vector3</span> <span class="token-variable">radians</span>, <span class="token-keyword">string</span> <span class="token-variable">name</span> <span class="token-operator">=</span> <span class="token-string">&quot;&quot;</span>)  <span class="token-comment">// Rotates a CSG object using Euler angles in radians specified in a Vector3 (X, Y, Z).</span></div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Rotate</span>(<span class="token-type">CsgObject</span> <span class="token-variable">objectToRotate</span>, <span class="token-keyword">double</span> <span class="token-variable">x</span> <span class="token-operator">=</span> <span class="token-number">0</span>, <span class="token-keyword">double</span> <span class="token-variable">y</span> <span class="token-operator">=</span> <span class="token-number">0</span>, <span class="token-keyword">double</span> <span class="token-variable">z</span> <span class="token-operator">=</span> <span class="token-number">0</span>, <span class="token-keyword">string</span> <span class="token-variable">name</span> <span class="token-operator">=</span> <span class="token-string">&quot;&quot;</span>)  <span class="token-comment">// Rotates a CSG object using explicit Euler angles in radians around the X, Y, and Z axes. Tip: Use MathHelper.DegreesToRadians(degrees) to convert degrees to radians.</span></div>
             </div>
           </section>
           <section>
@@ -771,11 +771,11 @@ Draw(shifted, RGB(80, 200, 255));</code></pre>
                 <span>Copy</span>
               </button>
             </div>
-            <div class="api-code-block" style="color: var(--accent-yellow);">
-              <pre><code>// Rotate solid around axes (in radians)
-var b = new Box(12, 12, 28, createCentered: true);
-var tilted = new Rotate(b, x: MathHelper.DegreesToRadians(45), z: MathHelper.DegreesToRadians(30));
-Draw(tilted, RGB(255, 184, 108));</code></pre>
+            <div class="api-code-block">
+              <pre><code><span class="token-comment">// Rotate solid around axes (in radians)</span>
+<span class="token-keyword">var</span> <span class="token-variable">b</span> <span class="token-operator">=</span> <span class="token-keyword">new</span> <span class="token-type">Box</span>(<span class="token-number">12</span>, <span class="token-number">12</span>, <span class="token-number">28</span>, <span class="token-variable">createCentered</span>: <span class="token-keyword">true</span>);
+<span class="token-keyword">var</span> <span class="token-variable">tilted</span> <span class="token-operator">=</span> <span class="token-keyword">new</span> <span class="token-type">Rotate</span>(<span class="token-variable">b</span>, <span class="token-variable">x</span>: <span class="token-type">MathHelper</span>.<span class="token-method">DegreesToRadians</span>(<span class="token-number">45</span>), <span class="token-variable">z</span>: <span class="token-type">MathHelper</span>.<span class="token-method">DegreesToRadians</span>(<span class="token-number">30</span>));
+<span class="token-method">Draw</span>(<span class="token-variable">tilted</span>, <span class="token-method">RGB</span>(<span class="token-number">255</span>, <span class="token-number">184</span>, <span class="token-number">108</span>));</code></pre>
             </div>
           </section>
         </div>
@@ -793,15 +793,15 @@ Draw(tilted, RGB(255, 184, 108));</code></pre>
           <section>
             <h3 class="api-section-heading">Constructors & Signatures</h3>
             <div class="api-code-block">
-              <div class="api-code-item">new Scale(CsgObject objectToScale, double scale, string name = &quot;&quot;)  // Scales a CSG object uniformly by the same multiplier along all 3 axes (X, Y, Z).</div>
-              <div class="api-code-item">new Scale(CsgObject objectToScale, double x, double y, double z, string name = &quot;&quot;)  // Scales a CSG object non-uniformly with independent scale multipliers along X, Y, and Z.</div>
-              <div class="api-code-item">new Scale(CsgObject objectToScale, Vector3 scale, string name = &quot;&quot;)  // Scales a CSG object using a Vector3 containing the (X, Y, Z) scale factors.</div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Scale</span>(<span class="token-type">CsgObject</span> <span class="token-variable">objectToScale</span>, <span class="token-keyword">double</span> <span class="token-variable">scale</span>, <span class="token-keyword">string</span> <span class="token-variable">name</span> <span class="token-operator">=</span> <span class="token-string">&quot;&quot;</span>)  <span class="token-comment">// Scales a CSG object uniformly by the same multiplier along all 3 axes (X, Y, Z).</span></div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Scale</span>(<span class="token-type">CsgObject</span> <span class="token-variable">objectToScale</span>, <span class="token-keyword">double</span> <span class="token-variable">x</span>, <span class="token-keyword">double</span> <span class="token-variable">y</span>, <span class="token-keyword">double</span> <span class="token-variable">z</span>, <span class="token-keyword">string</span> <span class="token-variable">name</span> <span class="token-operator">=</span> <span class="token-string">&quot;&quot;</span>)  <span class="token-comment">// Scales a CSG object non-uniformly with independent scale multipliers along X, Y, and Z.</span></div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Scale</span>(<span class="token-type">CsgObject</span> <span class="token-variable">objectToScale</span>, <span class="token-type">Vector3</span> <span class="token-variable">scale</span>, <span class="token-keyword">string</span> <span class="token-variable">name</span> <span class="token-operator">=</span> <span class="token-string">&quot;&quot;</span>)  <span class="token-comment">// Scales a CSG object using a Vector3 containing the (X, Y, Z) scale factors.</span></div>
             </div>
           </section>
           <section>
             <h3 class="api-section-heading">Methods</h3>
             <div class="api-code-block">
-              <div class="api-code-item">Vector3 GetScale()  // Gets the 3D scale factors (X, Y, Z).</div>
+              <div class="api-code-item"><span class="token-type">Vector3</span> <span class="token-variable">GetScale</span>()  <span class="token-comment">// Gets the 3D scale factors (X, Y, Z).</span></div>
             </div>
           </section>
           <section>
@@ -811,11 +811,11 @@ Draw(tilted, RGB(255, 184, 108));</code></pre>
                 <span>Copy</span>
               </button>
             </div>
-            <div class="api-code-block" style="color: var(--accent-yellow);">
-              <pre><code>// Non-uniform scaling of a solid along axes
-var sph = new Sphere(12);
-var stretched = new Scale(sph, x: 2.0, y: 0.8, z: 1.0);
-Draw(stretched, RGB(189, 147, 249));</code></pre>
+            <div class="api-code-block">
+              <pre><code><span class="token-comment">// Non-uniform scaling of a solid along axes</span>
+<span class="token-keyword">var</span> <span class="token-variable">sph</span> <span class="token-operator">=</span> <span class="token-keyword">new</span> <span class="token-type">Sphere</span>(<span class="token-number">12</span>);
+<span class="token-keyword">var</span> <span class="token-variable">stretched</span> <span class="token-operator">=</span> <span class="token-keyword">new</span> <span class="token-type">Scale</span>(<span class="token-variable">sph</span>, <span class="token-variable">x</span>: <span class="token-number">2.0</span>, <span class="token-variable">y</span>: <span class="token-number">0.8</span>, <span class="token-variable">z</span>: <span class="token-number">1.0</span>);
+<span class="token-method">Draw</span>(<span class="token-variable">stretched</span>, <span class="token-method">RGB</span>(<span class="token-number">189</span>, <span class="token-number">147</span>, <span class="token-number">249</span>));</code></pre>
             </div>
           </section>
         </div>
@@ -833,21 +833,21 @@ Draw(stretched, RGB(189, 147, 249));</code></pre>
           <section>
             <h3 class="api-section-heading">Constructors & Signatures</h3>
             <div class="api-code-block">
-              <div class="api-code-item">new Union(string name = &quot;&quot;)  // Creates an empty Union container.</div>
-              <div class="api-code-item">new Union(CsgObject a, CsgObject b, string name = &quot;&quot;)  // Combines two CSG objects into a unified solid (A + B).</div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Union</span>(<span class="token-keyword">string</span> <span class="token-variable">name</span> <span class="token-operator">=</span> <span class="token-string">&quot;&quot;</span>)  <span class="token-comment">// Creates an empty Union container.</span></div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Union</span>(<span class="token-type">CsgObject</span> <span class="token-variable">a</span>, <span class="token-type">CsgObject</span> <span class="token-variable">b</span>, <span class="token-keyword">string</span> <span class="token-variable">name</span> <span class="token-operator">=</span> <span class="token-string">&quot;&quot;</span>)  <span class="token-comment">// Combines two CSG objects into a unified solid (A + B).</span></div>
             </div>
           </section>
           <section>
             <h3 class="api-section-heading">Properties</h3>
             <div class="api-code-block">
-              <div class="api-code-item">List&lt;CsgObject&gt; AllObjects { get; }  // Gets the list of all participating CSG objects in this union.</div>
+              <div class="api-code-item"><span class="token-type">List</span><span class="token-operator">&lt;</span><span class="token-type">CsgObject</span><span class="token-operator">&gt;</span> <span class="token-variable">AllObjects</span> { <span class="token-keyword">get</span>; }  <span class="token-comment">// Gets the list of all participating CSG objects in this union.</span></div>
             </div>
           </section>
           <section>
             <h3 class="api-section-heading">Methods</h3>
             <div class="api-code-block">
-              <div class="api-code-item">AxisAlignedBoundingBox GetAxisAlignedBoundingBox()</div>
-              <div class="api-code-item">void Add(CsgObject objectToAdd)</div>
+              <div class="api-code-item"><span class="token-variable">AxisAlignedBoundingBox</span> <span class="token-variable">GetAxisAlignedBoundingBox</span>()</div>
+              <div class="api-code-item"><span class="token-keyword">void</span> <span class="token-variable">Add</span>(<span class="token-type">CsgObject</span> <span class="token-variable">objectToAdd</span>)</div>
             </div>
           </section>
           <section>
@@ -857,13 +857,13 @@ Draw(stretched, RGB(189, 147, 249));</code></pre>
                 <span>Copy</span>
               </button>
             </div>
-            <div class="api-code-block" style="color: var(--accent-yellow);">
-              <pre><code>// Union joins multiple solids into one contiguous shape (also: a + b)
-var joined = new Union(
-    new Box(24, 10, 10, createCentered: true),
-    new Box(10, 24, 10, createCentered: true)
+            <div class="api-code-block">
+              <pre><code><span class="token-comment">// Union joins multiple solids into one contiguous shape (also: a + b)</span>
+<span class="token-keyword">var</span> <span class="token-variable">joined</span> <span class="token-operator">=</span> <span class="token-keyword">new</span> <span class="token-type">Union</span>(
+    <span class="token-keyword">new</span> <span class="token-type">Box</span>(<span class="token-number">24</span>, <span class="token-number">10</span>, <span class="token-number">10</span>, <span class="token-variable">createCentered</span>: <span class="token-keyword">true</span>),
+    <span class="token-keyword">new</span> <span class="token-type">Box</span>(<span class="token-number">10</span>, <span class="token-number">24</span>, <span class="token-number">10</span>, <span class="token-variable">createCentered</span>: <span class="token-keyword">true</span>)
 );
-Draw(joined, RGB(80, 250, 123));</code></pre>
+<span class="token-method">Draw</span>(<span class="token-variable">joined</span>, <span class="token-method">RGB</span>(<span class="token-number">80</span>, <span class="token-number">250</span>, <span class="token-number">123</span>));</code></pre>
             </div>
           </section>
         </div>
@@ -881,22 +881,22 @@ Draw(joined, RGB(80, 250, 123));</code></pre>
           <section>
             <h3 class="api-section-heading">Constructors & Signatures</h3>
             <div class="api-code-block">
-              <div class="api-code-item">new Difference(CsgObject primary, string name = &quot;&quot;)  // Creates a Difference operation container initialized with a primary solid.</div>
-              <div class="api-code-item">new Difference(CsgObject primary, CsgObject subtract, string name = &quot;&quot;)  // Subtracts one solid from another (primary - subtract).</div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Difference</span>(<span class="token-type">CsgObject</span> <span class="token-variable">primary</span>, <span class="token-keyword">string</span> <span class="token-variable">name</span> <span class="token-operator">=</span> <span class="token-string">&quot;&quot;</span>)  <span class="token-comment">// Creates a Difference operation container initialized with a primary solid.</span></div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Difference</span>(<span class="token-type">CsgObject</span> <span class="token-variable">primary</span>, <span class="token-type">CsgObject</span> <span class="token-variable">subtract</span>, <span class="token-keyword">string</span> <span class="token-variable">name</span> <span class="token-operator">=</span> <span class="token-string">&quot;&quot;</span>)  <span class="token-comment">// Subtracts one solid from another (primary - subtract).</span></div>
             </div>
           </section>
           <section>
             <h3 class="api-section-heading">Properties</h3>
             <div class="api-code-block">
-              <div class="api-code-item">CsgObject Primary { get; }  // The base solid from which subsequent solids are carved out.</div>
-              <div class="api-code-item">List&lt;CsgObject&gt; AllSubtracts { get; }  // The collection of solids subtracted from the primary solid.</div>
+              <div class="api-code-item"><span class="token-type">CsgObject</span> <span class="token-variable">Primary</span> { <span class="token-keyword">get</span>; }  <span class="token-comment">// The base solid from which subsequent solids are carved out.</span></div>
+              <div class="api-code-item"><span class="token-type">List</span><span class="token-operator">&lt;</span><span class="token-type">CsgObject</span><span class="token-operator">&gt;</span> <span class="token-variable">AllSubtracts</span> { <span class="token-keyword">get</span>; }  <span class="token-comment">// The collection of solids subtracted from the primary solid.</span></div>
             </div>
           </section>
           <section>
             <h3 class="api-section-heading">Methods</h3>
             <div class="api-code-block">
-              <div class="api-code-item">void AddToSubtractList(CsgObject objectToAddToSubtractList)</div>
-              <div class="api-code-item">AxisAlignedBoundingBox GetAxisAlignedBoundingBox()</div>
+              <div class="api-code-item"><span class="token-keyword">void</span> <span class="token-variable">AddToSubtractList</span>(<span class="token-type">CsgObject</span> <span class="token-variable">objectToAddToSubtractList</span>)</div>
+              <div class="api-code-item"><span class="token-variable">AxisAlignedBoundingBox</span> <span class="token-variable">GetAxisAlignedBoundingBox</span>()</div>
             </div>
           </section>
           <section>
@@ -906,12 +906,12 @@ Draw(joined, RGB(80, 250, 123));</code></pre>
                 <span>Copy</span>
               </button>
             </div>
-            <div class="api-code-block" style="color: var(--accent-yellow);">
-              <pre><code>// Difference carves holes out of solids (also: a - b)
-var box = new Box(22, 22, 22, createCentered: true);
-var hole = new Cylinder(7, 30);
-var hollow = new Difference(box, hole);
-Draw(hollow, RGB(255, 85, 85));</code></pre>
+            <div class="api-code-block">
+              <pre><code><span class="token-comment">// Difference carves holes out of solids (also: a - b)</span>
+<span class="token-keyword">var</span> <span class="token-variable">box</span> <span class="token-operator">=</span> <span class="token-keyword">new</span> <span class="token-type">Box</span>(<span class="token-number">22</span>, <span class="token-number">22</span>, <span class="token-number">22</span>, <span class="token-variable">createCentered</span>: <span class="token-keyword">true</span>);
+<span class="token-keyword">var</span> <span class="token-variable">hole</span> <span class="token-operator">=</span> <span class="token-keyword">new</span> <span class="token-type">Cylinder</span>(<span class="token-number">7</span>, <span class="token-number">30</span>);
+<span class="token-keyword">var</span> <span class="token-variable">hollow</span> <span class="token-operator">=</span> <span class="token-keyword">new</span> <span class="token-type">Difference</span>(<span class="token-variable">box</span>, <span class="token-variable">hole</span>);
+<span class="token-method">Draw</span>(<span class="token-variable">hollow</span>, <span class="token-method">RGB</span>(<span class="token-number">255</span>, <span class="token-number">85</span>, <span class="token-number">85</span>));</code></pre>
             </div>
           </section>
         </div>
@@ -929,14 +929,14 @@ Draw(hollow, RGB(255, 85, 85));</code></pre>
           <section>
             <h3 class="api-section-heading">Constructors & Signatures</h3>
             <div class="api-code-block">
-              <div class="api-code-item">new Intersection(CsgObject a, CsgObject b, string name = &quot;&quot;)  // Computes the intersection of two solids, retaining only the common overlapping volume (A * B).</div>
-              <div class="api-code-item">new Intersection(Intersection objectToCopy)  // Creates a copy of an existing Intersection operation solid.</div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Intersection</span>(<span class="token-type">CsgObject</span> <span class="token-variable">a</span>, <span class="token-type">CsgObject</span> <span class="token-variable">b</span>, <span class="token-keyword">string</span> <span class="token-variable">name</span> <span class="token-operator">=</span> <span class="token-string">&quot;&quot;</span>)  <span class="token-comment">// Computes the intersection of two solids, retaining only the common overlapping volume (A * B).</span></div>
+              <div class="api-code-item"><span class="token-keyword">new</span> <span class="token-type">Intersection</span>(<span class="token-type">Intersection</span> <span class="token-variable">objectToCopy</span>)  <span class="token-comment">// Creates a copy of an existing Intersection operation solid.</span></div>
             </div>
           </section>
           <section>
             <h3 class="api-section-heading">Methods</h3>
             <div class="api-code-block">
-              <div class="api-code-item">AxisAlignedBoundingBox GetAxisAlignedBoundingBox()</div>
+              <div class="api-code-item"><span class="token-variable">AxisAlignedBoundingBox</span> <span class="token-variable">GetAxisAlignedBoundingBox</span>()</div>
             </div>
           </section>
           <section>
@@ -946,12 +946,12 @@ Draw(hollow, RGB(255, 85, 85));</code></pre>
                 <span>Copy</span>
               </button>
             </div>
-            <div class="api-code-block" style="color: var(--accent-yellow);">
-              <pre><code>// Intersection keeps only the shared volume of solids (also: a * b)
-var box = new Box(22, 22, 22, createCentered: true);
-var sphere = new Sphere(14);
-var common = new Intersection(box, sphere);
-Draw(common, RGB(241, 250, 140));</code></pre>
+            <div class="api-code-block">
+              <pre><code><span class="token-comment">// Intersection keeps only the shared volume of solids (also: a * b)</span>
+<span class="token-keyword">var</span> <span class="token-variable">box</span> <span class="token-operator">=</span> <span class="token-keyword">new</span> <span class="token-type">Box</span>(<span class="token-number">22</span>, <span class="token-number">22</span>, <span class="token-number">22</span>, <span class="token-variable">createCentered</span>: <span class="token-keyword">true</span>);
+<span class="token-keyword">var</span> <span class="token-variable">sphere</span> <span class="token-operator">=</span> <span class="token-keyword">new</span> <span class="token-type">Sphere</span>(<span class="token-number">14</span>);
+<span class="token-keyword">var</span> <span class="token-variable">common</span> <span class="token-operator">=</span> <span class="token-keyword">new</span> <span class="token-type">Intersection</span>(<span class="token-variable">box</span>, <span class="token-variable">sphere</span>);
+<span class="token-method">Draw</span>(<span class="token-variable">common</span>, <span class="token-method">RGB</span>(<span class="token-number">241</span>, <span class="token-number">250</span>, <span class="token-number">140</span>));</code></pre>
             </div>
           </section>
         </div>
@@ -968,12 +968,12 @@ Draw(common, RGB(241, 250, 140));</code></pre>
           <section>
             <h3 class="api-section-heading">Constructors & Signatures</h3>
             <div class="api-code-block">
-              <div class="api-code-item">void Draw(CsgObject objectToProcess)</div>
-              <div class="api-code-item">void Draw(CsgObject objectToProcess, Color color)</div>
-              <div class="api-code-item">void Draw(I2DPrimitive primitive2D)</div>
-              <div class="api-code-item">void Draw(I2DPrimitive primitive2D, Color color)</div>
-              <div class="api-code-item">void Draw(Mesh mesh)</div>
-              <div class="api-code-item">void Draw(Mesh mesh, Color color)</div>
+              <div class="api-code-item"><span class="token-keyword">void</span> <span class="token-method">Draw</span>(<span class="token-type">CsgObject</span> <span class="token-variable">objectToProcess</span>)</div>
+              <div class="api-code-item"><span class="token-keyword">void</span> <span class="token-method">Draw</span>(<span class="token-type">CsgObject</span> <span class="token-variable">objectToProcess</span>, <span class="token-type">Color</span> <span class="token-variable">color</span>)</div>
+              <div class="api-code-item"><span class="token-keyword">void</span> <span class="token-method">Draw</span>(<span class="token-type">I2DPrimitive</span> <span class="token-variable">primitive2D</span>)</div>
+              <div class="api-code-item"><span class="token-keyword">void</span> <span class="token-method">Draw</span>(<span class="token-type">I2DPrimitive</span> <span class="token-variable">primitive2D</span>, <span class="token-type">Color</span> <span class="token-variable">color</span>)</div>
+              <div class="api-code-item"><span class="token-keyword">void</span> <span class="token-method">Draw</span>(<span class="token-type">Mesh</span> <span class="token-variable">mesh</span>)</div>
+              <div class="api-code-item"><span class="token-keyword">void</span> <span class="token-method">Draw</span>(<span class="token-type">Mesh</span> <span class="token-variable">mesh</span>, <span class="token-type">Color</span> <span class="token-variable">color</span>)</div>
             </div>
           </section>
           <section>
@@ -983,8 +983,8 @@ Draw(common, RGB(241, 250, 140));</code></pre>
                 <span>Copy</span>
               </button>
             </div>
-            <div class="api-code-block" style="color: var(--accent-yellow);">
-              <pre><code>Draw(new Box(20, 20, 20, createCentered: true), RGB(80, 250, 123));</code></pre>
+            <div class="api-code-block">
+              <pre><code><span class="token-method">Draw</span>(<span class="token-keyword">new</span> <span class="token-type">Box</span>(<span class="token-number">20</span>, <span class="token-number">20</span>, <span class="token-number">20</span>, <span class="token-variable">createCentered</span>: <span class="token-keyword">true</span>), <span class="token-method">RGB</span>(<span class="token-number">80</span>, <span class="token-number">250</span>, <span class="token-number">123</span>));</code></pre>
             </div>
           </section>
         </div>
@@ -1001,8 +1001,8 @@ Draw(common, RGB(241, 250, 140));</code></pre>
           <section>
             <h3 class="api-section-heading">Constructors & Signatures</h3>
             <div class="api-code-block">
-              <div class="api-code-item">CsgObject Extrude(I2DPrimitive shape, double height, bool centered = false, Alignment alignment = Alignment.z)</div>
-              <div class="api-code-item">CsgObject Extrude(I2DPrimitive shape, double height, double twistDegrees, int slices = 30, double scale = 1.0, bool centered = false, Alignment alignment = Alignment.z)</div>
+              <div class="api-code-item"><span class="token-type">CsgObject</span> <span class="token-method">Extrude</span>(<span class="token-type">I2DPrimitive</span> <span class="token-variable">shape</span>, <span class="token-keyword">double</span> <span class="token-variable">height</span>, <span class="token-keyword">bool</span> <span class="token-variable">centered</span> <span class="token-operator">=</span> <span class="token-keyword">false</span>, <span class="token-type">Alignment</span> <span class="token-variable">alignment</span> <span class="token-operator">=</span> <span class="token-type">Alignment</span>.<span class="token-variable">z</span>)</div>
+              <div class="api-code-item"><span class="token-type">CsgObject</span> <span class="token-method">Extrude</span>(<span class="token-type">I2DPrimitive</span> <span class="token-variable">shape</span>, <span class="token-keyword">double</span> <span class="token-variable">height</span>, <span class="token-keyword">double</span> <span class="token-variable">twistDegrees</span>, <span class="token-keyword">int</span> <span class="token-variable">slices</span> <span class="token-operator">=</span> <span class="token-number">30</span>, <span class="token-keyword">double</span> <span class="token-variable">scale</span> <span class="token-operator">=</span> <span class="token-number">1.0</span>, <span class="token-keyword">bool</span> <span class="token-variable">centered</span> <span class="token-operator">=</span> <span class="token-keyword">false</span>, <span class="token-type">Alignment</span> <span class="token-variable">alignment</span> <span class="token-operator">=</span> <span class="token-type">Alignment</span>.<span class="token-variable">z</span>)</div>
             </div>
           </section>
           <section>
@@ -1012,10 +1012,10 @@ Draw(common, RGB(241, 250, 140));</code></pre>
                 <span>Copy</span>
               </button>
             </div>
-            <div class="api-code-block" style="color: var(--accent-yellow);">
-              <pre><code>var c = new Circle(12);
-var pillar = Extrude(c, height: 35, centered: true);
-Draw(pillar, RGB(46, 204, 113));</code></pre>
+            <div class="api-code-block">
+              <pre><code><span class="token-keyword">var</span> <span class="token-variable">c</span> <span class="token-operator">=</span> <span class="token-keyword">new</span> <span class="token-type">Circle</span>(<span class="token-number">12</span>);
+<span class="token-keyword">var</span> <span class="token-variable">pillar</span> <span class="token-operator">=</span> <span class="token-method">Extrude</span>(<span class="token-variable">c</span>, <span class="token-variable">height</span>: <span class="token-number">35</span>, <span class="token-variable">centered</span>: <span class="token-keyword">true</span>);
+<span class="token-method">Draw</span>(<span class="token-variable">pillar</span>, <span class="token-method">RGB</span>(<span class="token-number">46</span>, <span class="token-number">204</span>, <span class="token-number">113</span>));</code></pre>
             </div>
           </section>
         </div>
@@ -1032,7 +1032,7 @@ Draw(pillar, RGB(46, 204, 113));</code></pre>
           <section>
             <h3 class="api-section-heading">Constructors & Signatures</h3>
             <div class="api-code-block">
-              <div class="api-code-item">CsgObject TwistExtrude(I2DPrimitive shape, double height, double twistDegrees = 360, int slices = 30, double scale = 1.0, bool centered = false, Alignment alignment = Alignment.z)</div>
+              <div class="api-code-item"><span class="token-type">CsgObject</span> <span class="token-method">TwistExtrude</span>(<span class="token-type">I2DPrimitive</span> <span class="token-variable">shape</span>, <span class="token-keyword">double</span> <span class="token-variable">height</span>, <span class="token-keyword">double</span> <span class="token-variable">twistDegrees</span> <span class="token-operator">=</span> <span class="token-number">360</span>, <span class="token-keyword">int</span> <span class="token-variable">slices</span> <span class="token-operator">=</span> <span class="token-number">30</span>, <span class="token-keyword">double</span> <span class="token-variable">scale</span> <span class="token-operator">=</span> <span class="token-number">1.0</span>, <span class="token-keyword">bool</span> <span class="token-variable">centered</span> <span class="token-operator">=</span> <span class="token-keyword">false</span>, <span class="token-type">Alignment</span> <span class="token-variable">alignment</span> <span class="token-operator">=</span> <span class="token-type">Alignment</span>.<span class="token-variable">z</span>)</div>
             </div>
           </section>
           <section>
@@ -1042,10 +1042,10 @@ Draw(pillar, RGB(46, 204, 113));</code></pre>
                 <span>Copy</span>
               </button>
             </div>
-            <div class="api-code-block" style="color: var(--accent-yellow);">
-              <pre><code>var sq = new Square(16, centered: true);
-var spiral = TwistExtrude(sq, height: 40, twistDegrees: 180, slices: 40);
-Draw(spiral, RGB(255, 121, 198));</code></pre>
+            <div class="api-code-block">
+              <pre><code><span class="token-keyword">var</span> <span class="token-variable">sq</span> <span class="token-operator">=</span> <span class="token-keyword">new</span> <span class="token-type">Square</span>(<span class="token-number">16</span>, <span class="token-variable">centered</span>: <span class="token-keyword">true</span>);
+<span class="token-keyword">var</span> <span class="token-variable">spiral</span> <span class="token-operator">=</span> <span class="token-method">TwistExtrude</span>(<span class="token-variable">sq</span>, <span class="token-variable">height</span>: <span class="token-number">40</span>, <span class="token-variable">twistDegrees</span>: <span class="token-number">180</span>, <span class="token-variable">slices</span>: <span class="token-number">40</span>);
+<span class="token-method">Draw</span>(<span class="token-variable">spiral</span>, <span class="token-method">RGB</span>(<span class="token-number">255</span>, <span class="token-number">121</span>, <span class="token-number">198</span>));</code></pre>
             </div>
           </section>
         </div>
@@ -1062,7 +1062,7 @@ Draw(spiral, RGB(255, 121, 198));</code></pre>
           <section>
             <h3 class="api-section-heading">Constructors & Signatures</h3>
             <div class="api-code-block">
-              <div class="api-code-item">CsgObject Revolve(I2DPrimitive shape, double angleDegrees = 360, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)</div>
+              <div class="api-code-item"><span class="token-type">CsgObject</span> <span class="token-method">Revolve</span>(<span class="token-type">I2DPrimitive</span> <span class="token-variable">shape</span>, <span class="token-keyword">double</span> <span class="token-variable">angleDegrees</span> <span class="token-operator">=</span> <span class="token-number">360</span>, <span class="token-keyword">int</span> <span class="token-variable">angleSteps</span> <span class="token-operator">=</span> <span class="token-number">30</span>, <span class="token-keyword">double</span> <span class="token-variable">axisOffset</span> <span class="token-operator">=</span> <span class="token-number">0</span>, <span class="token-keyword">bool</span> <span class="token-variable">revolveAroundZ</span> <span class="token-operator">=</span> <span class="token-keyword">true</span>)</div>
             </div>
           </section>
           <section>
@@ -1072,10 +1072,10 @@ Draw(spiral, RGB(255, 121, 198));</code></pre>
                 <span>Copy</span>
               </button>
             </div>
-            <div class="api-code-block" style="color: var(--accent-yellow);">
-              <pre><code>var c = new Circle(x: 18, y: 0, radius: 6);
-var donut = Revolve(c, angleDegrees: 360, angleSteps: 36);
-Draw(donut, RGB(241, 196, 15));</code></pre>
+            <div class="api-code-block">
+              <pre><code><span class="token-keyword">var</span> <span class="token-variable">c</span> <span class="token-operator">=</span> <span class="token-keyword">new</span> <span class="token-type">Circle</span>(<span class="token-variable">x</span>: <span class="token-number">18</span>, <span class="token-variable">y</span>: <span class="token-number">0</span>, <span class="token-variable">radius</span>: <span class="token-number">6</span>);
+<span class="token-keyword">var</span> <span class="token-variable">donut</span> <span class="token-operator">=</span> <span class="token-method">Revolve</span>(<span class="token-variable">c</span>, <span class="token-variable">angleDegrees</span>: <span class="token-number">360</span>, <span class="token-variable">angleSteps</span>: <span class="token-number">36</span>);
+<span class="token-method">Draw</span>(<span class="token-variable">donut</span>, <span class="token-method">RGB</span>(<span class="token-number">241</span>, <span class="token-number">196</span>, <span class="token-number">15</span>));</code></pre>
             </div>
           </section>
         </div>
@@ -1092,7 +1092,7 @@ Draw(donut, RGB(241, 196, 15));</code></pre>
           <section>
             <h3 class="api-section-heading">Constructors & Signatures</h3>
             <div class="api-code-block">
-              <div class="api-code-item">CsgObject Loft(I2DPrimitive bottom, I2DPrimitive top, double height, double twistDegrees = 0, bool centered = false, Alignment alignment = Alignment.z)</div>
+              <div class="api-code-item"><span class="token-type">CsgObject</span> <span class="token-method">Loft</span>(<span class="token-type">I2DPrimitive</span> <span class="token-variable">bottom</span>, <span class="token-type">I2DPrimitive</span> <span class="token-variable">top</span>, <span class="token-keyword">double</span> <span class="token-variable">height</span>, <span class="token-keyword">double</span> <span class="token-variable">twistDegrees</span> <span class="token-operator">=</span> <span class="token-number">0</span>, <span class="token-keyword">bool</span> <span class="token-variable">centered</span> <span class="token-operator">=</span> <span class="token-keyword">false</span>, <span class="token-type">Alignment</span> <span class="token-variable">alignment</span> <span class="token-operator">=</span> <span class="token-type">Alignment</span>.<span class="token-variable">z</span>)</div>
             </div>
           </section>
           <section>
@@ -1102,11 +1102,11 @@ Draw(donut, RGB(241, 196, 15));</code></pre>
                 <span>Copy</span>
               </button>
             </div>
-            <div class="api-code-block" style="color: var(--accent-yellow);">
-              <pre><code>var bot = new Circle(16);
-var top = new Square(16, centered: true);
-var blended = Loft(bot, top, height: 35, twistDegrees: 45);
-Draw(blended, RGB(80, 200, 255));</code></pre>
+            <div class="api-code-block">
+              <pre><code><span class="token-keyword">var</span> <span class="token-variable">bot</span> <span class="token-operator">=</span> <span class="token-keyword">new</span> <span class="token-type">Circle</span>(<span class="token-number">16</span>);
+<span class="token-keyword">var</span> <span class="token-variable">top</span> <span class="token-operator">=</span> <span class="token-keyword">new</span> <span class="token-type">Square</span>(<span class="token-number">16</span>, <span class="token-variable">centered</span>: <span class="token-keyword">true</span>);
+<span class="token-keyword">var</span> <span class="token-variable">blended</span> <span class="token-operator">=</span> <span class="token-method">Loft</span>(<span class="token-variable">bot</span>, <span class="token-variable">top</span>, <span class="token-variable">height</span>: <span class="token-number">35</span>, <span class="token-variable">twistDegrees</span>: <span class="token-number">45</span>);
+<span class="token-method">Draw</span>(<span class="token-variable">blended</span>, <span class="token-method">RGB</span>(<span class="token-number">80</span>, <span class="token-number">200</span>, <span class="token-number">255</span>));</code></pre>
             </div>
           </section>
         </div>
@@ -1123,9 +1123,9 @@ Draw(blended, RGB(80, 200, 255));</code></pre>
           <section>
             <h3 class="api-section-heading">Constructors & Signatures</h3>
             <div class="api-code-block">
-              <div class="api-code-item">Color RGB(int r, int g, int b)            // 0 - 255</div>
-              <div class="api-code-item">Color RGBA(int r, int g, int b, int a)     // 0 - 255</div>
-              <div class="api-code-item">Color RGBf(double r, double g, double b)   // 0.0 - 1.0</div>
+              <div class="api-code-item"><span class="token-type">Color</span> <span class="token-method">RGB</span>(<span class="token-keyword">int</span> <span class="token-variable">r</span>, <span class="token-keyword">int</span> <span class="token-variable">g</span>, <span class="token-keyword">int</span> <span class="token-variable">b</span>)            <span class="token-comment">// 0 - 255</span></div>
+              <div class="api-code-item"><span class="token-type">Color</span> <span class="token-method">RGBA</span>(<span class="token-keyword">int</span> <span class="token-variable">r</span>, <span class="token-keyword">int</span> <span class="token-variable">g</span>, <span class="token-keyword">int</span> <span class="token-variable">b</span>, <span class="token-keyword">int</span> <span class="token-variable">a</span>)     <span class="token-comment">// 0 - 255</span></div>
+              <div class="api-code-item"><span class="token-type">Color</span> <span class="token-method">RGBf</span>(<span class="token-keyword">double</span> <span class="token-variable">r</span>, <span class="token-keyword">double</span> <span class="token-variable">g</span>, <span class="token-keyword">double</span> <span class="token-variable">b</span>)   <span class="token-comment">// 0.0 - 1.0</span></div>
             </div>
           </section>
           <section>
@@ -1135,10 +1135,10 @@ Draw(blended, RGB(80, 200, 255));</code></pre>
                 <span>Copy</span>
               </button>
             </div>
-            <div class="api-code-block" style="color: var(--accent-yellow);">
-              <pre><code>var col1 = RGB(255, 100, 50);
-var col2 = RGBA(80, 250, 123, 200);
-var col3 = RGBf(0.2, 0.8, 1.0);</code></pre>
+            <div class="api-code-block">
+              <pre><code><span class="token-keyword">var</span> <span class="token-variable">col1</span> <span class="token-operator">=</span> <span class="token-method">RGB</span>(<span class="token-number">255</span>, <span class="token-number">100</span>, <span class="token-number">50</span>);
+<span class="token-keyword">var</span> <span class="token-variable">col2</span> <span class="token-operator">=</span> <span class="token-method">RGBA</span>(<span class="token-number">80</span>, <span class="token-number">250</span>, <span class="token-number">123</span>, <span class="token-number">200</span>);
+<span class="token-keyword">var</span> <span class="token-variable">col3</span> <span class="token-operator">=</span> <span class="token-method">RGBf</span>(<span class="token-number">0.2</span>, <span class="token-number">0.8</span>, <span class="token-number">1.0</span>);</code></pre>
             </div>
           </section>
         </div>

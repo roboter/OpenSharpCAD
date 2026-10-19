@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using MatterHackers.Agg;
 using MatterHackers.Csg;
@@ -556,7 +557,7 @@ namespace CSharpCAD
                     sb.AppendLine("            <div class=\"api-code-block\">");
                     foreach (var ctor in item.Constructors)
                     {
-                        sb.AppendLine($"              <div class=\"api-code-item\">{EscapeHtml(ctor)}</div>");
+                        sb.AppendLine($"              <div class=\"api-code-item\">{HighlightCSharpHtml(ctor)}</div>");
                     }
                     sb.AppendLine("            </div>");
                     sb.AppendLine("          </section>");
@@ -570,7 +571,7 @@ namespace CSharpCAD
                     sb.AppendLine("            <div class=\"api-code-block\">");
                     foreach (var prop in item.Properties)
                     {
-                        sb.AppendLine($"              <div class=\"api-code-item\">{EscapeHtml(prop)}</div>");
+                        sb.AppendLine($"              <div class=\"api-code-item\">{HighlightCSharpHtml(prop)}</div>");
                     }
                     sb.AppendLine("            </div>");
                     sb.AppendLine("          </section>");
@@ -584,7 +585,7 @@ namespace CSharpCAD
                     sb.AppendLine("            <div class=\"api-code-block\">");
                     foreach (var m in item.Methods)
                     {
-                        sb.AppendLine($"              <div class=\"api-code-item\">{EscapeHtml(m)}</div>");
+                        sb.AppendLine($"              <div class=\"api-code-item\">{HighlightCSharpHtml(m)}</div>");
                     }
                     sb.AppendLine("            </div>");
                     sb.AppendLine("          </section>");
@@ -600,8 +601,8 @@ namespace CSharpCAD
                     sb.AppendLine("                <span>Copy</span>");
                     sb.AppendLine("              </button>");
                     sb.AppendLine("            </div>");
-                    sb.AppendLine("            <div class=\"api-code-block\" style=\"color: var(--accent-yellow);\">");
-                    sb.AppendLine($"              <pre><code>{EscapeHtml(item.ExampleSnippet)}</code></pre>");
+                    sb.AppendLine("            <div class=\"api-code-block\">");
+                    sb.AppendLine($"              <pre><code>{HighlightCSharpHtml(item.ExampleSnippet)}</code></pre>");
                     sb.AppendLine("            </div>");
                     sb.AppendLine("          </section>");
                 }
@@ -682,6 +683,109 @@ namespace CSharpCAD
         {
             if (string.IsNullOrEmpty(str)) return "";
             return str.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;").Replace("\"", "&quot;");
+        }
+
+        private static readonly HashSet<string> CSharpKeywords = new HashSet<string>
+        {
+            "abstract", "as", "base", "bool", "break", "byte", "case", "catch", "char",
+            "checked", "class", "const", "continue", "decimal", "default", "delegate",
+            "do", "double", "else", "enum", "event", "explicit", "extern", "false",
+            "finally", "fixed", "float", "for", "foreach", "goto", "if", "implicit",
+            "in", "int", "interface", "internal", "is", "lock", "long", "namespace",
+            "new", "null", "object", "operator", "out", "override", "params", "private",
+            "protected", "public", "readonly", "ref", "return", "sbyte", "sealed",
+            "short", "sizeof", "stackalloc", "static", "string", "struct", "switch",
+            "this", "throw", "true", "try", "typeof", "uint", "ulong", "unchecked",
+            "unsafe", "ushort", "using", "virtual", "void", "volatile", "while", "var",
+            "get", "set", "init"
+        };
+
+        private static readonly HashSet<string> CSharpTypes = new HashSet<string>
+        {
+            "Box", "Cylinder", "Sphere", "Torus", "Circle", "Rectangle", "Square",
+            "Line", "Point", "Dot", "Path", "Polygon", "Union", "Difference", "Intersection",
+            "Translate", "Rotate", "Scale", "Align", "Mesh", "Color", "ColorF",
+            "Vector2", "Vector3", "Vector4", "Matrix4X4", "MathHelper", "CsgObject",
+            "I2DPrimitive", "Alignment", "Face", "Edge", "List", "IEnumerable", "Action", "Func",
+            "Type", "Nullable", "ValueTuple"
+        };
+
+        private static readonly HashSet<string> CSharpProperties = new HashSet<string>
+        {
+            "Width", "Depth", "Height", "Size", "Radius", "RadiusMajor", "RadiusMinor",
+            "TopCenter", "BottomCenter", "Corners", "BoundingEdges", "UniqueVertices",
+            "Center", "Length", "Points", "Start", "End", "X", "Y", "Z", "Faces", "Edges", "Vertices"
+        };
+
+        private static readonly HashSet<string> CSharpCadMethods = new HashSet<string>
+        {
+            "Draw", "RGB", "RGBA", "RGBf", "Extrude", "TwistExtrude", "Revolve", "Loft",
+            "CylinderBetween", "GetCorners", "GetBoundingEdges", "GetUniqueVertices",
+            "GetEdges", "ToMesh", "ToWireMesh", "ToCircle", "ToSphere", "ToPath",
+            "LineTo", "DistanceTo", "AddPoint", "Close", "DegreesToRadians", "RadiansToDegrees",
+            "RotateExtrude", "Select", "Where", "ToArray", "ToList"
+        };
+
+        private static readonly Regex CSharpTokenRegex = new Regex(
+            @"(\/\/.*$)|(""(?:\\.|[^""\\])*"")|('(?:\\.|[^'\\])')|(\b\d+(?:\.\d+)?(?:f|d|m)?\b)|(\b[a-zA-Z_]\w*\b)|([+\-*/%=<>!&|^~]+)",
+            RegexOptions.Compiled);
+
+        /// <summary>
+        /// Formats C# code with syntax highlighting HTML markup using Dracula theme CSS token classes.
+        /// </summary>
+        public static string HighlightCSharpHtml(string code)
+        {
+            if (string.IsNullOrEmpty(code)) return string.Empty;
+
+            var lines = code.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+            var sb = new StringBuilder();
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string line = lines[i];
+                string trimmed = line.TrimStart();
+                if (trimmed.StartsWith("//"))
+                {
+                    string indent = line.Substring(0, line.IndexOf('/'));
+                    sb.Append(EscapeHtml(indent));
+                    sb.Append("<span class=\"token-comment\">").Append(EscapeHtml(trimmed)).Append("</span>");
+                }
+                else
+                {
+                    string highlightedLine = CSharpTokenRegex.Replace(line, m =>
+                    {
+                        if (m.Groups[1].Success)
+                            return $"<span class=\"token-comment\">{EscapeHtml(m.Value)}</span>";
+                        if (m.Groups[2].Success || m.Groups[3].Success)
+                            return $"<span class=\"token-string\">{EscapeHtml(m.Value)}</span>";
+                        if (m.Groups[4].Success)
+                            return $"<span class=\"token-number\">{EscapeHtml(m.Value)}</span>";
+                        if (m.Groups[5].Success)
+                        {
+                            string word = m.Value;
+                            if (CSharpKeywords.Contains(word))
+                                return $"<span class=\"token-keyword\">{EscapeHtml(word)}</span>";
+                            if (CSharpTypes.Contains(word))
+                                return $"<span class=\"token-type\">{EscapeHtml(word)}</span>";
+                            if (CSharpProperties.Contains(word))
+                                return $"<span class=\"token-property\">{EscapeHtml(word)}</span>";
+                            if (CSharpCadMethods.Contains(word))
+                                return $"<span class=\"token-method\">{EscapeHtml(word)}</span>";
+                            return $"<span class=\"token-variable\">{EscapeHtml(word)}</span>";
+                        }
+                        if (m.Groups[6].Success)
+                            return $"<span class=\"token-operator\">{EscapeHtml(m.Value)}</span>";
+
+                        return EscapeHtml(m.Value);
+                    });
+                    sb.Append(highlightedLine);
+                }
+
+                if (i < lines.Length - 1)
+                    sb.AppendLine();
+            }
+
+            return sb.ToString();
         }
 
         #region Reflection & XML Formatting Helpers

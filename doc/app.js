@@ -26,6 +26,12 @@ const CSHARP_TYPES = new Set([
   'I2DPrimitive', 'Alignment', 'Face', 'Edge', 'List', 'IEnumerable', 'ValueTuple'
 ]);
 
+const CSHARP_PROPERTIES = new Set([
+  'Width', 'Depth', 'Height', 'Size', 'Radius', 'RadiusMajor', 'RadiusMinor',
+  'TopCenter', 'BottomCenter', 'Corners', 'BoundingEdges', 'UniqueVertices',
+  'Center', 'Length', 'Points', 'Start', 'End', 'X', 'Y', 'Z', 'Faces', 'Edges', 'Vertices'
+]);
+
 const CSHARP_CAD_METHODS = new Set([
   'Draw', 'RGB', 'RGBA', 'RGBf', 'Extrude', 'TwistExtrude', 'Revolve', 'Loft',
   'CylinderBetween', 'GetCorners', 'GetBoundingEdges', 'GetUniqueVertices',
@@ -54,6 +60,7 @@ function highlightCSharp(code) {
       if (word) {
         if (CSHARP_KEYWORDS.has(word)) return `<span class="token-keyword">${escapeHtml(word)}</span>`;
         if (CSHARP_TYPES.has(word)) return `<span class="token-type">${escapeHtml(word)}</span>`;
+        if (CSHARP_PROPERTIES.has(word)) return `<span class="token-property">${escapeHtml(word)}</span>`;
         if (CSHARP_CAD_METHODS.has(word)) return `<span class="token-method">${escapeHtml(word)}</span>`;
         return `<span class="token-variable">${escapeHtml(word)}</span>`;
       }

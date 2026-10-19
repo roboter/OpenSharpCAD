@@ -519,6 +519,7 @@ code {
 .token-number    { color: var(--accent-purple); }
 .token-comment   { color: var(--text-dim); font-style: italic; }
 .token-method    { color: var(--accent-green); }
+.token-property  { color: var(--accent-orange); font-weight: 500; }
 .token-variable  { color: var(--text-main); }
 .token-operator  { color: var(--accent-pink); }
 
