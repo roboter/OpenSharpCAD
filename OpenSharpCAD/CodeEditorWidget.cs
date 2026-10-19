@@ -12,7 +12,7 @@ using Microsoft.CodeAnalysis.CSharp;
 namespace CSharpCAD
 {
     // ── Dracula-inspired colour palette ─────────────────────────────────────────
-    internal static class EditorPalette
+    public static class EditorPalette
     {
         public static readonly Color Background   = new Color( 40,  42,  54);
         public static readonly Color GutterBg     = new Color( 33,  34,  44);
@@ -152,11 +152,56 @@ namespace CSharpCAD
             if (_cachedText != Text)
                 RebuildTokens(Text);
 
-            if (_tokens.Count == 0) return;
-
             var printer = Printer;
             double lineH = printer.TypeFaceStyle.EmSizeInPixels;
             string src   = Text ?? "";
+
+            // ── Draw Full-Line Error / Warning Highlight across the entire editor width ──
+            if (_diagnostics != null && _diagnostics.Count > 0 && src != null)
+            {
+                var drawnLines = new HashSet<int>();
+                foreach (var diag in _diagnostics)
+                {
+                    if (diag.Line < 0) continue;
+                    if (!drawnLines.Add(diag.Line)) continue;
+
+                    // Locate character index at the start of diag.Line
+                    int targetLine = diag.Line;
+                    int curLine = 0;
+                    int lineStartIdx = 0;
+                    for (int i = 0; i < src.Length && curLine < targetLine; i++)
+                    {
+                        if (src[i] == '\n')
+                        {
+                            curLine++;
+                            lineStartIdx = i + 1;
+                        }
+                    }
+
+                    if (curLine == targetLine && lineStartIdx <= src.Length)
+                    {
+                        var off = printer.GetOffsetLeftOfCharacterIndex(Math.Min(lineStartIdx, src.Length));
+                        double drawY = Height + off.Y - printer.TypeFaceStyle.AscentInPixels;
+                        double boxY = drawY + printer.TypeFaceStyle.DescentInPixels;
+
+                        var lineBg = diag.IsWarning
+                            ? new Color(241, 250, 140, 35)
+                            : new Color(255, 60, 60, 48);
+
+                        // Highlight full width of the editor line
+                        double fullWidth = Math.Max(Width, 3000);
+                        g.FillRectangle(0, boxY, fullWidth, boxY + lineH, lineBg);
+
+                        // Left vertical accent stripe on the edge of the editor text
+                        var stripeColor = diag.IsWarning
+                            ? new Color(241, 250, 140, 220)
+                            : new Color(255, 80, 80, 240);
+                        g.FillRectangle(0, boxY, 3, boxY + lineH, stripeColor);
+                    }
+                }
+            }
+
+            if (_tokens.Count == 0) return;
 
             // Sort tokens by start so later (more specific) tokens overwrite earlier ones
             // Already ordered: default span first, then specific tokens on top.
@@ -244,7 +289,39 @@ namespace CSharpCAD
             }
         }
 
-        private double _pointSize;
+        public override void OnKeyDown(KeyEventArgs keyEvent)
+        {
+            if (keyEvent.Control && (keyEvent.KeyCode == Keys.C || keyEvent.KeyCode == Keys.Insert))
+            {
+                string toCopy = "";
+                if (Selecting)
+                {
+                    int start = Math.Min(CharIndexToInsertBefore, SelectionIndexToStartBefore);
+                    int end = Math.Max(CharIndexToInsertBefore, SelectionIndexToStartBefore);
+                    string all = Text ?? "";
+                    start = Math.Max(0, Math.Min(start, all.Length));
+                    end = Math.Max(0, Math.Min(end, all.Length));
+                    if (end > start)
+                    {
+                        toCopy = all.Substring(start, end - start);
+                    }
+                }
+                else
+                {
+                    toCopy = Text ?? "";
+                }
+
+                if (!string.IsNullOrEmpty(toCopy))
+                {
+                    HelpWindow.CopyToClipboard(toCopy);
+                    keyEvent.Handled = true;
+                    keyEvent.SuppressKeyPress = true;
+                    return;
+                }
+            }
+
+            base.OnKeyDown(keyEvent);
+        }
     }
 
     // ────────────────────────────────────────────────────────────────────────────
@@ -252,7 +329,7 @@ namespace CSharpCAD
     // ────────────────────────────────────────────────────────────────────────────
     public class SyntaxTextEditWidget : TextEditWidget
     {
-        public SyntaxTextEditWidget(string text, double pointSize = 16)
+        public SyntaxTextEditWidget(string text, double pointSize = 16, bool readOnly = false)
         {
             // The base constructor already created an InternalTextEditWidget and added it.
             // We must remove it to avoid double-rendering and layout confusion.
@@ -265,8 +342,31 @@ namespace CSharpCAD
             InternalTextEditWidget = new SyntaxHighlightInternalTextEditWidget(
                 text, pointSize, multiLine: true, tabIndex: 0);
 
+            if (readOnly)
+            {
+                InternalTextEditWidget.ReadOnly = true;
+            }
+
+            // Configure Dracula scrollbar styling globally for editor views
+            ScrollBar.ScrollBarWidth = 12;
+            ScrollBar.DefaultBackgroundColor = new Color(24, 25, 34, 160);
+            ScrollBar.DefaultThumbColor = new Color(98, 114, 164, 180);
+            ScrollBar.DefaultThumbHoverColor = new Color(139, 233, 253, 230);
+            ScrollBar.GrowThumbBy = 0;
+
             // Re-hook it (this adds it back to the ScrollArea)
             HookUpToInternalWidget(0, 0);
+
+            // Enable multiline, auto-scrolling, and vertical scrollbar
+            Multiline = true;
+            AutoScroll = true;
+            VerticalScrollBar.Show = ScrollBar.ShowState.WhenRequired;
+
+            if (VerticalScrollBar.Children.Count >= 2)
+            {
+                VerticalScrollBar.Children[0].BackgroundColor = new Color(24, 25, 34, 160);
+                VerticalScrollBar.Children[1].BackgroundColor = new Color(98, 114, 164, 180);
+            }
 
             // The InternalTextEditWidget manages its own size in UpdateLocalBounds.
             // We should not set Fit/Stretch anchors here as it can interfere with the ScrollArea's own Fit logic.
@@ -277,6 +377,12 @@ namespace CSharpCAD
             
             // Default to top
             TopLeftOffset = Vector2.Zero;
+
+            TextChanged += (s, e) =>
+            {
+                ScrollArea.Invalidate();
+                VerticalScrollBar.Invalidate();
+            };
         }
     }
 
@@ -309,6 +415,15 @@ namespace CSharpCAD
             Invalidate();
         }
 
+        public override void OnMouseWheel(MouseEventArgs mouseEvent)
+        {
+            _editor?.OnMouseWheel(mouseEvent);
+            if (mouseEvent.WheelDelta == 0)
+            {
+                Invalidate();
+            }
+        }
+
         public override void OnDraw(Graphics2D g)
         {
             base.OnDraw(g);
@@ -321,12 +436,18 @@ namespace CSharpCAD
             double lineH = printer.TypeFaceStyle.EmSizeInPixels;
 
             HashSet<int> errorLines = new();
+            HashSet<int> warningLines = new();
             if (_diagnostics != null)
             {
                 foreach (var d in _diagnostics)
                 {
-                    if (!d.IsRuntime)
-                        errorLines.Add(d.Line);
+                    if (d.Line >= 0)
+                    {
+                        if (d.IsWarning)
+                            warningLines.Add(d.Line);
+                        else
+                            errorLines.Add(d.Line);
+                    }
                 }
             }
 
@@ -359,24 +480,45 @@ namespace CSharpCAD
                 // Only draw if within the visible gutter
                 if (baselineY + lineH >= 0 && baselineY - lineH <= Height)
                 {
-                    bool hasError  = errorLines.Contains(lineNum);
-                    bool isCurrent = (lineNum == cursorLine);
-                    Color numCol   = hasError ? new Color(255, 95, 95) : (isCurrent ? EditorPalette.GutterFgCur : EditorPalette.GutterFg);
+                    bool hasError   = errorLines.Contains(lineNum);
+                    bool hasWarning = !hasError && warningLines.Contains(lineNum);
+                    bool isCurrent  = (lineNum == cursorLine);
 
-                    if (isCurrent)
+                    double barY = Math.Ceiling(baselineY + printer.TypeFaceStyle.DescentInPixels);
+
+                    if (hasError)
+                    {
+                        // 1. Soft red background across gutter line
+                        g.FillRectangle(0, barY, GutterWidth - 1, barY + lineH, new Color(255, 60, 60, 55));
+
+                        // 2. Bold red left margin stripe
+                        g.FillRectangle(0, barY, 4, barY + lineH, new Color(255, 80, 80, 240));
+
+                        // 3. Crisp error badge near line number
+                        double dotY = baselineY + lineH * 0.35;
+                        double dotX = 10;
+                        g.Circle(dotX, dotY, 4.5, new Color(255, 75, 75));
+                        g.Circle(dotX, dotY, 2.0, new Color(255, 255, 255));
+                    }
+                    else if (hasWarning)
+                    {
+                        g.FillRectangle(0, barY, GutterWidth - 1, barY + lineH, new Color(241, 250, 140, 40));
+                        g.FillRectangle(0, barY, 4, barY + lineH, new Color(241, 250, 140, 220));
+
+                        double dotY = baselineY + lineH * 0.35;
+                        double dotX = 10;
+                        g.Circle(dotX, dotY, 4.0, new Color(241, 250, 140));
+                    }
+                    else if (isCurrent)
                     {
                         // Match the selection highlight box exactly
-                        double barY = Math.Ceiling(baselineY + printer.TypeFaceStyle.DescentInPixels);
                         g.FillRectangle(0, barY, GutterWidth - 1, barY + lineH,
                                         new Color(60, 63, 80, 120));
                     }
 
-                    if (hasError)
-                    {
-                        // Draw crisp red circle badge for error line
-                        double dotY = baselineY + lineH * 0.35;
-                        g.Circle(10, dotY, 3.5, new Color(255, 85, 85));
-                    }
+                    Color numCol = hasError 
+                        ? new Color(255, 110, 110) 
+                        : (hasWarning ? new Color(241, 250, 140) : (isCurrent ? EditorPalette.GutterFgCur : EditorPalette.GutterFg));
 
                     string numStr = (lineNum + 1).ToString();
                     double charW  = printer.TypeFaceStyle.GetAdvanceForCharacter('0');
@@ -410,6 +552,9 @@ namespace CSharpCAD
             RoslynItem = item;
             TextColor = Color.White;
             Height = 20;
+            Selectable = true;
+            Cursor = Cursors.Hand;
+            HAnchor = HAnchor.Stretch;
         }
 
         private static string FormatLabel(RoslynCompletionItem item)
@@ -417,6 +562,7 @@ namespace CSharpCAD
             string tag = item.Kind switch
             {
                 "method" => " [m] ",
+                "constructor" => " [c] ",
                 "property" => " [p] ",
                 "field" => " [f] ",
                 "class" => " [c] ",
@@ -429,7 +575,7 @@ namespace CSharpCAD
                 _ => " [ ] "
             };
 
-            if (!string.IsNullOrEmpty(item.InlineDescription))
+            if (!string.IsNullOrEmpty(item.InlineDescription) && item.Kind != "constructor" && item.Kind != "method")
                 return tag + item.DisplayText + "  (" + item.InlineDescription + ")";
 
             return tag + item.DisplayText;
@@ -438,16 +584,19 @@ namespace CSharpCAD
 
     public class AutocompleteWidget : GuiWidget
     {
+        public event Action<RoslynCompletionItem> ItemChosen;
+
         private readonly ListBox _listBox;
         private readonly TextWidget _descriptionWidget;
         private readonly SyntaxTextEditWidget _editor;
         private List<RoslynCompletionItem> _currentItems = new();
+        private long _lastClickTicks = 0;
 
         public AutocompleteWidget(SyntaxTextEditWidget editor)
         {
             _editor = editor;
-            Width = 280;
-            Height = 175;
+            Width = 480;
+            Height = 160;
             BackgroundColor = new Color(40, 42, 54);
             Visible = false;
 
@@ -458,12 +607,30 @@ namespace CSharpCAD
             };
 
             // Suggestions List
-            _listBox = new ListBox(new RectangleDouble(0, 0, 280, 145))
+            _listBox = new ListBox(new RectangleDouble(0, 0, 480, 130))
             {
                 HAnchor = HAnchor.Stretch,
                 VAnchor = VAnchor.Stretch
             };
             _listBox.SelectedValueChanged += (s, e) => UpdateDescription();
+            _listBox.MouseUp += (s, e) =>
+            {
+                if (e.Button == MouseButtons.Left)
+                {
+                    if (_listBox.VerticalScrollBar != null && _listBox.VerticalScrollBar.Visible)
+                    {
+                        if (e.X >= _listBox.Width - _listBox.VerticalScrollBar.Width - 6)
+                        {
+                            return;
+                        }
+                    }
+                    var item = GetSelectedItem();
+                    if (item != null)
+                    {
+                        OnItemClicked(item);
+                    }
+                }
+            };
             mainLayout.AddChild(_listBox);
 
             // Description footer bar
@@ -536,16 +703,77 @@ namespace CSharpCAD
             }
 
             _currentItems = matches;
+            int itemIdx = 0;
             foreach (var match in matches)
             {
+                int capturedIdx = itemIdx;
                 var listItem = new AutocompleteListItem(match);
+
+                listItem.MouseDown += (s, e) =>
+                {
+                    if (e.Button == MouseButtons.Left)
+                    {
+                        _listBox.SelectedIndex = capturedIdx;
+                    }
+                };
+
+                listItem.MouseUp += (s, e) =>
+                {
+                    if (e.Button == MouseButtons.Left)
+                    {
+                        OnItemClicked(match);
+                    }
+                };
+
+                listItem.Click += (s, e) =>
+                {
+                    if (e.Button == MouseButtons.Left)
+                    {
+                        OnItemClicked(match);
+                    }
+                };
+
                 _listBox.AddChild(listItem);
+
+                var holder = listItem.Parent;
+                if (holder != null)
+                {
+                    holder.Cursor = Cursors.Hand;
+                    holder.MouseUp += (s, e) =>
+                    {
+                        if (e.Button == MouseButtons.Left)
+                        {
+                            OnItemClicked(match);
+                        }
+                    };
+                    holder.Click += (s, e) =>
+                    {
+                        if (e.Button == MouseButtons.Left)
+                        {
+                            OnItemClicked(match);
+                        }
+                    };
+                }
+
+                itemIdx++;
             }
 
             _listBox.SelectedIndex = 0;
             UpdateDescription();
             Visible = true;
             Invalidate();
+        }
+
+        private void OnItemClicked(RoslynCompletionItem item)
+        {
+            if (item == null) return;
+            long now = DateTime.UtcNow.Ticks;
+            if (now - _lastClickTicks < TimeSpan.FromMilliseconds(200).Ticks)
+            {
+                return;
+            }
+            _lastClickTicks = now;
+            ItemChosen?.Invoke(item);
         }
 
         private void UpdateDescription()
@@ -557,7 +785,13 @@ namespace CSharpCAD
                 return;
             }
 
-            string text = item.Kind.ToUpperInvariant() + ": " + item.DisplayText;
+            int idx = _listBox.SelectedIndex + 1;
+            int total = _currentItems.Count;
+            string countPrefix = (item.Kind == "constructor" || item.Kind == "method") && total > 1
+                ? $" ({idx} of {total})"
+                : "";
+
+            string text = item.Kind.ToUpperInvariant() + countPrefix + ": " + item.DisplayText;
             if (!string.IsNullOrEmpty(item.InlineDescription))
             {
                 text += " — " + item.InlineDescription;
@@ -653,6 +887,7 @@ namespace CSharpCAD
 
             // Add autocomplete popup as a top-level overlay
             _autocomplete = new AutocompleteWidget(Editor);
+            _autocomplete.ItemChosen += item => ApplyAutocomplete(item);
             AddChild(_autocomplete);
 
             // Hook events for autocomplete
@@ -714,6 +949,99 @@ namespace CSharpCAD
             TriggerAutocomplete(force: false);
         }
 
+        private static readonly HashSet<string> s_controlKeywords = new(StringComparer.Ordinal)
+        {
+            "if", "for", "foreach", "while", "switch", "catch", "using", "lock", "fixed", "sizeof", "typeof", "default"
+        };
+
+        private static bool CheckInvocation(string text, int pos, out string target, out bool isCtor, out int argIndex)
+        {
+            target = null;
+            isCtor = false;
+            argIndex = 0;
+
+            if (string.IsNullOrEmpty(text) || pos <= 0 || pos > text.Length)
+                return false;
+
+            int depth = 0;
+            int argCount = 0;
+            int openParenPos = -1;
+
+            for (int i = pos - 1; i >= 0; i--)
+            {
+                char c = text[i];
+                if (c == ')')
+                {
+                    depth++;
+                }
+                else if (c == '(')
+                {
+                    if (depth > 0)
+                    {
+                        depth--;
+                    }
+                    else
+                    {
+                        openParenPos = i;
+                        break;
+                    }
+                }
+                else if (c == ',' && depth == 0)
+                {
+                    argCount++;
+                }
+                else if (c == ';' || c == '{' || c == '}')
+                {
+                    break;
+                }
+            }
+
+            if (openParenPos < 0) return false;
+
+            // Find identifier before open paren
+            int endId = -1;
+            int startId = -1;
+            for (int i = openParenPos - 1; i >= 0; i--)
+            {
+                if (char.IsWhiteSpace(text[i]))
+                {
+                    if (endId != -1) { startId = i + 1; break; }
+                    continue;
+                }
+                if (char.IsLetterOrDigit(text[i]) || text[i] == '_')
+                {
+                    if (endId == -1) endId = i;
+                    if (i == 0) { startId = 0; break; }
+                }
+                else
+                {
+                    if (endId != -1) { startId = i + 1; break; }
+                    break;
+                }
+            }
+
+            if (endId == -1 || startId == -1) return false;
+
+            string id = text.Substring(startId, endId - startId + 1);
+            if (s_controlKeywords.Contains(id)) return false;
+
+            // Check if preceded by "new"
+            bool isNew = false;
+            int beforeStart = startId - 1;
+            while (beforeStart >= 0 && char.IsWhiteSpace(text[beforeStart]))
+                beforeStart--;
+            if (beforeStart >= 2 && text.Substring(beforeStart - 2, 3) == "new")
+            {
+                bool boundary = (beforeStart - 3 < 0) || !char.IsLetterOrDigit(text[beforeStart - 3]);
+                if (boundary) isNew = true;
+            }
+
+            target = id;
+            isCtor = isNew;
+            argIndex = argCount;
+            return true;
+        }
+
         private async void TriggerAutocomplete(bool force)
         {
             string text = Editor.Text ?? "";
@@ -721,11 +1049,25 @@ namespace CSharpCAD
 
             string prefix = "";
             bool shouldTrigger = force;
+            bool isSignatureTrigger = false;
+            string invocationTarget = null;
+            bool isConstructor = false;
+            int currentArgIndex = 0;
 
-            if (pos > 0 && pos <= text.Length)
+            if (CheckInvocation(text, pos, out invocationTarget, out isConstructor, out currentArgIndex))
+            {
+                shouldTrigger = true;
+                isSignatureTrigger = true;
+            }
+            else if (pos > 0 && pos <= text.Length)
             {
                 char prev = text[pos - 1];
-                if (prev == '.')
+                if (prev == ')')
+                {
+                    _autocomplete.Visible = false;
+                    return;
+                }
+                else if (prev == '.')
                 {
                     // Member access trigger (e.g. "myBox.")
                     shouldTrigger = true;
@@ -758,7 +1100,18 @@ namespace CSharpCAD
 
             try
             {
-                var completions = await _completionEngine.GetCompletionsAsync(text, pos, token);
+                List<RoslynCompletionItem> completions = null;
+                if (isSignatureTrigger)
+                {
+                    completions = await _completionEngine.GetSignaturesAsync(
+                        invocationTarget, isConstructor, currentArgIndex, text, pos, token);
+                    prefix = "";
+                }
+                else
+                {
+                    completions = await _completionEngine.GetCompletionsAsync(text, pos, token);
+                }
+
                 if (token.IsCancellationRequested) return;
 
                 if (completions != null && completions.Count > 0)
@@ -812,9 +1165,9 @@ namespace CSharpCAD
             _autocomplete.BringToFront();
         }
 
-        private void ApplyAutocomplete()
+        private void ApplyAutocomplete(RoslynCompletionItem explicitItem = null)
         {
-            var item = _autocomplete.GetSelectedItem();
+            var item = explicitItem ?? _autocomplete.GetSelectedItem();
             if (item == null) return;
 
             string selected = item.InsertionText ?? item.DisplayText;
@@ -822,8 +1175,49 @@ namespace CSharpCAD
 
             string text = Editor.Text ?? "";
             int pos = Editor.InternalTextEditWidget.CharIndexToInsertBefore;
-            int start = pos;
 
+            // Handle signature items (constructor/method)
+            if (item.Kind == "constructor" || item.Kind == "method")
+            {
+                int openParen = -1;
+                for (int i = pos - 1; i >= 0; i--)
+                {
+                    if (text[i] == '(') { openParen = i; break; }
+                    if (text[i] == ';' || text[i] == '\n') break;
+                }
+
+                if (openParen >= 0)
+                {
+                    int endName = openParen - 1;
+                    while (endName >= 0 && char.IsWhiteSpace(text[endName])) endName--;
+                    int startName = endName;
+                    while (startName >= 0 && (char.IsLetterOrDigit(text[startName]) || text[startName] == '_')) startName--;
+                    startName++;
+
+                    if (endName >= startName)
+                    {
+                        int parenIdx = item.DisplayText.IndexOf('(');
+                        string canonicalName = parenIdx > 0 ? item.DisplayText.Substring(0, parenIdx).Trim() : "";
+
+                        string correctedPrefix = text.Substring(0, startName) + canonicalName + text.Substring(endName + 1, openParen - endName);
+
+                        string insertion = selected;
+                        if (pos < text.Length && text[pos] == ')' && insertion.EndsWith(")"))
+                        {
+                            insertion = insertion.Substring(0, insertion.Length - 1);
+                        }
+
+                        string resultText = correctedPrefix + insertion + text.Substring(pos);
+                        Editor.Text = resultText;
+                        Editor.InternalTextEditWidget.CharIndexToInsertBefore = correctedPrefix.Length + insertion.Length;
+                        _autocomplete.Visible = false;
+                        Editor.InternalTextEditWidget.Focus();
+                        return;
+                    }
+                }
+            }
+
+            int start = pos;
             // Replace preceding identifier characters if typing a prefix
             while (start > 0 && (char.IsLetterOrDigit(text[start - 1]) || text[start - 1] == '_'))
                 start--;
@@ -886,5 +1280,77 @@ namespace CSharpCAD
         /// <summary>Called externally when the parent scrolls, to keep the gutter in sync.</summary>
         public void InvalidateGutter() =>
             (Children[0] as FlowLayoutWidget)?.Children[0]?.Invalidate();
+    }
+
+    // ────────────────────────────────────────────────────────────────────────────
+    // 6. Read-only syntax-highlighted code box widget (used in HelpWindow cards)
+    // ────────────────────────────────────────────────────────────────────────────
+    public class ReadOnlyCodeBoxWidget : GuiWidget
+    {
+        public SyntaxTextEditWidget Editor { get; }
+        private readonly double _fontSize;
+        private readonly double _maxDisplayHeight;
+
+        public ReadOnlyCodeBoxWidget(string text, double fontSize = 10, double maxDisplayHeight = 260)
+        {
+            _fontSize = fontSize;
+            _maxDisplayHeight = maxDisplayHeight;
+
+            HAnchor = HAnchor.Stretch;
+            Margin = new BorderDouble(0, 4, 0, 0);
+            Padding = new BorderDouble(6, 4);
+            BackgroundColor = EditorPalette.Background;
+
+            Editor = new SyntaxTextEditWidget(text ?? "", fontSize, readOnly: true)
+            {
+                HAnchor = HAnchor.Stretch,
+                VAnchor = VAnchor.Stretch,
+                BackgroundColor = EditorPalette.Background,
+            };
+
+            AddChild(Editor);
+            UpdateHeight(text ?? "");
+        }
+
+        public override string Text
+        {
+            get => Editor?.Text ?? "";
+            set
+            {
+                if (Editor != null)
+                {
+                    Editor.Text = value ?? "";
+                    Editor.TopLeftOffset = Vector2.Zero;
+                }
+                UpdateHeight(value ?? "");
+            }
+        }
+
+        public void UpdateHeight(string content)
+        {
+            int lineCount = 1;
+            for (int i = 0; i < content.Length; i++)
+            {
+                if (content[i] == '\n') lineCount++;
+            }
+
+            double lineH = Math.Ceiling(_fontSize * 1.55);
+            double neededHeight = Math.Max(38, lineCount * lineH + 16);
+            Height = Math.Min(neededHeight, _maxDisplayHeight);
+            if (Editor != null)
+            {
+                Editor.Height = Height;
+                Editor.ScrollArea.Invalidate();
+                Editor.VerticalScrollBar.Invalidate();
+            }
+            Invalidate();
+        }
+
+        public override void OnDraw(Graphics2D g)
+        {
+            base.OnDraw(g);
+            // Crisp border matching Dracula comment/border
+            g.Rectangle(LocalBounds, new Color(68, 71, 90));
+        }
     }
 }

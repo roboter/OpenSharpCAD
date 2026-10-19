@@ -1,0 +1,710 @@
+﻿# OpenSharpCAD API Documentation
+
+Comprehensive programmatic reference for all 3D Shapes, 2D Primitives, Transformations, CSG Boolean Operations, and Script Globals.
+
+> Generated automatically by OpenSharpCAD `AutoDocumentationService`.
+
+## Table of Contents
+- **3D Solid**
+  - [Box](#box)
+  - [Cylinder](#cylinder)
+  - [Sphere](#sphere)
+  - [Torus](#torus)
+- **2D Primitive**
+  - [Circle](#circle)
+  - [Rectangle](#rectangle)
+  - [Square](#square)
+  - [Line](#line)
+  - [Point](#point)
+  - [Path](#path)
+- **Transformation**
+  - [Translate](#translate)
+  - [Rotate](#rotate)
+  - [Scale](#scale)
+- **CSG Boolean**
+  - [Union](#union)
+  - [Difference](#difference)
+  - [Intersection](#intersection)
+- **Script Global**
+  - [Draw](#draw)
+  - [Extrude](#extrude)
+  - [TwistExtrude](#twistextrude)
+  - [Revolve](#revolve)
+  - [Loft](#loft)
+  - [RGB / RGBA / RGBf](#rgb--rgba--rgbf)
+
+---
+## 3D Solid
+
+### Box
+
+Represents an axis-aligned 3D box (cuboid) solid defined by dimensions along X, Y, and Z. Supports centered or corner origin, edge beveling/chamfering, and topology queries (corners, edges, lines, points).
+
+#### Constructors / Signatures
+```csharp
+new Box(double sizeX, double sizeY, double sizeZ, string name = "", bool createCentered = true)  // Creates a new 3D box solid with dimensions specified along X, Y, and Z.
+new Box(Vector3 size, string name = "", bool createCentered = true)  // Creates a new 3D box solid with dimensions specified by a Vector3 size.
+```
+
+#### Properties
+```csharp
+double Width { get; }  // Width of the box along the X axis.
+double Depth { get; }  // Depth of the box along the Y axis.
+double Height { get; }  // Height of the box along the Z axis.
+Vector3[] Corners { get; }  // Gets the 8 3D corner vertex positions of the box.
+ValueTuple`2[] BoundingEdges { get; }  // Gets the 12 bounding edges of the box as (Start, End) coordinate pairs.
+Point[] Points { get; }  // Gets the 8 corner vertices as compatible 2D/3D Point primitive objects for LINQ queries.
+Line[] Lines { get; }  // Gets the 12 bounding edges as compatible Line primitive objects for LINQ queries.
+```
+
+#### Methods
+```csharp
+void CutAlongDiagonal(Face facesToKeepWhole)  // Cut along the diagonal of a give edge to the opposite edge.  The edge is chosen by saying which 2 faces are to be kept solid, and or-ing them together.
+void BevelEdge(Face facesThatShareEdge, double radius)  // Bevel a give edge.  The edge is chosen by saying which 2 faces are to be used, and or-ing them together
+void BevelEdge(Edge edgeToBevel, double radius)
+void BevelFace(Face face, double radius)
+void BevelAll(double radius)
+void ChamferEdge(Face facesThatShareEdge, double cutDepth)  // Will cause a chamfered flat to be applied to the given edge.
+```
+
+#### Example Code
+```csharp
+// Cube of 20x20x20 centered at origin
+var cube = new Box(20, 20, 20, createCentered: true);
+Draw(cube, RGB(65, 105, 225));
+```
+
+### Cylinder
+
+Represents a 3D cylindrical or conical solid with specified radius/radii, height, number of facets (sides), and axis alignment. Supports regular cylinders, tapered cones, and creating cylinders directly from 2D/3D Line primitives.
+
+#### Constructors / Signatures
+```csharp
+new Cylinder(double radius, double height, int sides = 30, Alignment alignment = z, string name = "")  // Creates a uniform 3D cylinder solid with equal top and bottom radius.
+new Cylinder(Line line, double radius, int sides = 30)  // Creates a 3D cylinder using the length/height of a Line primitive.
+new Cylinder(double radius1, double radius2, double height, int sides = 30, Alignment alignment = z, string name = "")  // Creates a tapered 3D cylinder or cone with different bottom (radius1) and top (radius2) radii.
+```
+
+#### Properties
+```csharp
+double Radius1 { get; }  // Bottom (or start) radius of the cylinder or truncated cone.
+double Radius2 { get; }  // Top (or end) radius of the cylinder or truncated cone.
+double Radius { get; }  // Radius of the cylinder (equals Radius1).
+double Height { get; }  // Total height of the cylinder along its alignment axis.
+```
+
+#### Example Code
+```csharp
+// Cylinder of radius 10 and height 30 centered
+var cyl = new Cylinder(radius: 10, height: 30);
+Draw(cyl, RGB(46, 204, 113));
+```
+
+### Sphere
+
+Represents a 3D spherical solid centered at the origin (0, 0, 0) with a specified radius.
+
+#### Constructors / Signatures
+```csharp
+new Sphere(double radius, string name = "")  // Creates a new 3D sphere solid with specified radius.
+new Sphere(Sphere objectToCopy)  // Creates a copy of an existing 3D sphere solid.
+```
+
+#### Properties
+```csharp
+double Radius { get; }  // Radius of the sphere.
+```
+
+#### Methods
+```csharp
+AxisAlignedBoundingBox GetAxisAlignedBoundingBox()
+```
+
+#### Example Code
+```csharp
+// Sphere of radius 15
+var ball = new Sphere(radius: 15);
+Draw(ball, RGB(231, 76, 60));
+```
+
+### Torus
+
+Represents a 3D donut-shaped torus solid generated by revolving a circular cross-section around an axis.
+
+#### Constructors / Signatures
+```csharp
+new Torus(double innerRadius, double outerRadius, Alignment alignment = z, string name = "")  // Creates a new 3D torus solid with specified inner and outer radii and axis alignment.
+```
+
+#### Properties
+```csharp
+double InnerRadius { get; }  // Radius from the center of the hole to the inner edge of the tube.
+double OuterRadius { get; }  // Radius from the center of the hole to the outermost edge of the tube.
+Alignment Alignment { get; }  // Orientation axis of revolution (default: Alignment.z).
+```
+
+#### Example Code
+```csharp
+// Torus with outer ring radius 20, tube inner radius 5
+var ring = new Torus(innerRadius: 5, outerRadius: 20);
+Draw(ring, RGB(241, 196, 15));
+```
+
+---
+## 2D Primitive
+
+### Circle
+
+Represents a 2D circle with center and radius (or regular N-gon if sides > 2).
+
+#### Constructors / Signatures
+```csharp
+new Circle(double radius, int sides = 0)
+new Circle(double x, double y, double radius, int sides = 0)
+new Circle(Vector2 center, double radius, int sides = 0)
+```
+
+#### Properties
+```csharp
+Vector2 Center { get; set; }
+double Radius { get; set; }
+int Sides { get; set; }
+double Diameter { get; set; }
+bool IsClosed { get; }
+```
+
+#### Methods
+```csharp
+void ValidateClosed(string operationName = "extrude")
+IVertexSource ToVertexSource()
+CsgObject Extrude(double height, bool centered = false, Alignment alignment = z)
+CsgObject Revolve(double angleDegrees = 360, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)
+CsgObject RevolveRadians(double angleStart = 0, double angleEnd = 6,2831854820251465, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)
+CsgObject Loft(I2DPrimitive top, double height, double twistDegrees = 0, int resolution = 60, bool capped = true, bool centered = false, Alignment alignment = z)
+CsgObject Extrude(double height, double twistDegrees, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)
+CsgObject TwistExtrude(double height, double twistDegrees = 360, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)
+Mesh ToMesh()
+Mesh ToWireMesh(double width = 0,5)
+string ToString()
+```
+
+#### Example Code
+```csharp
+// Circle of radius 15
+var c = new Circle(radius: 15);
+Draw(c, RGB(80, 250, 123));
+```
+
+### Rectangle
+
+Represents a 2D rectangle (with optional rounded corners).
+
+#### Constructors / Signatures
+```csharp
+new Rectangle(double width, double height, bool centered = true)
+new Rectangle(double x, double y, double width, double height, bool centered = false)
+new Rectangle(Vector2 size, bool centered = true)
+new Rectangle(double width, double height, double cornerRadius, bool centered = true)
+```
+
+#### Properties
+```csharp
+double Width { get; set; }
+double Height { get; set; }
+Vector2 Center { get; set; }
+double CornerRadius { get; set; }
+bool IsClosed { get; }
+```
+
+#### Methods
+```csharp
+void ValidateClosed(string operationName = "extrude")
+IVertexSource ToVertexSource()
+CsgObject Extrude(double height, bool centered = false, Alignment alignment = z)
+CsgObject Revolve(double angleDegrees = 360, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)
+CsgObject RevolveRadians(double angleStart = 0, double angleEnd = 6,2831854820251465, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)
+CsgObject Loft(I2DPrimitive top, double height, double twistDegrees = 0, int resolution = 60, bool capped = true, bool centered = false, Alignment alignment = z)
+CsgObject Extrude(double height, double twistDegrees, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)
+CsgObject TwistExtrude(double height, double twistDegrees = 360, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)
+Mesh ToMesh()
+Mesh ToWireMesh(double width = 0,5)
+string ToString()
+```
+
+#### Example Code
+```csharp
+// Rectangle 30 wide x 16 tall with 3mm rounded corners
+var rect = new Rectangle(30, 16, cornerRadius: 3, centered: true);
+Draw(rect, RGB(139, 233, 253));
+```
+
+### Square
+
+Represents a 2D square primitive (equal width and height).
+
+#### Constructors / Signatures
+```csharp
+new Square(double size, bool centered = true)
+new Square(double x, double y, double size, bool centered = false)
+new Square(double size, double cornerRadius, bool centered = true)
+```
+
+#### Properties
+```csharp
+double Size { get; set; }
+```
+
+#### Methods
+```csharp
+string ToString()
+```
+
+#### Example Code
+```csharp
+// Square with side 24 and rounded corners
+var sq = new Square(size: 24, cornerRadius: 3, centered: true);
+Draw(sq, RGB(189, 147, 249));
+```
+
+### Line
+
+Represents a 2D or 3D line segment between two points. Supports length, height (compatible with Cylinder height), direction, midpoints, and cylinder conversion. Note: A line is an open 1D segment with zero enclosed area, so attempting to extrude or revolve it directly will fail validation. Combine lines in a closed Path (with path.Close()) to form extrudable boundaries.
+
+#### Constructors / Signatures
+```csharp
+new Line(Point start, Point end)
+new Line(Vector3 start, Vector3 end)
+new Line(Vector2 start, Vector2 end)
+new Line(double x1, double y1, double x2, double y2)
+new Line(double x1, double y1, double z1, double x2, double y2, double z2)
+new Line(double length, double angleRadians = 0)
+new Line()
+```
+
+#### Properties
+```csharp
+Vector3 Start3D { get; set; }
+Vector3 End3D { get; set; }
+Point StartPoint { get; set; }
+Point EndPoint { get; set; }
+Vector2 Start { get; set; }
+Vector2 End { get; set; }
+double X1 { get; }
+double Y1 { get; }
+double Z1 { get; }
+double X2 { get; }
+double Y2 { get; }
+double Z2 { get; }
+double Dx { get; }
+double Dy { get; }
+double Dz { get; }
+double Length { get; }
+double Height { get; }  // The height/length of this line segment. Directly compatible with Cylinder height.
+Vector3 MidPoint3D { get; }
+Point MidPoint { get; }
+Vector3 Direction { get; }
+bool IsClosed { get; }
+```
+
+#### Methods
+```csharp
+void ValidateClosed(string operationName = "extrude")
+IVertexSource ToVertexSource()
+CsgObject Extrude(double height, bool centered = false, Alignment alignment = z)
+CsgObject Revolve(double angleDegrees = 360, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)
+CsgObject RevolveRadians(double angleStart = 0, double angleEnd = 6,2831854820251465, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)
+CsgObject Loft(I2DPrimitive top, double height, double twistDegrees = 0, int resolution = 60, bool capped = true, bool centered = false, Alignment alignment = z)
+CsgObject Extrude(double height, double twistDegrees, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)
+CsgObject TwistExtrude(double height, double twistDegrees = 360, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)
+Mesh ToMesh()
+Mesh ToWireMesh(double width = 0,5)
+CsgObject ToCylinder(double radius, int sides = 16)
+Path ToPath()
+string ToString()
+```
+
+#### Example Code
+```csharp
+// 3D Line between two coordinate points
+var line = new Line(new Point(0, 0, 0), new Point(25, 20, 15));
+Draw(line, RGB(255, 121, 198));
+```
+
+### Point
+
+Represents a 2D or 3D coordinate point (X, Y, Z). Fully compatible with Vector2, Vector3, tuples (x, y) / (x, y, z), Dot, and Line.
+
+#### Constructors / Signatures
+```csharp
+new Point(double x, double y, double z = 0)
+new Point(double x, double y)
+new Point(Vector2 pos)
+new Point(Vector3 pos)
+new Point()
+```
+
+#### Properties
+```csharp
+double X { get; set; }
+double Y { get; set; }
+double Z { get; set; }
+Vector2 Position2D { get; set; }
+Vector3 Position3D { get; set; }
+Vector2 Position { get; set; }
+bool IsClosed { get; }
+```
+
+#### Methods
+```csharp
+double DistanceTo(Point other)
+double DistanceTo(Vector3 other)
+double DistanceTo(Vector2 other)
+Line LineTo(Point other)
+Line LineTo(Vector3 other)
+Line LineTo(Vector2 other)
+Line LineTo(double x, double y, double z = 0)
+void Deconstruct(Double& x, Double& y)
+void Deconstruct(Double& x, Double& y, Double& z)
+bool Equals(Object obj)
+bool Equals(Point other)
+int GetHashCode()
+void ValidateClosed(string operationName = "extrude")
+IVertexSource ToVertexSource()
+CsgObject Extrude(double height, bool centered = false, Alignment alignment = z)
+CsgObject Revolve(double angleDegrees = 360, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)
+CsgObject RevolveRadians(double angleStart = 0, double angleEnd = 6,2831854820251465, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)
+CsgObject Loft(I2DPrimitive top, double height, double twistDegrees = 0, int resolution = 60, bool capped = true, bool centered = false, Alignment alignment = z)
+CsgObject Extrude(double height, double twistDegrees, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)
+CsgObject TwistExtrude(double height, double twistDegrees = 360, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)
+Mesh ToMesh()
+Mesh ToWireMesh(double width = 0,5)
+Circle ToCircle(double radius)
+CsgObject ToSphere(double radius)
+Path ToPath()
+string ToString()
+```
+
+#### Example Code
+```csharp
+// Point coordinate (X, Y, Z)
+var pt = new Point(10, 15, 20);
+Draw(new Sphere(radius: 3), RGB(255, 85, 85));
+```
+
+### Path
+
+Represents a 2D path / polygon composed of sequential points, line segments, and curves. Can be explicitly closed via path.Close() or by matching the first and last points.
+
+#### Constructors / Signatures
+```csharp
+new Path()
+new Path(IEnumerable`1 points, bool close = false)
+new Path(Vector2[] points)
+new Path(double[] coordinates, bool close = false)
+```
+
+#### Properties
+```csharp
+IReadOnlyList`1 Points { get; }
+bool IsClosed { get; }
+```
+
+#### Methods
+```csharp
+Path MoveTo(double x, double y)
+Path MoveTo(Vector2 point)
+Path LineTo(double x, double y)
+Path LineTo(Vector2 point)
+Path AddPoint(double x, double y)
+Path AddPoint(Vector2 point)
+Path Add(Line line)
+Path CurveTo(double ctrlX, double ctrlY, double endX, double endY)
+Path CurveTo(double ctrl1X, double ctrl1Y, double ctrl2X, double ctrl2Y, double endX, double endY)
+Path Close()
+void ValidateClosed(string operationName = "extrude")
+IVertexSource ToVertexSource()
+CsgObject Extrude(double height, bool centered = false, Alignment alignment = z)
+CsgObject Revolve(double angleDegrees = 360, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)
+CsgObject RevolveRadians(double angleStart = 0, double angleEnd = 6,2831854820251465, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)
+CsgObject Loft(I2DPrimitive top, double height, double twistDegrees = 0, int resolution = 60, bool capped = true, bool centered = false, Alignment alignment = z)
+CsgObject Extrude(double height, double twistDegrees, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)
+CsgObject TwistExtrude(double height, double twistDegrees = 360, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)
+Mesh ToMesh()
+Mesh ToWireMesh(double width = 0,5)
+string ToString()
+```
+
+#### Example Code
+```csharp
+// Polyline / polygon path formed by chained points
+var path = new Path();
+path.AddPoint(0, 0);
+path.AddPoint(20, 0);
+path.AddPoint(10, 18);
+path.Close();
+Draw(path, RGB(241, 250, 140));
+```
+
+---
+## Transformation
+
+### Translate
+
+Represents a spatial translation (offset/movement) transformation applied to a 3D CSG object along the X, Y, and Z axes.
+
+#### Constructors / Signatures
+```csharp
+new Translate(CsgObject objectToTranslate, double x = 0, double y = 0, double z = 0, string name = "")  // Translates a CSG object by explicit X, Y, and Z offset distances.
+new Translate(CsgObject objectToTranslate, Vector3 translation, string name = "")  // Translates a CSG object by a Vector3 displacement vector.
+```
+
+#### Properties
+```csharp
+Vector3 Translation { get; set; }  // The current 3D translation offset vector.
+```
+
+#### Example Code
+```csharp
+// Translate solid 15 units along X and 10 along Z
+var b = new Box(16, 16, 16);
+var shifted = new Translate(b, x: 15, y: 0, z: 10);
+Draw(shifted, RGB(80, 200, 255));
+```
+
+### Rotate
+
+Represents a 3D rotation transformation applied to a CSG object around the X, Y, and Z axes (angles in radians).
+
+#### Constructors / Signatures
+```csharp
+new Rotate(CsgObject objectToRotate, Vector3 radians, string name = "")  // Rotates a CSG object using Euler angles in radians specified in a Vector3 (X, Y, Z).
+new Rotate(CsgObject objectToRotate, double x = 0, double y = 0, double z = 0, string name = "")  // Rotates a CSG object using explicit Euler angles in radians around the X, Y, and Z axes. Tip: Use MathHelper.DegreesToRadians(degrees) to convert degrees to radians.
+```
+
+#### Example Code
+```csharp
+// Rotate solid around axes (in radians)
+var b = new Box(12, 12, 28, createCentered: true);
+var tilted = new Rotate(b, x: MathHelper.DegreesToRadians(45), z: MathHelper.DegreesToRadians(30));
+Draw(tilted, RGB(255, 184, 108));
+```
+
+### Scale
+
+Represents a 3D scaling (resizing) transformation applied to a CSG object uniformly or non-uniformly along X, Y, and Z.
+
+#### Constructors / Signatures
+```csharp
+new Scale(CsgObject objectToScale, double scale, string name = "")  // Scales a CSG object uniformly by the same multiplier along all 3 axes (X, Y, Z).
+new Scale(CsgObject objectToScale, double x, double y, double z, string name = "")  // Scales a CSG object non-uniformly with independent scale multipliers along X, Y, and Z.
+new Scale(CsgObject objectToScale, Vector3 scale, string name = "")  // Scales a CSG object using a Vector3 containing the (X, Y, Z) scale factors.
+```
+
+#### Methods
+```csharp
+Vector3 GetScale()  // Gets the 3D scale factors (X, Y, Z).
+```
+
+#### Example Code
+```csharp
+// Non-uniform scaling of a solid along axes
+var sph = new Sphere(12);
+var stretched = new Scale(sph, x: 2.0, y: 0.8, z: 1.0);
+Draw(stretched, RGB(189, 147, 249));
+```
+
+---
+## CSG Boolean
+
+### Union
+
+Represents a CSG Boolean Union (addition / merge) operation combining two or more 3D objects into a single solid. In code, you can also use the '+' operator: objectA + objectB.
+
+#### Constructors / Signatures
+```csharp
+new Union(string name = "")  // Creates an empty Union container.
+new Union(CsgObject a, CsgObject b, string name = "")  // Combines two CSG objects into a unified solid (A + B).
+```
+
+#### Properties
+```csharp
+List<CsgObject> AllObjects { get; }  // Gets the list of all participating CSG objects in this union.
+```
+
+#### Methods
+```csharp
+AxisAlignedBoundingBox GetAxisAlignedBoundingBox()
+void Add(CsgObject objectToAdd)
+```
+
+#### Example Code
+```csharp
+// Union joins multiple solids into one contiguous shape (also: a + b)
+var joined = new Union(
+    new Box(24, 10, 10, createCentered: true),
+    new Box(10, 24, 10, createCentered: true)
+);
+Draw(joined, RGB(80, 250, 123));
+```
+
+### Difference
+
+Represents a CSG Boolean Difference (subtraction / cutout) operation carving one or more solids out of a primary solid. In code, you can also use the '-' operator: primaryObject - subtractObject.
+
+#### Constructors / Signatures
+```csharp
+new Difference(CsgObject primary, string name = "")  // Creates a Difference operation container initialized with a primary solid.
+new Difference(CsgObject primary, CsgObject subtract, string name = "")  // Subtracts one solid from another (primary - subtract).
+```
+
+#### Properties
+```csharp
+CsgObject Primary { get; }  // The base solid from which subsequent solids are carved out.
+List<CsgObject> AllSubtracts { get; }  // The collection of solids subtracted from the primary solid.
+```
+
+#### Methods
+```csharp
+void AddToSubtractList(CsgObject objectToAddToSubtractList)
+AxisAlignedBoundingBox GetAxisAlignedBoundingBox()
+```
+
+#### Example Code
+```csharp
+// Difference carves holes out of solids (also: a - b)
+var box = new Box(22, 22, 22, createCentered: true);
+var hole = new Cylinder(7, 30);
+var hollow = new Difference(box, hole);
+Draw(hollow, RGB(255, 85, 85));
+```
+
+### Intersection
+
+Represents a CSG Boolean Intersection operation keeping only the overlapping 3D region shared by two solids (A ∩ B). In code, you can also use the '*' operator: solidA * solidB.
+
+#### Constructors / Signatures
+```csharp
+new Intersection(CsgObject a, CsgObject b, string name = "")  // Computes the intersection of two solids, retaining only the common overlapping volume (A * B).
+new Intersection(Intersection objectToCopy)  // Creates a copy of an existing Intersection operation solid.
+```
+
+#### Methods
+```csharp
+AxisAlignedBoundingBox GetAxisAlignedBoundingBox()
+```
+
+#### Example Code
+```csharp
+// Intersection keeps only the shared volume of solids (also: a * b)
+var box = new Box(22, 22, 22, createCentered: true);
+var sphere = new Sphere(14);
+var common = new Intersection(box, sphere);
+Draw(common, RGB(241, 250, 140));
+```
+
+---
+## Script Global
+
+### Draw
+
+Renders a 3D solid, 2D primitive, or mesh into the 3D viewport with an optional custom color.
+
+#### Constructors / Signatures
+```csharp
+void Draw(CsgObject objectToProcess)
+void Draw(CsgObject objectToProcess, Color color)
+void Draw(I2DPrimitive primitive2D)
+void Draw(I2DPrimitive primitive2D, Color color)
+void Draw(Mesh mesh)
+void Draw(Mesh mesh, Color color)
+```
+
+#### Example Code
+```csharp
+Draw(new Box(20, 20, 20, createCentered: true), RGB(80, 250, 123));
+```
+
+### Extrude
+
+Extrudes a closed 2D shape (Circle, Rectangle, Path) linearly along an axis into a 3D solid, with optional twist and scale.
+
+#### Constructors / Signatures
+```csharp
+CsgObject Extrude(I2DPrimitive shape, double height, bool centered = false, Alignment alignment = Alignment.z)
+CsgObject Extrude(I2DPrimitive shape, double height, double twistDegrees, int slices = 30, double scale = 1.0, bool centered = false, Alignment alignment = Alignment.z)
+```
+
+#### Example Code
+```csharp
+var c = new Circle(12);
+var pillar = Extrude(c, height: 35, centered: true);
+Draw(pillar, RGB(46, 204, 113));
+```
+
+### TwistExtrude
+
+Extrudes a closed 2D primitive while twisting around its centroid into a helical spiral 3D solid.
+
+#### Constructors / Signatures
+```csharp
+CsgObject TwistExtrude(I2DPrimitive shape, double height, double twistDegrees = 360, int slices = 30, double scale = 1.0, bool centered = false, Alignment alignment = Alignment.z)
+```
+
+#### Example Code
+```csharp
+var sq = new Square(16, centered: true);
+var spiral = TwistExtrude(sq, height: 40, twistDegrees: 180, slices: 40);
+Draw(spiral, RGB(255, 121, 198));
+```
+
+### Revolve
+
+Revolves a 2D profile curve around an axis to produce a 3D rotational solid of revolution (e.g. vases, bowls, lathe parts).
+
+#### Constructors / Signatures
+```csharp
+CsgObject Revolve(I2DPrimitive shape, double angleDegrees = 360, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)
+```
+
+#### Example Code
+```csharp
+var c = new Circle(x: 18, y: 0, radius: 6);
+var donut = Revolve(c, angleDegrees: 360, angleSteps: 36);
+Draw(donut, RGB(241, 196, 15));
+```
+
+### Loft
+
+Creates a smooth 3D skin transition between 2D profile sections across height.
+
+#### Constructors / Signatures
+```csharp
+CsgObject Loft(I2DPrimitive bottom, I2DPrimitive top, double height, double twistDegrees = 0, bool centered = false, Alignment alignment = Alignment.z)
+```
+
+#### Example Code
+```csharp
+var bot = new Circle(16);
+var top = new Square(16, centered: true);
+var blended = Loft(bot, top, height: 35, twistDegrees: 45);
+Draw(blended, RGB(80, 200, 255));
+```
+
+### RGB / RGBA / RGBf
+
+Color construction helpers for styling solids and meshes in the 3D viewport.
+
+#### Constructors / Signatures
+```csharp
+Color RGB(int r, int g, int b)            // 0 - 255
+Color RGBA(int r, int g, int b, int a)     // 0 - 255
+Color RGBf(double r, double g, double b)   // 0.0 - 1.0
+```
+
+#### Example Code
+```csharp
+var col1 = RGB(255, 100, 50);
+var col2 = RGBA(80, 250, 123, 200);
+var col3 = RGBf(0.2, 0.8, 1.0);
+```
+

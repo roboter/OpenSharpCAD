@@ -1,10 +1,15 @@
 using MatterHackers.Agg.Platform;
 using System;
-using System.Runtime.InteropServices;
 using System.Globalization;
-using System.Threading;
 using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using MatterHackers.Agg.UI;
 using MatterHackers.VectorMath;
 
@@ -50,6 +55,7 @@ class Program
     [STAThread]
     static void Main(string[] args)
     {
+
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             AggContext.Config.ProviderTypes.SystemWindowProvider = "MatterHackers.Agg.UI.OpenGLWinformsWindowProvider, agg_platform_win32";

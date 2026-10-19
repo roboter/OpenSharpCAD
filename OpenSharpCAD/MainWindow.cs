@@ -10,7 +10,9 @@ using System.Text;
 using MatterHackers.Csg.Transform;
 using MatterHackers.Csg.Solids;
 using MatterHackers.RenderOpenGl;
+using MatterHackers.RenderOpenGl.OpenGl;
 using System.IO;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 
 namespace CSharpCAD
@@ -26,6 +28,7 @@ namespace CSharpCAD
             : base(world, sourceWidget)
         {
             this.World = world;
+            this.TransformState = MatterHackers.VectorMath.TrackBall.TrackBallTransformType.Translation;
         }
 
         public override void OnDraw(Graphics2D graphics2D)
@@ -40,6 +43,11 @@ namespace CSharpCAD
                 screenRect.Right *= GuiWidget.DeviceScale;
                 screenRect.Top *= GuiWidget.DeviceScale;
 
+                if (screenRect.Width <= 0 || screenRect.Height <= 0)
+                {
+                    return;
+                }
+
                 GLHelper.SetGlContext(this.World, screenRect, new LightingData()
                 {
                     AmbientLight = new float[] { 0.2f, 0.2f, 0.2f, 1.0f }
@@ -51,8 +59,33 @@ namespace CSharpCAD
 
         public override void OnMouseDown(MouseEventArgs mouseEvent)
         {
-            System.Console.WriteLine("TrackballTumbleView.OnMouseDown");
+            if (mouseEvent.Button == MouseButtons.Left)
+            {
+                TransformState = MatterHackers.VectorMath.TrackBall.TrackBallTransformType.Translation;
+            }
+            else if (mouseEvent.Button == MouseButtons.Right)
+            {
+                TransformState = MatterHackers.VectorMath.TrackBall.TrackBallTransformType.Rotation;
+            }
+            else if (mouseEvent.Button == MouseButtons.Middle)
+            {
+                TransformState = MatterHackers.VectorMath.TrackBall.TrackBallTransformType.Translation;
+            }
+
             base.OnMouseDown(mouseEvent);
+
+            if (MouseCaptured)
+            {
+                Vector2 pos = new Vector2(mouseEvent.X, mouseEvent.Y);
+                if (mouseEvent.Button == MouseButtons.Left || mouseEvent.Button == MouseButtons.Middle)
+                {
+                    TrackBallController.OnMouseDown(pos, Matrix4X4.Identity, MatterHackers.VectorMath.TrackBall.TrackBallTransformType.Translation);
+                }
+                else if (mouseEvent.Button == MouseButtons.Right)
+                {
+                    TrackBallController.OnMouseDown(pos, Matrix4X4.Identity, MatterHackers.VectorMath.TrackBall.TrackBallTransformType.Rotation);
+                }
+            }
         }
 
         public override void OnMouseMove(MouseEventArgs mouseEvent)
@@ -70,7 +103,7 @@ namespace CSharpCAD
 
     public class MainWindow : SystemWindow
     {
-        private TrackballTumbleView trackBallWidget;
+        public TrackballTumbleView trackBallWidget;
         private Button outputScad;
         private Splitter verticalSplitter;
         private AxisOrientationWidget axisWidget;
@@ -81,11 +114,13 @@ namespace CSharpCAD
         private CodeEditorWidget _codeEditor;
         private ProblemsPanelWidget _problemsPanel;
         private Union rootUnion = new Union("root");
-        private HelpWindow _helpWindow;
         dynamic classRef;
+        public dynamic ClassRef => classRef;
 
         // Keep track of error lines for highlighting
         private List<int> errorLines = new List<int>();
+
+        private HelpWindow _helpWindow;
 
         public MainWindow(bool renderRayTrace) : base(800, 600)
         {
@@ -99,6 +134,7 @@ namespace CSharpCAD
             {
                 HAnchor = HAnchor.Stretch,
                 VAnchor = VAnchor.Stretch,
+                Orientation = Orientation.Vertical,
                 SplitterDistance = 420,
                 SplitterBackground = new Color(50, 52, 68),
             };
@@ -180,11 +216,6 @@ namespace CSharpCAD
                         ToggleHelp();
                         e.Handled = true;
                     }
-                    else if (e.KeyCode == Keys.Escape && _helpWindow != null && _helpWindow.Visible)
-                    {
-                        _helpWindow.Visible = false;
-                        e.Handled = true;
-                    }
                 };
                 textSide.AddChild(_codeEditor);
                 verticalSplitter.Panel1.AddChild(textSide);
@@ -208,13 +239,57 @@ namespace CSharpCAD
                 HAnchor = HAnchor.Stretch,
                 VAnchor = VAnchor.Stretch,
                 DrawContent = glLightedView_DrawGlContent,
-                TransformState = MatterHackers.VectorMath.TrackBall.TrackBallTransformType.Rotation,
+                TransformState = MatterHackers.VectorMath.TrackBall.TrackBallTransformType.Translation,
             };
             rightSplitter.Panel1.AddChild(trackBallWidget);
 
             // Axis orientation gizmo – floating overlay in the 3D panel
             axisWidget = new AxisOrientationWidget(world);
             rightSplitter.Panel1.AddChild(axisWidget);
+
+            // Floating 3D viewport controls (Home, Zoom In, Zoom Out)
+            var viewportHud = new FlowLayoutWidget(FlowDirection.LeftToRight)
+            {
+                HAnchor = HAnchor.Right,
+                VAnchor = VAnchor.Top,
+                Margin = new BorderDouble(0, 0, 14, 14),
+                Padding = new BorderDouble(6, 4),
+                BackgroundColor = new Color(24, 26, 36, 210),
+            };
+
+            var homeBtn = new HelpWindow.StyledButton("🏠 Home", new Color(248, 248, 242), new Color(68, 71, 90), new Color(98, 114, 164), pointSize: 10, padding: new BorderDouble(8, 5))
+            {
+                VAnchor = VAnchor.Center,
+                Margin = new BorderDouble(2, 0),
+            };
+            homeBtn.Click += (s, e) => CenterView();
+            viewportHud.AddChild(homeBtn);
+
+            var zoomInBtn = new HelpWindow.StyledButton("+", new Color(248, 248, 242), new Color(50, 54, 72), new Color(70, 76, 100), pointSize: 11, padding: new BorderDouble(8, 4))
+            {
+                VAnchor = VAnchor.Center,
+                Margin = new BorderDouble(2, 0),
+            };
+            zoomInBtn.Click += (s, e) =>
+            {
+                trackBallWidget.World.Scale *= 1.2;
+                trackBallWidget.Invalidate();
+            };
+            viewportHud.AddChild(zoomInBtn);
+
+            var zoomOutBtn = new HelpWindow.StyledButton("-", new Color(248, 248, 242), new Color(50, 54, 72), new Color(70, 76, 100), pointSize: 11, padding: new BorderDouble(8, 4))
+            {
+                VAnchor = VAnchor.Center,
+                Margin = new BorderDouble(2, 0),
+            };
+            zoomOutBtn.Click += (s, e) =>
+            {
+                trackBallWidget.World.Scale *= (1.0 / 1.2);
+                trackBallWidget.Invalidate();
+            };
+            viewportHud.AddChild(zoomOutBtn);
+
+            rightSplitter.Panel1.AddChild(viewportHud);
 
             // Refresh gizmo on every camera rotation
             trackBallWidget.ViewChanged += () => axisWidget?.Invalidate();
@@ -227,6 +302,12 @@ namespace CSharpCAD
 
             BackgroundColor = Color.White;
             PerformLayout();
+            Compile();
+        }
+
+        public void SetScriptAndCompile(string script)
+        {
+            _codeEditor.Text = script;
             Compile();
         }
 
@@ -245,7 +326,7 @@ namespace CSharpCAD
 
         public void ToggleHelp()
         {
-            if (_helpWindow == null)
+            if (_helpWindow == null || _helpWindow.HasBeenClosed)
             {
                 _helpWindow = new HelpWindow(
                     onInsertCode: (snippet, replaceWhole) =>
@@ -253,6 +334,8 @@ namespace CSharpCAD
                         if (replaceWhole)
                         {
                             _codeEditor.Text = snippet;
+                            Compile();
+                            CenterView();
                         }
                         else
                         {
@@ -266,30 +349,26 @@ namespace CSharpCAD
                                 _codeEditor.Text = current.TrimEnd() + "\n\n" + snippet;
                             }
                         }
-                        _helpWindow.Visible = false;
-                        _codeEditor.Editor.Focus();
+                        if (!HasBeenClosed && _codeEditor?.Editor?.Parent != null)
+                        {
+                            try { _codeEditor.Editor.Focus(); } catch { }
+                        }
                     },
                     onClose: () =>
                     {
-                        _helpWindow.Visible = false;
-                        _codeEditor.Editor.Focus();
+                        _helpWindow = null;
+                        if (!HasBeenClosed && _codeEditor?.Editor?.Parent != null)
+                        {
+                            try { _codeEditor.Editor.Focus(); } catch { }
+                        }
                     }
                 );
-                AddChild(_helpWindow);
-                _helpWindow.BringToFront();
+                _helpWindow.ShowAsSystemWindow();
             }
             else
             {
-                _helpWindow.Visible = !_helpWindow.Visible;
-                if (_helpWindow.Visible)
-                {
-                    _helpWindow.EnsureWithinParent();
-                    _helpWindow.BringToFront();
-                }
-                else
-                {
-                    _codeEditor.Editor.Focus();
-                }
+                _helpWindow.BringToFront();
+                _helpWindow.Focus();
             }
         }
 
@@ -302,14 +381,18 @@ namespace CSharpCAD
                 return;
             }
 
-            if (keyEvent.KeyCode == Keys.Escape && _helpWindow != null && _helpWindow.Visible)
-            {
-                _helpWindow.Visible = false;
-                keyEvent.Handled = true;
-                return;
-            }
-
             base.OnKeyDown(keyEvent);
+        }
+
+        public override void OnClosed(EventArgs e)
+        {
+            var hw = _helpWindow;
+            _helpWindow = null;
+            if (hw != null && !hw.HasBeenClosed)
+            {
+                try { hw.Close(); } catch { }
+            }
+            base.OnClosed(e);
         }
 
         private void Compile()
@@ -318,11 +401,13 @@ namespace CSharpCAD
             List<Diagnostic> errors;
 
             string script = _codeEditor.Text ?? "";
-            classRef = compilerService.Compile(script, out errors);
+            dynamic newClassRef = compilerService.Compile(script, out errors);
 
             var editorDiagnostics = new List<EditorDiagnostic>();
 
-            if (errors.Count > 0)
+            bool hasCompileErrors = (errors != null && Enumerable.Any(errors, e => e.Severity == DiagnosticSeverity.Error)) || newClassRef == null;
+
+            if (errors != null && errors.Count > 0)
             {
                 foreach (var error in errors)
                 {
@@ -360,46 +445,121 @@ namespace CSharpCAD
                     });
                 }
 
-                _codeEditor.SetDiagnostics(editorDiagnostics);
-                _problemsPanel.SetDiagnostics(editorDiagnostics);
-                return;
+                if (hasCompileErrors)
+                {
+                    // Compilation error: report diagnostics and keep previous 3D object
+                    _codeEditor.SetDiagnostics(editorDiagnostics);
+                    _problemsPanel.SetDiagnostics(editorDiagnostics);
+                    trackBallWidget.Invalidate();
+                    axisWidget?.Invalidate();
+                    return;
+                }
             }
 
+            bool buildSuccess = false;
             try
             {
                 // Pre-compute & cache meshes once during compile so 3D camera tumbling runs at 60+ FPS
-                classRef?.Build();
-                if (classRef != null && !string.IsNullOrEmpty((string)classRef.LastError))
+                newClassRef?.Build();
+                if (newClassRef != null && !string.IsNullOrEmpty((string)newClassRef.LastError))
                 {
+                    int rtLine = 0;
+                    try { rtLine = (int)newClassRef.LastErrorLine; } catch { }
+                    if (rtLine < 0) rtLine = 0;
+                    int rtStartIdx = GetCharIndex(script, rtLine, 0);
+
                     editorDiagnostics.Add(new EditorDiagnostic
                     {
                         Id = "Runtime",
-                        Message = (string)classRef.LastError,
-                        Line = 0,
+                        Message = (string)newClassRef.LastError,
+                        Line = rtLine,
                         Column = 0,
-                        StartIndex = 0,
-                        Length = 0,
+                        StartIndex = rtStartIdx,
+                        Length = 1,
                         IsRuntime = true,
                     });
+                }
+                else if (newClassRef != null)
+                {
+                    buildSuccess = true;
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error during script Build: " + ex.Message);
+                int exLine = 0;
+                var match = System.Text.RegularExpressions.Regex.Match(ex.StackTrace ?? "", @"(?:script:line |:line )(\d+)");
+                if (match.Success && int.TryParse(match.Groups[1].Value, out int parsedL))
+                {
+                    exLine = Math.Max(0, parsedL - 1);
+                }
+                int exStartIdx = GetCharIndex(script, exLine, 0);
+
                 editorDiagnostics.Add(new EditorDiagnostic
                 {
                     Id = "Runtime",
                     Message = ex.Message,
-                    Line = 0,
+                    Line = exLine,
                     Column = 0,
-                    StartIndex = 0,
-                    Length = 0,
+                    StartIndex = exStartIdx,
+                    Length = 1,
                     IsRuntime = true,
                 });
             }
 
+            // Only update the active 3D object if the build succeeded without error!
+            // If compilation or runtime error occurs, keep previous 3D object so it remains visible.
+            if (buildSuccess)
+            {
+                classRef = newClassRef;
+            }
+
             _codeEditor.SetDiagnostics(editorDiagnostics);
             _problemsPanel.SetDiagnostics(editorDiagnostics);
+            trackBallWidget.Invalidate();
+            axisWidget?.Invalidate();
+
+            if (!_hasCenteredView && classRef != null)
+            {
+                _hasCenteredView = true;
+                CenterView();
+            }
+        }
+
+        private bool _hasCenteredView = false;
+
+        public void CenterView()
+        {
+            if (trackBallWidget == null) return;
+            trackBallWidget.ZeroVelocity();
+
+            AxisAlignedBoundingBox bounds = null;
+            try
+            {
+                bounds = classRef?.GetBounds();
+            }
+            catch { }
+
+            Vector3 center = (bounds != null) ? bounds.Center : Vector3.Zero;
+            Vector3 size = (bounds != null) ? bounds.Size : new Vector3(30, 30, 30);
+            double maxDim = Math.Max(size.X, Math.Max(size.Y, size.Z));
+            if (maxDim < 0.001 || double.IsNaN(maxDim)) maxDim = 30;
+
+            var world = trackBallWidget.World;
+            world.Reset();
+
+            double vHeight = 2.0 * 7.0 * Math.Tan(MathHelper.DegreesToRadians(45.0) * 0.5); // ~5.8
+            double w = trackBallWidget.Width > 0 ? trackBallWidget.Width : 800;
+            double h = trackBallWidget.Height > 0 ? trackBallWidget.Height : 600;
+            double aspect = w / h;
+            double vWidth = vHeight * aspect;
+            double targetExtent = Math.Min(vHeight, vWidth) * 0.65;
+            double scale = targetExtent / maxDim;
+
+            world.Scale = scale;
+            world.Translate(-center);
+            world.RotationMatrix = Matrix4X4.CreateRotationX(MathHelper.DegreesToRadians(-45)) * Matrix4X4.CreateRotationZ(MathHelper.DegreesToRadians(45));
+
             trackBallWidget.Invalidate();
             axisWidget?.Invalidate();
         }
