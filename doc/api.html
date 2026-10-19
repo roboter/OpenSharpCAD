@@ -1,0 +1,1186 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenSharpCAD — API Reference</title>
+  <meta name="description" content="Comprehensive API Reference documentation for OpenSharpCAD: 3D Solids, 2D Primitives, Transformations, CSG Booleans, and Script Globals.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💎</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-top">
+      <a href="index.html" class="brand">
+        <div class="brand-logo">#</div>
+        <span class="brand-title">OpenSharpCAD</span>
+        <span class="brand-badge">API Reference</span>
+      </a>
+      <div class="header-actions">
+        <a href="index.html" class="nav-link">
+          <span>🎮 Interactive 3D Examples</span>
+        </a>
+        <a href="api.html" class="nav-link" style="color: var(--accent-cyan); font-weight: 700;">
+          <span>📖 API Reference</span>
+        </a>
+        <a href="https://github.com/roboter/OpenSharpCAD" class="nav-link" target="_blank" rel="noopener">
+          <span>🐙 GitHub</span>
+        </a>
+      </div>
+    </div>
+  </header>
+  <section class="hero-section" style="padding: 2rem 1.5rem 1rem;">
+    <h1 class="hero-title">OpenSharpCAD API Reference</h1>
+    <p class="hero-subtitle">Complete programmatic reference for all 3D Solids, 2D Primitives, Transformations, CSG Boolean Operations, and Script Globals.</p>
+  </section>
+  <div class="api-layout">
+    <aside class="api-sidebar">
+      <div class="api-sidebar-search">
+        <input type="text" id="api-filter-input" class="api-sidebar-input" placeholder="Filter API classes...">
+      </div>
+      <nav id="api-nav">
+        <div class="api-nav-group">
+          <div class="api-nav-group-title">3D Solid</div>
+          <a href="#box" class="api-nav-link" data-name="box">
+            <span>Box</span>
+          </a>
+          <a href="#cylinder" class="api-nav-link" data-name="cylinder">
+            <span>Cylinder</span>
+          </a>
+          <a href="#sphere" class="api-nav-link" data-name="sphere">
+            <span>Sphere</span>
+          </a>
+          <a href="#torus" class="api-nav-link" data-name="torus">
+            <span>Torus</span>
+          </a>
+        </div>
+        <div class="api-nav-group">
+          <div class="api-nav-group-title">2D Primitive</div>
+          <a href="#circle" class="api-nav-link" data-name="circle">
+            <span>Circle</span>
+          </a>
+          <a href="#rectangle" class="api-nav-link" data-name="rectangle">
+            <span>Rectangle</span>
+          </a>
+          <a href="#square" class="api-nav-link" data-name="square">
+            <span>Square</span>
+          </a>
+          <a href="#line" class="api-nav-link" data-name="line">
+            <span>Line</span>
+          </a>
+          <a href="#point" class="api-nav-link" data-name="point">
+            <span>Point</span>
+          </a>
+          <a href="#path" class="api-nav-link" data-name="path">
+            <span>Path</span>
+          </a>
+        </div>
+        <div class="api-nav-group">
+          <div class="api-nav-group-title">Transformation</div>
+          <a href="#translate" class="api-nav-link" data-name="translate">
+            <span>Translate</span>
+          </a>
+          <a href="#rotate" class="api-nav-link" data-name="rotate">
+            <span>Rotate</span>
+          </a>
+          <a href="#scale" class="api-nav-link" data-name="scale">
+            <span>Scale</span>
+          </a>
+        </div>
+        <div class="api-nav-group">
+          <div class="api-nav-group-title">CSG Boolean</div>
+          <a href="#union" class="api-nav-link" data-name="union">
+            <span>Union</span>
+          </a>
+          <a href="#difference" class="api-nav-link" data-name="difference">
+            <span>Difference</span>
+          </a>
+          <a href="#intersection" class="api-nav-link" data-name="intersection">
+            <span>Intersection</span>
+          </a>
+        </div>
+        <div class="api-nav-group">
+          <div class="api-nav-group-title">Script Global</div>
+          <a href="#draw" class="api-nav-link" data-name="draw">
+            <span>Draw</span>
+          </a>
+          <a href="#extrude" class="api-nav-link" data-name="extrude">
+            <span>Extrude</span>
+          </a>
+          <a href="#twistextrude" class="api-nav-link" data-name="twistextrude">
+            <span>TwistExtrude</span>
+          </a>
+          <a href="#revolve" class="api-nav-link" data-name="revolve">
+            <span>Revolve</span>
+          </a>
+          <a href="#loft" class="api-nav-link" data-name="loft">
+            <span>Loft</span>
+          </a>
+          <a href="#rgb--rgba--rgbf" class="api-nav-link" data-name="rgb / rgba / rgbf">
+            <span>RGB / RGBA / RGBf</span>
+          </a>
+        </div>
+      </nav>
+    </aside>
+    <main class="api-main-content" id="api-main-content">
+      <article class="api-entry-card" id="box" data-name="box">
+        <header class="api-entry-header">
+          <div class="api-entry-title-row">
+            <h2 class="api-entry-title">Box</h2>
+            <span class="card-badge" style="background: rgba(139, 233, 253, 0.15); color: var(--accent-cyan); border: 1px solid rgba(139, 233, 253, 0.3);">3D Solid</span>
+            <span class="api-entry-namespace">MatterHackers.Csg.Solids.Box</span>
+          </div>
+          <p class="api-entry-summary">Represents an axis-aligned 3D box (cuboid) solid defined by dimensions along X, Y, and Z. Supports centered or corner origin, edge beveling/chamfering, and topology queries (corners, edges, lines, points).</p>
+        </header>
+        <div class="api-entry-body">
+          <section>
+            <h3 class="api-section-heading">Constructors & Signatures</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">new Box(double sizeX, double sizeY, double sizeZ, string name = &quot;&quot;, bool createCentered = true)  // Creates a new 3D box solid with dimensions specified along X, Y, and Z.</div>
+              <div class="api-code-item">new Box(Vector3 size, string name = &quot;&quot;, bool createCentered = true)  // Creates a new 3D box solid with dimensions specified by a Vector3 size.</div>
+            </div>
+          </section>
+          <section>
+            <h3 class="api-section-heading">Properties</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">double Width { get; }  // Width of the box along the X axis.</div>
+              <div class="api-code-item">double Depth { get; }  // Depth of the box along the Y axis.</div>
+              <div class="api-code-item">double Height { get; }  // Height of the box along the Z axis.</div>
+              <div class="api-code-item">Vector3[] Corners { get; }  // Gets the 8 3D corner vertex positions of the box.</div>
+              <div class="api-code-item">ValueTuple`2[] BoundingEdges { get; }  // Gets the 12 bounding edges of the box as (Start, End) coordinate pairs.</div>
+              <div class="api-code-item">Point[] Points { get; }  // Gets the 8 corner vertices as compatible 2D/3D Point primitive objects for LINQ queries.</div>
+              <div class="api-code-item">Line[] Lines { get; }  // Gets the 12 bounding edges as compatible Line primitive objects for LINQ queries.</div>
+            </div>
+          </section>
+          <section>
+            <h3 class="api-section-heading">Methods</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">void CutAlongDiagonal(Face facesToKeepWhole)  // Cut along the diagonal of a give edge to the opposite edge.  The edge is chosen by saying which 2 faces are to be kept solid, and or-ing them together.</div>
+              <div class="api-code-item">void BevelEdge(Face facesThatShareEdge, double radius)  // Bevel a give edge.  The edge is chosen by saying which 2 faces are to be used, and or-ing them together</div>
+              <div class="api-code-item">void BevelEdge(Edge edgeToBevel, double radius)</div>
+              <div class="api-code-item">void BevelFace(Face face, double radius)</div>
+              <div class="api-code-item">void BevelAll(double radius)</div>
+              <div class="api-code-item">void ChamferEdge(Face facesThatShareEdge, double cutDepth)  // Will cause a chamfered flat to be applied to the given edge.</div>
+            </div>
+          </section>
+          <section>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <h3 class="api-section-heading" style="margin-bottom: 0;">Example Usage</h3>
+              <button class="copy-btn" data-code="%2F%2F%20Cube%20of%2020x20x20%20centered%20at%20origin%0Avar%20cube%20%3D%20new%20Box%2820%2C%2020%2C%2020%2C%20createCentered%3A%20true%29%3B%0ADraw%28cube%2C%20RGB%2865%2C%20105%2C%20225%29%29%3B">
+                <span>Copy</span>
+              </button>
+            </div>
+            <div class="api-code-block" style="color: var(--accent-yellow);">
+              <pre><code>// Cube of 20x20x20 centered at origin
+var cube = new Box(20, 20, 20, createCentered: true);
+Draw(cube, RGB(65, 105, 225));</code></pre>
+            </div>
+          </section>
+        </div>
+      </article>
+      <article class="api-entry-card" id="cylinder" data-name="cylinder">
+        <header class="api-entry-header">
+          <div class="api-entry-title-row">
+            <h2 class="api-entry-title">Cylinder</h2>
+            <span class="card-badge" style="background: rgba(139, 233, 253, 0.15); color: var(--accent-cyan); border: 1px solid rgba(139, 233, 253, 0.3);">3D Solid</span>
+            <span class="api-entry-namespace">MatterHackers.Csg.Solids.Cylinder</span>
+          </div>
+          <p class="api-entry-summary">Represents a 3D cylindrical or conical solid with specified radius/radii, height, number of facets (sides), and axis alignment. Supports regular cylinders, tapered cones, and creating cylinders directly from 2D/3D Line primitives.</p>
+        </header>
+        <div class="api-entry-body">
+          <section>
+            <h3 class="api-section-heading">Constructors & Signatures</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">new Cylinder(double radius, double height, int sides = 30, Alignment alignment = z, string name = &quot;&quot;)  // Creates a uniform 3D cylinder solid with equal top and bottom radius.</div>
+              <div class="api-code-item">new Cylinder(Line line, double radius, int sides = 30)  // Creates a 3D cylinder using the length/height of a Line primitive.</div>
+              <div class="api-code-item">new Cylinder(double radius1, double radius2, double height, int sides = 30, Alignment alignment = z, string name = &quot;&quot;)  // Creates a tapered 3D cylinder or cone with different bottom (radius1) and top (radius2) radii.</div>
+            </div>
+          </section>
+          <section>
+            <h3 class="api-section-heading">Properties</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">double Radius1 { get; }  // Bottom (or start) radius of the cylinder or truncated cone.</div>
+              <div class="api-code-item">double Radius2 { get; }  // Top (or end) radius of the cylinder or truncated cone.</div>
+              <div class="api-code-item">double Radius { get; }  // Radius of the cylinder (equals Radius1).</div>
+              <div class="api-code-item">double Height { get; }  // Total height of the cylinder along its alignment axis.</div>
+            </div>
+          </section>
+          <section>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <h3 class="api-section-heading" style="margin-bottom: 0;">Example Usage</h3>
+              <button class="copy-btn" data-code="%2F%2F%20Cylinder%20of%20radius%2010%20and%20height%2030%20centered%0Avar%20cyl%20%3D%20new%20Cylinder%28radius%3A%2010%2C%20height%3A%2030%2C%20sides%3A%2036%29%3B%0ADraw%28cyl%2C%20RGB%2846%2C%20204%2C%20113%29%29%3B">
+                <span>Copy</span>
+              </button>
+            </div>
+            <div class="api-code-block" style="color: var(--accent-yellow);">
+              <pre><code>// Cylinder of radius 10 and height 30 centered
+var cyl = new Cylinder(radius: 10, height: 30, sides: 36);
+Draw(cyl, RGB(46, 204, 113));</code></pre>
+            </div>
+          </section>
+        </div>
+      </article>
+      <article class="api-entry-card" id="sphere" data-name="sphere">
+        <header class="api-entry-header">
+          <div class="api-entry-title-row">
+            <h2 class="api-entry-title">Sphere</h2>
+            <span class="card-badge" style="background: rgba(139, 233, 253, 0.15); color: var(--accent-cyan); border: 1px solid rgba(139, 233, 253, 0.3);">3D Solid</span>
+            <span class="api-entry-namespace">MatterHackers.Csg.Solids.Sphere</span>
+          </div>
+          <p class="api-entry-summary">Represents a 3D spherical solid centered at the origin (0, 0, 0) with a specified radius.</p>
+        </header>
+        <div class="api-entry-body">
+          <section>
+            <h3 class="api-section-heading">Constructors & Signatures</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">new Sphere(double radius, string name = &quot;&quot;)  // Creates a new 3D sphere solid with specified radius.</div>
+              <div class="api-code-item">new Sphere(Sphere objectToCopy)  // Creates a copy of an existing 3D sphere solid.</div>
+            </div>
+          </section>
+          <section>
+            <h3 class="api-section-heading">Properties</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">double Radius { get; }  // Radius of the sphere.</div>
+            </div>
+          </section>
+          <section>
+            <h3 class="api-section-heading">Methods</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">AxisAlignedBoundingBox GetAxisAlignedBoundingBox()</div>
+            </div>
+          </section>
+          <section>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <h3 class="api-section-heading" style="margin-bottom: 0;">Example Usage</h3>
+              <button class="copy-btn" data-code="%2F%2F%20Sphere%20of%20radius%2015%0Avar%20ball%20%3D%20new%20Sphere%28radius%3A%2015%29%3B%0ADraw%28ball%2C%20RGB%28231%2C%2076%2C%2060%29%29%3B">
+                <span>Copy</span>
+              </button>
+            </div>
+            <div class="api-code-block" style="color: var(--accent-yellow);">
+              <pre><code>// Sphere of radius 15
+var ball = new Sphere(radius: 15);
+Draw(ball, RGB(231, 76, 60));</code></pre>
+            </div>
+          </section>
+        </div>
+      </article>
+      <article class="api-entry-card" id="torus" data-name="torus">
+        <header class="api-entry-header">
+          <div class="api-entry-title-row">
+            <h2 class="api-entry-title">Torus</h2>
+            <span class="card-badge" style="background: rgba(139, 233, 253, 0.15); color: var(--accent-cyan); border: 1px solid rgba(139, 233, 253, 0.3);">3D Solid</span>
+            <span class="api-entry-namespace">MatterHackers.Csg.Solids.Torus</span>
+          </div>
+          <p class="api-entry-summary">Represents a 3D donut-shaped torus solid generated by revolving a circular cross-section around an axis.</p>
+        </header>
+        <div class="api-entry-body">
+          <section>
+            <h3 class="api-section-heading">Constructors & Signatures</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">new Torus(double innerRadius, double outerRadius, Alignment alignment = z, string name = &quot;&quot;)  // Creates a new 3D torus solid with specified inner and outer radii and axis alignment.</div>
+            </div>
+          </section>
+          <section>
+            <h3 class="api-section-heading">Properties</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">double InnerRadius { get; }  // Radius from the center of the hole to the inner edge of the tube.</div>
+              <div class="api-code-item">double OuterRadius { get; }  // Radius from the center of the hole to the outermost edge of the tube.</div>
+              <div class="api-code-item">Alignment Alignment { get; }  // Orientation axis of revolution (default: Alignment.z).</div>
+            </div>
+          </section>
+          <section>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <h3 class="api-section-heading" style="margin-bottom: 0;">Example Usage</h3>
+              <button class="copy-btn" data-code="%2F%2F%20Torus%20with%20outer%20ring%20radius%2020%2C%20tube%20inner%20radius%205%0Avar%20ring%20%3D%20new%20Torus%28innerRadius%3A%205%2C%20outerRadius%3A%2020%29%3B%0ADraw%28ring%2C%20RGB%28241%2C%20196%2C%2015%29%29%3B">
+                <span>Copy</span>
+              </button>
+            </div>
+            <div class="api-code-block" style="color: var(--accent-yellow);">
+              <pre><code>// Torus with outer ring radius 20, tube inner radius 5
+var ring = new Torus(innerRadius: 5, outerRadius: 20);
+Draw(ring, RGB(241, 196, 15));</code></pre>
+            </div>
+          </section>
+        </div>
+      </article>
+      <article class="api-entry-card" id="circle" data-name="circle">
+        <header class="api-entry-header">
+          <div class="api-entry-title-row">
+            <h2 class="api-entry-title">Circle</h2>
+            <span class="card-badge" style="background: rgba(139, 233, 253, 0.15); color: var(--accent-green); border: 1px solid rgba(139, 233, 253, 0.3);">2D Primitive</span>
+            <span class="api-entry-namespace">MatterHackers.Csg.Solids.Circle</span>
+          </div>
+          <p class="api-entry-summary">Represents a 2D circle with center and radius (or regular N-gon if sides &gt; 2).</p>
+        </header>
+        <div class="api-entry-body">
+          <section>
+            <h3 class="api-section-heading">Constructors & Signatures</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">new Circle(double radius, int sides = 0)</div>
+              <div class="api-code-item">new Circle(double x, double y, double radius, int sides = 0)</div>
+              <div class="api-code-item">new Circle(Vector2 center, double radius, int sides = 0)</div>
+            </div>
+          </section>
+          <section>
+            <h3 class="api-section-heading">Properties</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">Vector2 Center { get; set; }</div>
+              <div class="api-code-item">double Radius { get; set; }</div>
+              <div class="api-code-item">int Sides { get; set; }</div>
+              <div class="api-code-item">double Diameter { get; set; }</div>
+              <div class="api-code-item">bool IsClosed { get; }</div>
+            </div>
+          </section>
+          <section>
+            <h3 class="api-section-heading">Methods</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">void ValidateClosed(string operationName = &quot;extrude&quot;)</div>
+              <div class="api-code-item">IVertexSource ToVertexSource()</div>
+              <div class="api-code-item">CsgObject Extrude(double height, bool centered = false, Alignment alignment = z)</div>
+              <div class="api-code-item">CsgObject Revolve(double angleDegrees = 360, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)</div>
+              <div class="api-code-item">CsgObject RevolveRadians(double angleStart = 0, double angleEnd = 6,2831854820251465, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)</div>
+              <div class="api-code-item">CsgObject Loft(I2DPrimitive top, double height, double twistDegrees = 0, int resolution = 60, bool capped = true, bool centered = false, Alignment alignment = z)</div>
+              <div class="api-code-item">CsgObject Extrude(double height, double twistDegrees, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)</div>
+              <div class="api-code-item">CsgObject TwistExtrude(double height, double twistDegrees = 360, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)</div>
+              <div class="api-code-item">Mesh ToMesh()</div>
+              <div class="api-code-item">Mesh ToWireMesh(double width = 0,5)</div>
+              <div class="api-code-item">string ToString()</div>
+            </div>
+          </section>
+          <section>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <h3 class="api-section-heading" style="margin-bottom: 0;">Example Usage</h3>
+              <button class="copy-btn" data-code="%2F%2F%20Circle%20of%20radius%2015%0Avar%20c%20%3D%20new%20Circle%28radius%3A%2015%29%3B%0ADraw%28c%2C%20RGB%2880%2C%20250%2C%20123%29%29%3B">
+                <span>Copy</span>
+              </button>
+            </div>
+            <div class="api-code-block" style="color: var(--accent-yellow);">
+              <pre><code>// Circle of radius 15
+var c = new Circle(radius: 15);
+Draw(c, RGB(80, 250, 123));</code></pre>
+            </div>
+          </section>
+        </div>
+      </article>
+      <article class="api-entry-card" id="rectangle" data-name="rectangle">
+        <header class="api-entry-header">
+          <div class="api-entry-title-row">
+            <h2 class="api-entry-title">Rectangle</h2>
+            <span class="card-badge" style="background: rgba(139, 233, 253, 0.15); color: var(--accent-green); border: 1px solid rgba(139, 233, 253, 0.3);">2D Primitive</span>
+            <span class="api-entry-namespace">MatterHackers.Csg.Solids.Rectangle</span>
+          </div>
+          <p class="api-entry-summary">Represents a 2D rectangle (with optional rounded corners).</p>
+        </header>
+        <div class="api-entry-body">
+          <section>
+            <h3 class="api-section-heading">Constructors & Signatures</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">new Rectangle(double width, double height, bool centered = true)</div>
+              <div class="api-code-item">new Rectangle(double x, double y, double width, double height, bool centered = false)</div>
+              <div class="api-code-item">new Rectangle(Vector2 size, bool centered = true)</div>
+              <div class="api-code-item">new Rectangle(double width, double height, double cornerRadius, bool centered = true)</div>
+            </div>
+          </section>
+          <section>
+            <h3 class="api-section-heading">Properties</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">double Width { get; set; }</div>
+              <div class="api-code-item">double Height { get; set; }</div>
+              <div class="api-code-item">Vector2 Center { get; set; }</div>
+              <div class="api-code-item">double CornerRadius { get; set; }</div>
+              <div class="api-code-item">bool IsClosed { get; }</div>
+            </div>
+          </section>
+          <section>
+            <h3 class="api-section-heading">Methods</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">void ValidateClosed(string operationName = &quot;extrude&quot;)</div>
+              <div class="api-code-item">IVertexSource ToVertexSource()</div>
+              <div class="api-code-item">CsgObject Extrude(double height, bool centered = false, Alignment alignment = z)</div>
+              <div class="api-code-item">CsgObject Revolve(double angleDegrees = 360, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)</div>
+              <div class="api-code-item">CsgObject RevolveRadians(double angleStart = 0, double angleEnd = 6,2831854820251465, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)</div>
+              <div class="api-code-item">CsgObject Loft(I2DPrimitive top, double height, double twistDegrees = 0, int resolution = 60, bool capped = true, bool centered = false, Alignment alignment = z)</div>
+              <div class="api-code-item">CsgObject Extrude(double height, double twistDegrees, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)</div>
+              <div class="api-code-item">CsgObject TwistExtrude(double height, double twistDegrees = 360, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)</div>
+              <div class="api-code-item">Mesh ToMesh()</div>
+              <div class="api-code-item">Mesh ToWireMesh(double width = 0,5)</div>
+              <div class="api-code-item">string ToString()</div>
+            </div>
+          </section>
+          <section>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <h3 class="api-section-heading" style="margin-bottom: 0;">Example Usage</h3>
+              <button class="copy-btn" data-code="%2F%2F%20Rectangle%2030%20wide%20x%2016%20tall%20with%203mm%20rounded%20corners%0Avar%20rect%20%3D%20new%20Rectangle%2830%2C%2016%2C%20cornerRadius%3A%203%2C%20centered%3A%20true%29%3B%0ADraw%28rect%2C%20RGB%28139%2C%20233%2C%20253%29%29%3B">
+                <span>Copy</span>
+              </button>
+            </div>
+            <div class="api-code-block" style="color: var(--accent-yellow);">
+              <pre><code>// Rectangle 30 wide x 16 tall with 3mm rounded corners
+var rect = new Rectangle(30, 16, cornerRadius: 3, centered: true);
+Draw(rect, RGB(139, 233, 253));</code></pre>
+            </div>
+          </section>
+        </div>
+      </article>
+      <article class="api-entry-card" id="square" data-name="square">
+        <header class="api-entry-header">
+          <div class="api-entry-title-row">
+            <h2 class="api-entry-title">Square</h2>
+            <span class="card-badge" style="background: rgba(139, 233, 253, 0.15); color: var(--accent-green); border: 1px solid rgba(139, 233, 253, 0.3);">2D Primitive</span>
+            <span class="api-entry-namespace">MatterHackers.Csg.Solids.Square</span>
+          </div>
+          <p class="api-entry-summary">Represents a 2D square primitive (equal width and height).</p>
+        </header>
+        <div class="api-entry-body">
+          <section>
+            <h3 class="api-section-heading">Constructors & Signatures</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">new Square(double size, bool centered = true)</div>
+              <div class="api-code-item">new Square(double x, double y, double size, bool centered = false)</div>
+              <div class="api-code-item">new Square(double size, double cornerRadius, bool centered = true)</div>
+            </div>
+          </section>
+          <section>
+            <h3 class="api-section-heading">Properties</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">double Size { get; set; }</div>
+            </div>
+          </section>
+          <section>
+            <h3 class="api-section-heading">Methods</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">string ToString()</div>
+            </div>
+          </section>
+          <section>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <h3 class="api-section-heading" style="margin-bottom: 0;">Example Usage</h3>
+              <button class="copy-btn" data-code="%2F%2F%20Square%20with%20side%2024%20and%20rounded%20corners%0Avar%20sq%20%3D%20new%20Square%28size%3A%2024%2C%20cornerRadius%3A%203%2C%20centered%3A%20true%29%3B%0ADraw%28sq%2C%20RGB%28189%2C%20147%2C%20249%29%29%3B">
+                <span>Copy</span>
+              </button>
+            </div>
+            <div class="api-code-block" style="color: var(--accent-yellow);">
+              <pre><code>// Square with side 24 and rounded corners
+var sq = new Square(size: 24, cornerRadius: 3, centered: true);
+Draw(sq, RGB(189, 147, 249));</code></pre>
+            </div>
+          </section>
+        </div>
+      </article>
+      <article class="api-entry-card" id="line" data-name="line">
+        <header class="api-entry-header">
+          <div class="api-entry-title-row">
+            <h2 class="api-entry-title">Line</h2>
+            <span class="card-badge" style="background: rgba(139, 233, 253, 0.15); color: var(--accent-green); border: 1px solid rgba(139, 233, 253, 0.3);">2D Primitive</span>
+            <span class="api-entry-namespace">MatterHackers.Csg.Solids.Line</span>
+          </div>
+          <p class="api-entry-summary">Represents a 2D or 3D line segment between two points. Supports length, height (compatible with Cylinder height), direction, midpoints, and cylinder conversion. Note: A line is an open 1D segment with zero enclosed area, so attempting to extrude or revolve it directly will fail validation. Combine lines in a closed Path (with path.Close()) to form extrudable boundaries.</p>
+        </header>
+        <div class="api-entry-body">
+          <section>
+            <h3 class="api-section-heading">Constructors & Signatures</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">new Line(Point start, Point end)</div>
+              <div class="api-code-item">new Line(Vector3 start, Vector3 end)</div>
+              <div class="api-code-item">new Line(Vector2 start, Vector2 end)</div>
+              <div class="api-code-item">new Line(double x1, double y1, double x2, double y2)</div>
+              <div class="api-code-item">new Line(double x1, double y1, double z1, double x2, double y2, double z2)</div>
+              <div class="api-code-item">new Line(double length, double angleRadians = 0)</div>
+              <div class="api-code-item">new Line()</div>
+            </div>
+          </section>
+          <section>
+            <h3 class="api-section-heading">Properties</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">Vector3 Start3D { get; set; }</div>
+              <div class="api-code-item">Vector3 End3D { get; set; }</div>
+              <div class="api-code-item">Point StartPoint { get; set; }</div>
+              <div class="api-code-item">Point EndPoint { get; set; }</div>
+              <div class="api-code-item">Vector2 Start { get; set; }</div>
+              <div class="api-code-item">Vector2 End { get; set; }</div>
+              <div class="api-code-item">double X1 { get; }</div>
+              <div class="api-code-item">double Y1 { get; }</div>
+              <div class="api-code-item">double Z1 { get; }</div>
+              <div class="api-code-item">double X2 { get; }</div>
+              <div class="api-code-item">double Y2 { get; }</div>
+              <div class="api-code-item">double Z2 { get; }</div>
+              <div class="api-code-item">double Dx { get; }</div>
+              <div class="api-code-item">double Dy { get; }</div>
+              <div class="api-code-item">double Dz { get; }</div>
+              <div class="api-code-item">double Length { get; }</div>
+              <div class="api-code-item">double Height { get; }  // The height/length of this line segment. Directly compatible with Cylinder height.</div>
+              <div class="api-code-item">Vector3 MidPoint3D { get; }</div>
+              <div class="api-code-item">Point MidPoint { get; }</div>
+              <div class="api-code-item">Vector3 Direction { get; }</div>
+              <div class="api-code-item">bool IsClosed { get; }</div>
+            </div>
+          </section>
+          <section>
+            <h3 class="api-section-heading">Methods</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">void ValidateClosed(string operationName = &quot;extrude&quot;)</div>
+              <div class="api-code-item">IVertexSource ToVertexSource()</div>
+              <div class="api-code-item">CsgObject Extrude(double height, bool centered = false, Alignment alignment = z)</div>
+              <div class="api-code-item">CsgObject Revolve(double angleDegrees = 360, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)</div>
+              <div class="api-code-item">CsgObject RevolveRadians(double angleStart = 0, double angleEnd = 6,2831854820251465, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)</div>
+              <div class="api-code-item">CsgObject Loft(I2DPrimitive top, double height, double twistDegrees = 0, int resolution = 60, bool capped = true, bool centered = false, Alignment alignment = z)</div>
+              <div class="api-code-item">CsgObject Extrude(double height, double twistDegrees, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)</div>
+              <div class="api-code-item">CsgObject TwistExtrude(double height, double twistDegrees = 360, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)</div>
+              <div class="api-code-item">Mesh ToMesh()</div>
+              <div class="api-code-item">Mesh ToWireMesh(double width = 0,5)</div>
+              <div class="api-code-item">CsgObject ToCylinder(double radius, int sides = 16)</div>
+              <div class="api-code-item">Path ToPath()</div>
+              <div class="api-code-item">string ToString()</div>
+            </div>
+          </section>
+          <section>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <h3 class="api-section-heading" style="margin-bottom: 0;">Example Usage</h3>
+              <button class="copy-btn" data-code="%2F%2F%203D%20Line%20between%20two%20coordinate%20points%0Avar%20line%20%3D%20new%20Line%28new%20Point%280%2C%200%2C%200%29%2C%20new%20Point%2825%2C%2020%2C%2015%29%29%3B%0ADraw%28line%2C%20RGB%28255%2C%20121%2C%20198%29%29%3B">
+                <span>Copy</span>
+              </button>
+            </div>
+            <div class="api-code-block" style="color: var(--accent-yellow);">
+              <pre><code>// 3D Line between two coordinate points
+var line = new Line(new Point(0, 0, 0), new Point(25, 20, 15));
+Draw(line, RGB(255, 121, 198));</code></pre>
+            </div>
+          </section>
+        </div>
+      </article>
+      <article class="api-entry-card" id="point" data-name="point">
+        <header class="api-entry-header">
+          <div class="api-entry-title-row">
+            <h2 class="api-entry-title">Point</h2>
+            <span class="card-badge" style="background: rgba(139, 233, 253, 0.15); color: var(--accent-green); border: 1px solid rgba(139, 233, 253, 0.3);">2D Primitive</span>
+            <span class="api-entry-namespace">MatterHackers.Csg.Solids.Point</span>
+          </div>
+          <p class="api-entry-summary">Represents a 2D or 3D coordinate point (X, Y, Z). Fully compatible with Vector2, Vector3, tuples (x, y) / (x, y, z), Dot, and Line.</p>
+        </header>
+        <div class="api-entry-body">
+          <section>
+            <h3 class="api-section-heading">Constructors & Signatures</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">new Point(double x, double y, double z = 0)</div>
+              <div class="api-code-item">new Point(double x, double y)</div>
+              <div class="api-code-item">new Point(Vector2 pos)</div>
+              <div class="api-code-item">new Point(Vector3 pos)</div>
+              <div class="api-code-item">new Point()</div>
+            </div>
+          </section>
+          <section>
+            <h3 class="api-section-heading">Properties</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">double X { get; set; }</div>
+              <div class="api-code-item">double Y { get; set; }</div>
+              <div class="api-code-item">double Z { get; set; }</div>
+              <div class="api-code-item">Vector2 Position2D { get; set; }</div>
+              <div class="api-code-item">Vector3 Position3D { get; set; }</div>
+              <div class="api-code-item">Vector2 Position { get; set; }</div>
+              <div class="api-code-item">bool IsClosed { get; }</div>
+            </div>
+          </section>
+          <section>
+            <h3 class="api-section-heading">Methods</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">double DistanceTo(Point other)</div>
+              <div class="api-code-item">double DistanceTo(Vector3 other)</div>
+              <div class="api-code-item">double DistanceTo(Vector2 other)</div>
+              <div class="api-code-item">Line LineTo(Point other)</div>
+              <div class="api-code-item">Line LineTo(Vector3 other)</div>
+              <div class="api-code-item">Line LineTo(Vector2 other)</div>
+              <div class="api-code-item">Line LineTo(double x, double y, double z = 0)</div>
+              <div class="api-code-item">void Deconstruct(Double&amp; x, Double&amp; y)</div>
+              <div class="api-code-item">void Deconstruct(Double&amp; x, Double&amp; y, Double&amp; z)</div>
+              <div class="api-code-item">bool Equals(Object obj)</div>
+              <div class="api-code-item">bool Equals(Point other)</div>
+              <div class="api-code-item">int GetHashCode()</div>
+              <div class="api-code-item">void ValidateClosed(string operationName = &quot;extrude&quot;)</div>
+              <div class="api-code-item">IVertexSource ToVertexSource()</div>
+              <div class="api-code-item">CsgObject Extrude(double height, bool centered = false, Alignment alignment = z)</div>
+              <div class="api-code-item">CsgObject Revolve(double angleDegrees = 360, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)</div>
+              <div class="api-code-item">CsgObject RevolveRadians(double angleStart = 0, double angleEnd = 6,2831854820251465, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)</div>
+              <div class="api-code-item">CsgObject Loft(I2DPrimitive top, double height, double twistDegrees = 0, int resolution = 60, bool capped = true, bool centered = false, Alignment alignment = z)</div>
+              <div class="api-code-item">CsgObject Extrude(double height, double twistDegrees, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)</div>
+              <div class="api-code-item">CsgObject TwistExtrude(double height, double twistDegrees = 360, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)</div>
+              <div class="api-code-item">Mesh ToMesh()</div>
+              <div class="api-code-item">Mesh ToWireMesh(double width = 0,5)</div>
+              <div class="api-code-item">Circle ToCircle(double radius)</div>
+              <div class="api-code-item">CsgObject ToSphere(double radius)</div>
+              <div class="api-code-item">Path ToPath()</div>
+              <div class="api-code-item">string ToString()</div>
+            </div>
+          </section>
+          <section>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <h3 class="api-section-heading" style="margin-bottom: 0;">Example Usage</h3>
+              <button class="copy-btn" data-code="%2F%2F%201.%20Create%20a%203D%20coordinate%20point%20%28X%2C%20Y%2C%20Z%29%0Avar%20pt%20%3D%20new%20Point%2810%2C%2015%2C%2020%29%3B%0A%0A%2F%2F%202.%20Position%20a%20solid%20at%20the%20point%20coordinates%20%28or%20call%20pt.ToSphere%283%29%29%3A%0Avar%20sphere%20%3D%20new%20Translate%28new%20Sphere%283%29%2C%20pt%29%3B%0A%0A%2F%2F%203.%20Connect%20the%20point%20to%20origin%20with%20a%203D%20line%3A%0Avar%20line%20%3D%20pt.LineTo%28new%20Point%280%2C%200%2C%200%29%29%3B%0A%0ADraw%28sphere%2C%20RGB%28255%2C%2085%2C%2085%29%29%3B%0ADraw%28line%2C%20RGB%2880%2C%20200%2C%20255%29%29%3B">
+                <span>Copy</span>
+              </button>
+            </div>
+            <div class="api-code-block" style="color: var(--accent-yellow);">
+              <pre><code>// 1. Create a 3D coordinate point (X, Y, Z)
+var pt = new Point(10, 15, 20);
+
+// 2. Position a solid at the point coordinates (or call pt.ToSphere(3)):
+var sphere = new Translate(new Sphere(3), pt);
+
+// 3. Connect the point to origin with a 3D line:
+var line = pt.LineTo(new Point(0, 0, 0));
+
+Draw(sphere, RGB(255, 85, 85));
+Draw(line, RGB(80, 200, 255));</code></pre>
+            </div>
+          </section>
+        </div>
+      </article>
+      <article class="api-entry-card" id="path" data-name="path">
+        <header class="api-entry-header">
+          <div class="api-entry-title-row">
+            <h2 class="api-entry-title">Path</h2>
+            <span class="card-badge" style="background: rgba(139, 233, 253, 0.15); color: var(--accent-green); border: 1px solid rgba(139, 233, 253, 0.3);">2D Primitive</span>
+            <span class="api-entry-namespace">MatterHackers.Csg.Solids.Path</span>
+          </div>
+          <p class="api-entry-summary">Represents a 2D path / polygon composed of sequential points, line segments, and curves. Can be explicitly closed via path.Close() or by matching the first and last points.</p>
+        </header>
+        <div class="api-entry-body">
+          <section>
+            <h3 class="api-section-heading">Constructors & Signatures</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">new Path()</div>
+              <div class="api-code-item">new Path(IEnumerable`1 points, bool close = false)</div>
+              <div class="api-code-item">new Path(Vector2[] points)</div>
+              <div class="api-code-item">new Path(double[] coordinates, bool close = false)</div>
+            </div>
+          </section>
+          <section>
+            <h3 class="api-section-heading">Properties</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">IReadOnlyList`1 Points { get; }</div>
+              <div class="api-code-item">bool IsClosed { get; }</div>
+            </div>
+          </section>
+          <section>
+            <h3 class="api-section-heading">Methods</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">Path MoveTo(double x, double y)</div>
+              <div class="api-code-item">Path MoveTo(Vector2 point)</div>
+              <div class="api-code-item">Path LineTo(double x, double y)</div>
+              <div class="api-code-item">Path LineTo(Vector2 point)</div>
+              <div class="api-code-item">Path AddPoint(double x, double y)</div>
+              <div class="api-code-item">Path AddPoint(Vector2 point)</div>
+              <div class="api-code-item">Path Add(Line line)</div>
+              <div class="api-code-item">Path CurveTo(double ctrlX, double ctrlY, double endX, double endY)</div>
+              <div class="api-code-item">Path CurveTo(double ctrl1X, double ctrl1Y, double ctrl2X, double ctrl2Y, double endX, double endY)</div>
+              <div class="api-code-item">Path Close()</div>
+              <div class="api-code-item">void ValidateClosed(string operationName = &quot;extrude&quot;)</div>
+              <div class="api-code-item">IVertexSource ToVertexSource()</div>
+              <div class="api-code-item">CsgObject Extrude(double height, bool centered = false, Alignment alignment = z)</div>
+              <div class="api-code-item">CsgObject Revolve(double angleDegrees = 360, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)</div>
+              <div class="api-code-item">CsgObject RevolveRadians(double angleStart = 0, double angleEnd = 6,2831854820251465, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)</div>
+              <div class="api-code-item">CsgObject Loft(I2DPrimitive top, double height, double twistDegrees = 0, int resolution = 60, bool capped = true, bool centered = false, Alignment alignment = z)</div>
+              <div class="api-code-item">CsgObject Extrude(double height, double twistDegrees, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)</div>
+              <div class="api-code-item">CsgObject TwistExtrude(double height, double twistDegrees = 360, int slices = 30, double scale = 1, bool centered = false, Alignment alignment = z)</div>
+              <div class="api-code-item">Mesh ToMesh()</div>
+              <div class="api-code-item">Mesh ToWireMesh(double width = 0,5)</div>
+              <div class="api-code-item">string ToString()</div>
+            </div>
+          </section>
+          <section>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <h3 class="api-section-heading" style="margin-bottom: 0;">Example Usage</h3>
+              <button class="copy-btn" data-code="%2F%2F%20Polyline%20%2F%20polygon%20path%20formed%20by%20chained%20points%0Avar%20path%20%3D%20new%20Path%28%29%3B%0Apath.AddPoint%280%2C%200%29%3B%0Apath.AddPoint%2820%2C%200%29%3B%0Apath.AddPoint%2810%2C%2018%29%3B%0Apath.Close%28%29%3B%0ADraw%28path%2C%20RGB%28241%2C%20250%2C%20140%29%29%3B">
+                <span>Copy</span>
+              </button>
+            </div>
+            <div class="api-code-block" style="color: var(--accent-yellow);">
+              <pre><code>// Polyline / polygon path formed by chained points
+var path = new Path();
+path.AddPoint(0, 0);
+path.AddPoint(20, 0);
+path.AddPoint(10, 18);
+path.Close();
+Draw(path, RGB(241, 250, 140));</code></pre>
+            </div>
+          </section>
+        </div>
+      </article>
+      <article class="api-entry-card" id="translate" data-name="translate">
+        <header class="api-entry-header">
+          <div class="api-entry-title-row">
+            <h2 class="api-entry-title">Translate</h2>
+            <span class="card-badge" style="background: rgba(139, 233, 253, 0.15); color: var(--accent-purple); border: 1px solid rgba(139, 233, 253, 0.3);">Transformation</span>
+            <span class="api-entry-namespace">MatterHackers.Csg.Transform.Translate</span>
+          </div>
+          <p class="api-entry-summary">Represents a spatial translation (offset/movement) transformation applied to a 3D CSG object along the X, Y, and Z axes.</p>
+        </header>
+        <div class="api-entry-body">
+          <section>
+            <h3 class="api-section-heading">Constructors & Signatures</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">new Translate(CsgObject objectToTranslate, double x = 0, double y = 0, double z = 0, string name = &quot;&quot;)  // Translates a CSG object by explicit X, Y, and Z offset distances.</div>
+              <div class="api-code-item">new Translate(CsgObject objectToTranslate, Vector3 translation, string name = &quot;&quot;)  // Translates a CSG object by a Vector3 displacement vector.</div>
+            </div>
+          </section>
+          <section>
+            <h3 class="api-section-heading">Properties</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">Vector3 Translation { get; set; }  // The current 3D translation offset vector.</div>
+            </div>
+          </section>
+          <section>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <h3 class="api-section-heading" style="margin-bottom: 0;">Example Usage</h3>
+              <button class="copy-btn" data-code="%2F%2F%20Translate%20solid%2015%20units%20along%20X%20and%2010%20along%20Z%0Avar%20b%20%3D%20new%20Box%2816%2C%2016%2C%2016%29%3B%0Avar%20shifted%20%3D%20new%20Translate%28b%2C%20x%3A%2015%2C%20y%3A%200%2C%20z%3A%2010%29%3B%0ADraw%28shifted%2C%20RGB%2880%2C%20200%2C%20255%29%29%3B">
+                <span>Copy</span>
+              </button>
+            </div>
+            <div class="api-code-block" style="color: var(--accent-yellow);">
+              <pre><code>// Translate solid 15 units along X and 10 along Z
+var b = new Box(16, 16, 16);
+var shifted = new Translate(b, x: 15, y: 0, z: 10);
+Draw(shifted, RGB(80, 200, 255));</code></pre>
+            </div>
+          </section>
+        </div>
+      </article>
+      <article class="api-entry-card" id="rotate" data-name="rotate">
+        <header class="api-entry-header">
+          <div class="api-entry-title-row">
+            <h2 class="api-entry-title">Rotate</h2>
+            <span class="card-badge" style="background: rgba(139, 233, 253, 0.15); color: var(--accent-purple); border: 1px solid rgba(139, 233, 253, 0.3);">Transformation</span>
+            <span class="api-entry-namespace">MatterHackers.Csg.Transform.Rotate</span>
+          </div>
+          <p class="api-entry-summary">Represents a 3D rotation transformation applied to a CSG object around the X, Y, and Z axes (angles in radians).</p>
+        </header>
+        <div class="api-entry-body">
+          <section>
+            <h3 class="api-section-heading">Constructors & Signatures</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">new Rotate(CsgObject objectToRotate, Vector3 radians, string name = &quot;&quot;)  // Rotates a CSG object using Euler angles in radians specified in a Vector3 (X, Y, Z).</div>
+              <div class="api-code-item">new Rotate(CsgObject objectToRotate, double x = 0, double y = 0, double z = 0, string name = &quot;&quot;)  // Rotates a CSG object using explicit Euler angles in radians around the X, Y, and Z axes. Tip: Use MathHelper.DegreesToRadians(degrees) to convert degrees to radians.</div>
+            </div>
+          </section>
+          <section>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <h3 class="api-section-heading" style="margin-bottom: 0;">Example Usage</h3>
+              <button class="copy-btn" data-code="%2F%2F%20Rotate%20solid%20around%20axes%20%28in%20radians%29%0Avar%20b%20%3D%20new%20Box%2812%2C%2012%2C%2028%2C%20createCentered%3A%20true%29%3B%0Avar%20tilted%20%3D%20new%20Rotate%28b%2C%20x%3A%20MathHelper.DegreesToRadians%2845%29%2C%20z%3A%20MathHelper.DegreesToRadians%2830%29%29%3B%0ADraw%28tilted%2C%20RGB%28255%2C%20184%2C%20108%29%29%3B">
+                <span>Copy</span>
+              </button>
+            </div>
+            <div class="api-code-block" style="color: var(--accent-yellow);">
+              <pre><code>// Rotate solid around axes (in radians)
+var b = new Box(12, 12, 28, createCentered: true);
+var tilted = new Rotate(b, x: MathHelper.DegreesToRadians(45), z: MathHelper.DegreesToRadians(30));
+Draw(tilted, RGB(255, 184, 108));</code></pre>
+            </div>
+          </section>
+        </div>
+      </article>
+      <article class="api-entry-card" id="scale" data-name="scale">
+        <header class="api-entry-header">
+          <div class="api-entry-title-row">
+            <h2 class="api-entry-title">Scale</h2>
+            <span class="card-badge" style="background: rgba(139, 233, 253, 0.15); color: var(--accent-purple); border: 1px solid rgba(139, 233, 253, 0.3);">Transformation</span>
+            <span class="api-entry-namespace">MatterHackers.Csg.Transform.Scale</span>
+          </div>
+          <p class="api-entry-summary">Represents a 3D scaling (resizing) transformation applied to a CSG object uniformly or non-uniformly along X, Y, and Z.</p>
+        </header>
+        <div class="api-entry-body">
+          <section>
+            <h3 class="api-section-heading">Constructors & Signatures</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">new Scale(CsgObject objectToScale, double scale, string name = &quot;&quot;)  // Scales a CSG object uniformly by the same multiplier along all 3 axes (X, Y, Z).</div>
+              <div class="api-code-item">new Scale(CsgObject objectToScale, double x, double y, double z, string name = &quot;&quot;)  // Scales a CSG object non-uniformly with independent scale multipliers along X, Y, and Z.</div>
+              <div class="api-code-item">new Scale(CsgObject objectToScale, Vector3 scale, string name = &quot;&quot;)  // Scales a CSG object using a Vector3 containing the (X, Y, Z) scale factors.</div>
+            </div>
+          </section>
+          <section>
+            <h3 class="api-section-heading">Methods</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">Vector3 GetScale()  // Gets the 3D scale factors (X, Y, Z).</div>
+            </div>
+          </section>
+          <section>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <h3 class="api-section-heading" style="margin-bottom: 0;">Example Usage</h3>
+              <button class="copy-btn" data-code="%2F%2F%20Non-uniform%20scaling%20of%20a%20solid%20along%20axes%0Avar%20sph%20%3D%20new%20Sphere%2812%29%3B%0Avar%20stretched%20%3D%20new%20Scale%28sph%2C%20x%3A%202.0%2C%20y%3A%200.8%2C%20z%3A%201.0%29%3B%0ADraw%28stretched%2C%20RGB%28189%2C%20147%2C%20249%29%29%3B">
+                <span>Copy</span>
+              </button>
+            </div>
+            <div class="api-code-block" style="color: var(--accent-yellow);">
+              <pre><code>// Non-uniform scaling of a solid along axes
+var sph = new Sphere(12);
+var stretched = new Scale(sph, x: 2.0, y: 0.8, z: 1.0);
+Draw(stretched, RGB(189, 147, 249));</code></pre>
+            </div>
+          </section>
+        </div>
+      </article>
+      <article class="api-entry-card" id="union" data-name="union">
+        <header class="api-entry-header">
+          <div class="api-entry-title-row">
+            <h2 class="api-entry-title">Union</h2>
+            <span class="card-badge" style="background: rgba(139, 233, 253, 0.15); color: var(--accent-pink); border: 1px solid rgba(139, 233, 253, 0.3);">CSG Boolean</span>
+            <span class="api-entry-namespace">MatterHackers.Csg.Operations.Union</span>
+          </div>
+          <p class="api-entry-summary">Represents a CSG Boolean Union (addition / merge) operation combining two or more 3D objects into a single solid. In code, you can also use the '+' operator: objectA + objectB.</p>
+        </header>
+        <div class="api-entry-body">
+          <section>
+            <h3 class="api-section-heading">Constructors & Signatures</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">new Union(string name = &quot;&quot;)  // Creates an empty Union container.</div>
+              <div class="api-code-item">new Union(CsgObject a, CsgObject b, string name = &quot;&quot;)  // Combines two CSG objects into a unified solid (A + B).</div>
+            </div>
+          </section>
+          <section>
+            <h3 class="api-section-heading">Properties</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">List&lt;CsgObject&gt; AllObjects { get; }  // Gets the list of all participating CSG objects in this union.</div>
+            </div>
+          </section>
+          <section>
+            <h3 class="api-section-heading">Methods</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">AxisAlignedBoundingBox GetAxisAlignedBoundingBox()</div>
+              <div class="api-code-item">void Add(CsgObject objectToAdd)</div>
+            </div>
+          </section>
+          <section>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <h3 class="api-section-heading" style="margin-bottom: 0;">Example Usage</h3>
+              <button class="copy-btn" data-code="%2F%2F%20Union%20joins%20multiple%20solids%20into%20one%20contiguous%20shape%20%28also%3A%20a%20%2B%20b%29%0Avar%20joined%20%3D%20new%20Union%28%0A%20%20%20%20new%20Box%2824%2C%2010%2C%2010%2C%20createCentered%3A%20true%29%2C%0A%20%20%20%20new%20Box%2810%2C%2024%2C%2010%2C%20createCentered%3A%20true%29%0A%29%3B%0ADraw%28joined%2C%20RGB%2880%2C%20250%2C%20123%29%29%3B">
+                <span>Copy</span>
+              </button>
+            </div>
+            <div class="api-code-block" style="color: var(--accent-yellow);">
+              <pre><code>// Union joins multiple solids into one contiguous shape (also: a + b)
+var joined = new Union(
+    new Box(24, 10, 10, createCentered: true),
+    new Box(10, 24, 10, createCentered: true)
+);
+Draw(joined, RGB(80, 250, 123));</code></pre>
+            </div>
+          </section>
+        </div>
+      </article>
+      <article class="api-entry-card" id="difference" data-name="difference">
+        <header class="api-entry-header">
+          <div class="api-entry-title-row">
+            <h2 class="api-entry-title">Difference</h2>
+            <span class="card-badge" style="background: rgba(139, 233, 253, 0.15); color: var(--accent-pink); border: 1px solid rgba(139, 233, 253, 0.3);">CSG Boolean</span>
+            <span class="api-entry-namespace">MatterHackers.Csg.Operations.Difference</span>
+          </div>
+          <p class="api-entry-summary">Represents a CSG Boolean Difference (subtraction / cutout) operation carving one or more solids out of a primary solid. In code, you can also use the '-' operator: primaryObject - subtractObject.</p>
+        </header>
+        <div class="api-entry-body">
+          <section>
+            <h3 class="api-section-heading">Constructors & Signatures</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">new Difference(CsgObject primary, string name = &quot;&quot;)  // Creates a Difference operation container initialized with a primary solid.</div>
+              <div class="api-code-item">new Difference(CsgObject primary, CsgObject subtract, string name = &quot;&quot;)  // Subtracts one solid from another (primary - subtract).</div>
+            </div>
+          </section>
+          <section>
+            <h3 class="api-section-heading">Properties</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">CsgObject Primary { get; }  // The base solid from which subsequent solids are carved out.</div>
+              <div class="api-code-item">List&lt;CsgObject&gt; AllSubtracts { get; }  // The collection of solids subtracted from the primary solid.</div>
+            </div>
+          </section>
+          <section>
+            <h3 class="api-section-heading">Methods</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">void AddToSubtractList(CsgObject objectToAddToSubtractList)</div>
+              <div class="api-code-item">AxisAlignedBoundingBox GetAxisAlignedBoundingBox()</div>
+            </div>
+          </section>
+          <section>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <h3 class="api-section-heading" style="margin-bottom: 0;">Example Usage</h3>
+              <button class="copy-btn" data-code="%2F%2F%20Difference%20carves%20holes%20out%20of%20solids%20%28also%3A%20a%20-%20b%29%0Avar%20box%20%3D%20new%20Box%2822%2C%2022%2C%2022%2C%20createCentered%3A%20true%29%3B%0Avar%20hole%20%3D%20new%20Cylinder%287%2C%2030%29%3B%0Avar%20hollow%20%3D%20new%20Difference%28box%2C%20hole%29%3B%0ADraw%28hollow%2C%20RGB%28255%2C%2085%2C%2085%29%29%3B">
+                <span>Copy</span>
+              </button>
+            </div>
+            <div class="api-code-block" style="color: var(--accent-yellow);">
+              <pre><code>// Difference carves holes out of solids (also: a - b)
+var box = new Box(22, 22, 22, createCentered: true);
+var hole = new Cylinder(7, 30);
+var hollow = new Difference(box, hole);
+Draw(hollow, RGB(255, 85, 85));</code></pre>
+            </div>
+          </section>
+        </div>
+      </article>
+      <article class="api-entry-card" id="intersection" data-name="intersection">
+        <header class="api-entry-header">
+          <div class="api-entry-title-row">
+            <h2 class="api-entry-title">Intersection</h2>
+            <span class="card-badge" style="background: rgba(139, 233, 253, 0.15); color: var(--accent-pink); border: 1px solid rgba(139, 233, 253, 0.3);">CSG Boolean</span>
+            <span class="api-entry-namespace">MatterHackers.Csg.Operations.Intersection</span>
+          </div>
+          <p class="api-entry-summary">Represents a CSG Boolean Intersection operation keeping only the overlapping 3D region shared by two solids (A ∩ B). In code, you can also use the '*' operator: solidA * solidB.</p>
+        </header>
+        <div class="api-entry-body">
+          <section>
+            <h3 class="api-section-heading">Constructors & Signatures</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">new Intersection(CsgObject a, CsgObject b, string name = &quot;&quot;)  // Computes the intersection of two solids, retaining only the common overlapping volume (A * B).</div>
+              <div class="api-code-item">new Intersection(Intersection objectToCopy)  // Creates a copy of an existing Intersection operation solid.</div>
+            </div>
+          </section>
+          <section>
+            <h3 class="api-section-heading">Methods</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">AxisAlignedBoundingBox GetAxisAlignedBoundingBox()</div>
+            </div>
+          </section>
+          <section>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <h3 class="api-section-heading" style="margin-bottom: 0;">Example Usage</h3>
+              <button class="copy-btn" data-code="%2F%2F%20Intersection%20keeps%20only%20the%20shared%20volume%20of%20solids%20%28also%3A%20a%20%2A%20b%29%0Avar%20box%20%3D%20new%20Box%2822%2C%2022%2C%2022%2C%20createCentered%3A%20true%29%3B%0Avar%20sphere%20%3D%20new%20Sphere%2814%29%3B%0Avar%20common%20%3D%20new%20Intersection%28box%2C%20sphere%29%3B%0ADraw%28common%2C%20RGB%28241%2C%20250%2C%20140%29%29%3B">
+                <span>Copy</span>
+              </button>
+            </div>
+            <div class="api-code-block" style="color: var(--accent-yellow);">
+              <pre><code>// Intersection keeps only the shared volume of solids (also: a * b)
+var box = new Box(22, 22, 22, createCentered: true);
+var sphere = new Sphere(14);
+var common = new Intersection(box, sphere);
+Draw(common, RGB(241, 250, 140));</code></pre>
+            </div>
+          </section>
+        </div>
+      </article>
+      <article class="api-entry-card" id="draw" data-name="draw">
+        <header class="api-entry-header">
+          <div class="api-entry-title-row">
+            <h2 class="api-entry-title">Draw</h2>
+            <span class="card-badge" style="background: rgba(139, 233, 253, 0.15); color: var(--accent-yellow); border: 1px solid rgba(139, 233, 253, 0.3);">Script Global</span>
+          </div>
+          <p class="api-entry-summary">Renders a 3D solid, 2D primitive, or mesh into the 3D viewport with an optional custom color.</p>
+        </header>
+        <div class="api-entry-body">
+          <section>
+            <h3 class="api-section-heading">Constructors & Signatures</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">void Draw(CsgObject objectToProcess)</div>
+              <div class="api-code-item">void Draw(CsgObject objectToProcess, Color color)</div>
+              <div class="api-code-item">void Draw(I2DPrimitive primitive2D)</div>
+              <div class="api-code-item">void Draw(I2DPrimitive primitive2D, Color color)</div>
+              <div class="api-code-item">void Draw(Mesh mesh)</div>
+              <div class="api-code-item">void Draw(Mesh mesh, Color color)</div>
+            </div>
+          </section>
+          <section>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <h3 class="api-section-heading" style="margin-bottom: 0;">Example Usage</h3>
+              <button class="copy-btn" data-code="Draw%28new%20Box%2820%2C%2020%2C%2020%2C%20createCentered%3A%20true%29%2C%20RGB%2880%2C%20250%2C%20123%29%29%3B">
+                <span>Copy</span>
+              </button>
+            </div>
+            <div class="api-code-block" style="color: var(--accent-yellow);">
+              <pre><code>Draw(new Box(20, 20, 20, createCentered: true), RGB(80, 250, 123));</code></pre>
+            </div>
+          </section>
+        </div>
+      </article>
+      <article class="api-entry-card" id="extrude" data-name="extrude">
+        <header class="api-entry-header">
+          <div class="api-entry-title-row">
+            <h2 class="api-entry-title">Extrude</h2>
+            <span class="card-badge" style="background: rgba(139, 233, 253, 0.15); color: var(--accent-yellow); border: 1px solid rgba(139, 233, 253, 0.3);">Script Global</span>
+          </div>
+          <p class="api-entry-summary">Extrudes a closed 2D shape (Circle, Rectangle, Path) linearly along an axis into a 3D solid, with optional twist and scale.</p>
+        </header>
+        <div class="api-entry-body">
+          <section>
+            <h3 class="api-section-heading">Constructors & Signatures</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">CsgObject Extrude(I2DPrimitive shape, double height, bool centered = false, Alignment alignment = Alignment.z)</div>
+              <div class="api-code-item">CsgObject Extrude(I2DPrimitive shape, double height, double twistDegrees, int slices = 30, double scale = 1.0, bool centered = false, Alignment alignment = Alignment.z)</div>
+            </div>
+          </section>
+          <section>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <h3 class="api-section-heading" style="margin-bottom: 0;">Example Usage</h3>
+              <button class="copy-btn" data-code="var%20c%20%3D%20new%20Circle%2812%29%3B%0Avar%20pillar%20%3D%20Extrude%28c%2C%20height%3A%2035%2C%20centered%3A%20true%29%3B%0ADraw%28pillar%2C%20RGB%2846%2C%20204%2C%20113%29%29%3B">
+                <span>Copy</span>
+              </button>
+            </div>
+            <div class="api-code-block" style="color: var(--accent-yellow);">
+              <pre><code>var c = new Circle(12);
+var pillar = Extrude(c, height: 35, centered: true);
+Draw(pillar, RGB(46, 204, 113));</code></pre>
+            </div>
+          </section>
+        </div>
+      </article>
+      <article class="api-entry-card" id="twistextrude" data-name="twistextrude">
+        <header class="api-entry-header">
+          <div class="api-entry-title-row">
+            <h2 class="api-entry-title">TwistExtrude</h2>
+            <span class="card-badge" style="background: rgba(139, 233, 253, 0.15); color: var(--accent-yellow); border: 1px solid rgba(139, 233, 253, 0.3);">Script Global</span>
+          </div>
+          <p class="api-entry-summary">Extrudes a closed 2D primitive while twisting around its centroid into a helical spiral 3D solid.</p>
+        </header>
+        <div class="api-entry-body">
+          <section>
+            <h3 class="api-section-heading">Constructors & Signatures</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">CsgObject TwistExtrude(I2DPrimitive shape, double height, double twistDegrees = 360, int slices = 30, double scale = 1.0, bool centered = false, Alignment alignment = Alignment.z)</div>
+            </div>
+          </section>
+          <section>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <h3 class="api-section-heading" style="margin-bottom: 0;">Example Usage</h3>
+              <button class="copy-btn" data-code="var%20sq%20%3D%20new%20Square%2816%2C%20centered%3A%20true%29%3B%0Avar%20spiral%20%3D%20TwistExtrude%28sq%2C%20height%3A%2040%2C%20twistDegrees%3A%20180%2C%20slices%3A%2040%29%3B%0ADraw%28spiral%2C%20RGB%28255%2C%20121%2C%20198%29%29%3B">
+                <span>Copy</span>
+              </button>
+            </div>
+            <div class="api-code-block" style="color: var(--accent-yellow);">
+              <pre><code>var sq = new Square(16, centered: true);
+var spiral = TwistExtrude(sq, height: 40, twistDegrees: 180, slices: 40);
+Draw(spiral, RGB(255, 121, 198));</code></pre>
+            </div>
+          </section>
+        </div>
+      </article>
+      <article class="api-entry-card" id="revolve" data-name="revolve">
+        <header class="api-entry-header">
+          <div class="api-entry-title-row">
+            <h2 class="api-entry-title">Revolve</h2>
+            <span class="card-badge" style="background: rgba(139, 233, 253, 0.15); color: var(--accent-yellow); border: 1px solid rgba(139, 233, 253, 0.3);">Script Global</span>
+          </div>
+          <p class="api-entry-summary">Revolves a 2D profile curve around an axis to produce a 3D rotational solid of revolution (e.g. vases, bowls, lathe parts).</p>
+        </header>
+        <div class="api-entry-body">
+          <section>
+            <h3 class="api-section-heading">Constructors & Signatures</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">CsgObject Revolve(I2DPrimitive shape, double angleDegrees = 360, int angleSteps = 30, double axisOffset = 0, bool revolveAroundZ = true)</div>
+            </div>
+          </section>
+          <section>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <h3 class="api-section-heading" style="margin-bottom: 0;">Example Usage</h3>
+              <button class="copy-btn" data-code="var%20c%20%3D%20new%20Circle%28x%3A%2018%2C%20y%3A%200%2C%20radius%3A%206%29%3B%0Avar%20donut%20%3D%20Revolve%28c%2C%20angleDegrees%3A%20360%2C%20angleSteps%3A%2036%29%3B%0ADraw%28donut%2C%20RGB%28241%2C%20196%2C%2015%29%29%3B">
+                <span>Copy</span>
+              </button>
+            </div>
+            <div class="api-code-block" style="color: var(--accent-yellow);">
+              <pre><code>var c = new Circle(x: 18, y: 0, radius: 6);
+var donut = Revolve(c, angleDegrees: 360, angleSteps: 36);
+Draw(donut, RGB(241, 196, 15));</code></pre>
+            </div>
+          </section>
+        </div>
+      </article>
+      <article class="api-entry-card" id="loft" data-name="loft">
+        <header class="api-entry-header">
+          <div class="api-entry-title-row">
+            <h2 class="api-entry-title">Loft</h2>
+            <span class="card-badge" style="background: rgba(139, 233, 253, 0.15); color: var(--accent-yellow); border: 1px solid rgba(139, 233, 253, 0.3);">Script Global</span>
+          </div>
+          <p class="api-entry-summary">Creates a smooth 3D skin transition between 2D profile sections across height.</p>
+        </header>
+        <div class="api-entry-body">
+          <section>
+            <h3 class="api-section-heading">Constructors & Signatures</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">CsgObject Loft(I2DPrimitive bottom, I2DPrimitive top, double height, double twistDegrees = 0, bool centered = false, Alignment alignment = Alignment.z)</div>
+            </div>
+          </section>
+          <section>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <h3 class="api-section-heading" style="margin-bottom: 0;">Example Usage</h3>
+              <button class="copy-btn" data-code="var%20bot%20%3D%20new%20Circle%2816%29%3B%0Avar%20top%20%3D%20new%20Square%2816%2C%20centered%3A%20true%29%3B%0Avar%20blended%20%3D%20Loft%28bot%2C%20top%2C%20height%3A%2035%2C%20twistDegrees%3A%2045%29%3B%0ADraw%28blended%2C%20RGB%2880%2C%20200%2C%20255%29%29%3B">
+                <span>Copy</span>
+              </button>
+            </div>
+            <div class="api-code-block" style="color: var(--accent-yellow);">
+              <pre><code>var bot = new Circle(16);
+var top = new Square(16, centered: true);
+var blended = Loft(bot, top, height: 35, twistDegrees: 45);
+Draw(blended, RGB(80, 200, 255));</code></pre>
+            </div>
+          </section>
+        </div>
+      </article>
+      <article class="api-entry-card" id="rgb--rgba--rgbf" data-name="rgb / rgba / rgbf">
+        <header class="api-entry-header">
+          <div class="api-entry-title-row">
+            <h2 class="api-entry-title">RGB / RGBA / RGBf</h2>
+            <span class="card-badge" style="background: rgba(139, 233, 253, 0.15); color: var(--accent-yellow); border: 1px solid rgba(139, 233, 253, 0.3);">Script Global</span>
+          </div>
+          <p class="api-entry-summary">Color construction helpers for styling solids and meshes in the 3D viewport.</p>
+        </header>
+        <div class="api-entry-body">
+          <section>
+            <h3 class="api-section-heading">Constructors & Signatures</h3>
+            <div class="api-code-block">
+              <div class="api-code-item">Color RGB(int r, int g, int b)            // 0 - 255</div>
+              <div class="api-code-item">Color RGBA(int r, int g, int b, int a)     // 0 - 255</div>
+              <div class="api-code-item">Color RGBf(double r, double g, double b)   // 0.0 - 1.0</div>
+            </div>
+          </section>
+          <section>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <h3 class="api-section-heading" style="margin-bottom: 0;">Example Usage</h3>
+              <button class="copy-btn" data-code="var%20col1%20%3D%20RGB%28255%2C%20100%2C%2050%29%3B%0Avar%20col2%20%3D%20RGBA%2880%2C%20250%2C%20123%2C%20200%29%3B%0Avar%20col3%20%3D%20RGBf%280.2%2C%200.8%2C%201.0%29%3B">
+                <span>Copy</span>
+              </button>
+            </div>
+            <div class="api-code-block" style="color: var(--accent-yellow);">
+              <pre><code>var col1 = RGB(255, 100, 50);
+var col2 = RGBA(80, 250, 123, 200);
+var col3 = RGBf(0.2, 0.8, 1.0);</code></pre>
+            </div>
+          </section>
+        </div>
+      </article>
+    </main>
+  </div>
+  <footer class="app-footer">
+    <div class="footer-links">
+      <a href="index.html">Interactive 3D Examples</a>
+      <a href="https://github.com/roboter/OpenSharpCAD">Repository</a>
+      <a href="#top">Back to top ↑</a>
+    </div>
+    <p>© OpenSharpCAD. Built with Three.js and C# CAD engine.</p>
+  </footer>
+  <script>
+    const filterInput = document.getElementById('api-filter-input');
+    const navLinks = document.querySelectorAll('.api-nav-link');
+    const cards = document.querySelectorAll('.api-entry-card');
+    if (filterInput) {
+      filterInput.addEventListener('input', (e) => {
+        const q = e.target.value.toLowerCase().trim();
+        cards.forEach(c => {
+          const match = !q || c.dataset.name.includes(q) || c.textContent.toLowerCase().includes(q);
+          c.style.display = match ? 'flex' : 'none';
+        });
+        navLinks.forEach(l => {
+          const match = !q || l.dataset.name.includes(q);
+          l.style.display = match ? 'flex' : 'none';
+        });
+      });
+    }
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const code = decodeURIComponent(btn.dataset.code);
+        try {
+          await navigator.clipboard.writeText(code);
+          const prev = btn.innerHTML;
+          btn.innerHTML = '<span>Copied!</span>';
+          setTimeout(() => btn.innerHTML = prev, 1500);
+        } catch (err) {}
+      });
+    });
+  </script>
+</body>
+</html>

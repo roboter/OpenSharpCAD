@@ -554,6 +554,30 @@ Draw(ring2, Color.Indigo);
         Assert.That(System.IO.File.Exists(apiDocPath), Is.True);
     }
 
+    [Test]
+    public void TestAutoDocumentationServiceGeneratesHtml()
+    {
+        string html = AutoDocumentationService.GenerateHtml();
+        Assert.That(html, Is.Not.Null.And.Not.Empty);
+        Assert.That(html, Does.Contain("<!DOCTYPE html>"));
+        Assert.That(html, Does.Contain("OpenSharpCAD — API Reference"));
+        Assert.That(html, Does.Contain("api-sidebar"));
+        Assert.That(html, Does.Contain("api-main-content"));
+        Assert.That(html, Does.Contain("Box"));
+        Assert.That(html, Does.Contain("Cylinder"));
+        Assert.That(html, Does.Contain("Sphere"));
+        Assert.That(html, Does.Contain("Torus"));
+        Assert.That(html, Does.Contain("Translate"));
+        Assert.That(html, Does.Contain("Union"));
+        Assert.That(html, Does.Contain("Draw"));
+
+        string repoRoot = System.IO.Path.GetFullPath(System.IO.Path.Combine(TestContext.CurrentContext.TestDirectory, "../../../.."));
+        string apiHtmlPath = System.IO.Path.Combine(repoRoot, "doc/api.html");
+        AutoDocumentationService.ExportHtmlFile(apiHtmlPath);
+        Assert.That(System.IO.File.Exists(apiHtmlPath), Is.True);
+        Assert.That(new System.IO.FileInfo(apiHtmlPath).Length, Is.GreaterThan(1000));
+    }
+
     private static T? FindChild<T>(GuiWidget widget) where T : GuiWidget
     {
         foreach (var child in widget.Children)
