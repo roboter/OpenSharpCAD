@@ -386,9 +386,17 @@ string ToString()
 
 #### Example Code
 ```csharp
-// Point coordinate (X, Y, Z)
+// 1. Create a 3D coordinate point (X, Y, Z)
 var pt = new Point(10, 15, 20);
-Draw(new Sphere(radius: 3), RGB(255, 85, 85));
+
+// 2. Position a solid at the point coordinates (or call pt.ToSphere(3)):
+var sphere = new Translate(new Sphere(3), pt);
+
+// 3. Connect the point to origin with a 3D line:
+var line = pt.LineTo(new Point(0, 0, 0));
+
+Draw(sphere, RGB(255, 85, 85));
+Draw(line, RGB(80, 200, 255));
 ```
 
 ### Path

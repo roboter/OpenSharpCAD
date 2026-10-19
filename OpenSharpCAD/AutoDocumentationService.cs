@@ -84,8 +84,18 @@ namespace CSharpCAD
                 () => new List<(Mesh, Color)> { (new Line(new Point(-15, -15, 0), new Point(15, 15, 20)).ToWireMesh(1.0), new Color(255, 121, 198)) }));
 
             list.Add(DocumentType(typeof(Point), "2D Primitive",
-                "// Point coordinate (X, Y, Z)\nvar pt = new Point(10, 15, 20);\nDraw(new Sphere(radius: 3), RGB(255, 85, 85));",
-                () => new List<(Mesh, Color)> { (new Sphere(3).ToMesh(), new Color(255, 85, 85)) }));
+                "// 1. Create a 3D coordinate point (X, Y, Z)\nvar pt = new Point(10, 15, 20);\n\n// 2. Position a solid at the point coordinates (or call pt.ToSphere(3)):\nvar sphere = new Translate(new Sphere(3), pt);\n\n// 3. Connect the point to origin with a 3D line:\nvar line = pt.LineTo(new Point(0, 0, 0));\n\nDraw(sphere, RGB(255, 85, 85));\nDraw(line, RGB(80, 200, 255));",
+                () =>
+                {
+                    var pt = new Point(10, 15, 20);
+                    var sphere = new Translate(new Sphere(3), pt);
+                    var line = pt.LineTo(new Point(0, 0, 0));
+                    return new List<(Mesh, Color)>
+                    {
+                        (sphere.ToMesh(), new Color(255, 85, 85)),
+                        (line.ToWireMesh(1.0), new Color(80, 200, 255))
+                    };
+                }));
 
             list.Add(DocumentType(typeof(Path), "2D Primitive",
                 "// Polyline / polygon path formed by chained points\nvar path = new Path();\npath.AddPoint(0, 0);\npath.AddPoint(20, 0);\npath.AddPoint(10, 18);\npath.Close();\nDraw(path, RGB(241, 250, 140));",
