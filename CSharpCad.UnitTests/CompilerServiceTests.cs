@@ -676,16 +676,20 @@ Draw(new Box(10, 10, 10));
         var lastError = lastErrorProp?.GetValue(result) as string;
         Assert.That(lastError, Is.Null, $"Execution at t=0 had error: {lastError}");
 
-        // Execute animation at t=0.5
+        // Execute animation across multiple time steps [0.0 .. 1.0]
         var buildTimeMethod = result.GetType().GetMethod("BuildTime");
         Assert.That(buildTimeMethod, Is.Not.Null);
-        buildTimeMethod.Invoke(result, new object[] { 0.5 });
 
-        lastError = lastErrorProp?.GetValue(result) as string;
-        Assert.That(lastError, Is.Null, $"Execution at t=0.5 had error: {lastError}");
+        double[] testTimes = new double[] { 0.0, 0.1, 0.25, 0.5, 0.75, 0.9, 1.0 };
+        foreach (var t in testTimes)
+        {
+            buildTimeMethod.Invoke(result, new object[] { t });
+            var err = lastErrorProp?.GetValue(result) as string;
+            Assert.That(err, Is.Null, $"Execution at t={t} had error: {err}");
+        }
 
         var timeProp = result.GetType().GetProperty("t");
-        Assert.That(timeProp?.GetValue(result), Is.EqualTo(0.5));
+        Assert.That(timeProp?.GetValue(result), Is.EqualTo(1.0));
     }
 
     [Test]
