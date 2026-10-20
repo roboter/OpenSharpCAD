@@ -689,6 +689,35 @@ Draw(new Box(10, 10, 10));
     }
 
     [Test]
+    public void TestLogoExampleScriptCompilesAndExecutes()
+    {
+        string examplePath = Path.GetFullPath(Path.Combine(TestContext.CurrentContext.TestDirectory, "../../../../examples/logo.cs"));
+        if (!File.Exists(examplePath))
+        {
+            examplePath = Path.GetFullPath(Path.Combine(TestContext.CurrentContext.TestDirectory, "../../../examples/logo.cs"));
+        }
+        if (!File.Exists(examplePath))
+        {
+            examplePath = Path.Combine(Directory.GetCurrentDirectory(), "examples/logo.cs");
+        }
+        Assert.That(File.Exists(examplePath), Is.True, $"examples/logo.cs must exist at {examplePath}");
+        string script = File.ReadAllText(examplePath);
+
+        ICompilerService compiler = new CompilerService();
+        var result = compiler.Compile(script, out var errors);
+        Assert.That(errors, Is.Empty, $"logo.cs should compile with 0 errors. Errors: {string.Join("; ", errors.Select(e => e.GetMessage()))}");
+        Assert.That(result, Is.Not.Null);
+
+        var buildMethod = result.GetType().GetMethod("Build");
+        Assert.That(buildMethod, Is.Not.Null);
+        buildMethod.Invoke(result, null);
+
+        var lastErrorProp = result.GetType().GetProperty("LastError");
+        var lastError = lastErrorProp?.GetValue(result) as string;
+        Assert.That(lastError, Is.Null, $"Execution of logo.cs had error: {lastError}");
+    }
+
+    [Test]
     public void TestSecurityWhitelistAllowsPermittedAssemblies()
     {
         Assert.That(DynCode.CodeHelper.IsAllowedAssembly("System.Private.CoreLib"), Is.True);

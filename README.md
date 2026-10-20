@@ -21,6 +21,7 @@
   <a href="#-screenshots">📸 Screenshots</a> •
   <a href="#-video-demo">📺 Video</a> •
   <a href="#-key-features">⚡ Features</a> •
+  <a href="#-openscad-vs-opensharpcad">🔄 OpenSCAD vs OpenSharpCAD</a> •
   <a href="#-code-examples">💡 Examples</a> •
   <a href="#-interactive-documentation">🌐 Documentation</a> •
   <a href="#-getting-started">🚀 Quick Start</a> •
@@ -78,6 +79,99 @@
   - In-app reference cheat sheet (press `F1` or click Help).
   - Standalone Three.js WebGL documentation viewer with side-by-side 3D models and Dracula-themed C# snippets.
 - 💻 **Cross-Platform**: Native support for macOS (Intel & Apple Silicon), Windows, and Linux via .NET 10.0 and GLFW.
+
+---
+
+## 🔄 OpenSCAD vs OpenSharpCAD
+
+OpenSharpCAD takes the declarative, code-first philosophy pioneered by OpenSCAD and elevates it with the performance, type safety, and rich language features of modern **C# and .NET 10**.
+
+### 🧩 Side-by-Side: The Classic OpenSCAD Logo
+
+Here is how the iconic OpenSCAD `logo.scad` (a sphere hollowed out by three orthogonal cutting cylinders) is written in both systems:
+
+<table>
+<tr>
+<th width="50%">OpenSCAD (<code>logo.scad</code>)</th>
+<th width="50%">OpenSharpCAD (<code>logo.cs</code>)</th>
+</tr>
+<tr>
+<td valign="top">
+
+```openscad
+// OpenSCAD declarative module
+Logo(50);
+
+module Logo(size=50, $fn=100) {
+    hole = size / 2;
+    cylinderHeight = size * 1.25;
+
+    // Nested prefix difference block
+    difference() {
+        sphere(d=size);
+        
+        cylinder(d=hole, h=cylinderHeight, center=true);
+        rotate([90, 0, 0]) 
+            cylinder(d=hole, h=cylinderHeight, center=true);
+        rotate([0, 90, 0]) 
+            cylinder(d=hole, h=cylinderHeight, center=true);
+    }
+}
+```
+
+</td>
+<td valign="top">
+
+```csharp
+// OpenSharpCAD C# function
+Logo(50);
+
+void Logo(double size = 50, int fn = 100) {
+    double holeRadius = (size / 2.0) / 2.0;
+    double cylinderHeight = size * 1.25;
+
+    var sphere = new Sphere(radius: size / 2.0);
+    var cylZ = new Cylinder(radius: holeRadius, height: cylinderHeight, sides: fn).Translate(0, 0, -cylinderHeight / 2.0);
+    var cylX = new Rotate(cylZ, y: MathHelper.DegreesToRadians(90));
+    var cylY = new Rotate(cylZ, x: MathHelper.DegreesToRadians(90));
+
+    // Intuitive CSG operators (- for difference, + for union)
+    var logo = sphere - cylZ - cylX - cylY;
+    Draw(logo, RGB(255, 170, 50));
+}
+```
+
+</td>
+</tr>
+</table>
+
+---
+
+### 📊 Feature Comparison Matrix
+
+| Feature | OpenSCAD | OpenSharpCAD |
+| :--- | :--- | :--- |
+| **Language** | Custom functional DSL (specialized, dynamic) | Standard C# 13 / .NET 10 (general-purpose, OOP + functional) |
+| **CSG Operations** | Nested block statements (`union()`, `difference()`, `intersection()`) | Natural operator overloading (`+`, `-`, `*`) |
+| **Type Safety** | Dynamic typing (runtime variable evaluation) | Static strong typing with Roslyn compiler type safety |
+| **Compiler Diagnostics** | Console messages on render / export | Real-time red squiggles, line/column markers, and Problems panel |
+| **IntelliSense & Autocomplete** | Basic word completion | Full Roslyn completion engine with parameter info and docs |
+| **Transformations** | Hierarchical prefix blocks (`translate() rotate() { ... }`) | Fluent method chaining (`.Translate().Rotate()`) or constructor wrappers |
+| **Code Structure** | Modules (`module`) and functions (`function`) | Standard C# methods, classes, records, extension methods, and namespaces |
+| **Ecosystem & Libraries** | Proprietary `.scad` script includes | Full .NET ecosystem, NuGet packages, math libraries, and LINQ queries |
+| **Animation Variable** | `$t` (0.0 to 1.0) | `$t` (transparently supported for OpenSCAD parity), `t`, or `Time` |
+| **Animation UI** | Time, FPS, and Steps inputs | Integrated bottom bar with Play/Pause, Reset, Time, FPS, Steps, and frame counter |
+| **Rendering Architecture** | CGAL-based CPU CSG mesh generation | Roslyn compiled assemblies + hardware-accelerated OpenGL / WebGL rendering |
+| **Unit Testing** | External community test harnesses | Native integration with NUnit, xUnit, and `dotnet test` |
+
+---
+
+### 🚀 Key Advantages of OpenSharpCAD
+
+1. **Natural Mathematical CSG**: No deeply nested braces. Compose complex boolean geometries with simple algebra: `Draw((outerBox + cylinder) - mountingHoles)`.
+2. **First-Class Modern Tooling**: Enjoy syntax highlighting, inline diagnostic tooltips, jump-to-error navigation, and Roslyn completion directly inside the application.
+3. **Familiar to OpenSCAD Users**: Transitioning is effortless—concepts like `$t` for animations, parametric primitives (`Sphere`, `Cylinder`, `Box`), and degree-based math helpers work out of the box.
+4. **Reusability & Extensibility**: Write standard C# classes, share CAD libraries across projects via NuGet, and write automated unit tests for dimensional validation.
 
 ---
 
