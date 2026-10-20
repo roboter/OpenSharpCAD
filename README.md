@@ -274,14 +274,29 @@ To prevent untrusted scripts from performing malicious system actions, OpenSharp
      - Forbidden `using` directives such as `using System.IO;`, `using System.Diagnostics;`, `using System.Net;`, `using System.Reflection;` (`OSCAD002`).
      - Qualified member calls to file I/O, process execution, or reflection (`System.IO.File`, `Directory`, `Process`, `Environment.Exit`) (`OSCAD003`).
 
-### ⚠️ Remaining Considerations: Resource Exhaustion (DoS)
+### ⚠️ Dangers That Still Remain: Why a Whitelist is NOT a 100% Sandbox
 
-While filesystem and network access are blocked by the whitelist and AST inspection, pure C# language constructs (such as infinite loops `while(true) {}` or memory allocation loops) can still freeze the evaluation thread. 
+While the Roslyn reference whitelist and AST syntax filters prevent scripts from accessing the local filesystem, network, or spawning shell processes, **in-process compilation is never a 100% security sandbox in modern .NET**. Untrusted scripts can still cause significant disruption:
 
-**Safe Usage Guidelines:**
-- **Inspect unknown scripts** before running them.
-- **Never run OpenSharpCAD with elevated privileges** (`root` or Administrator).
-- **Run automated batch/cloud pipelines inside containers** with CPU and memory quotas (`--memory 512m --cpus 1.0`).
+| Remaining Threat | Mechanism | Real-World Impact |
+| :--- | :--- | :--- |
+| **CPU Denial of Service (Freeze)** | `while (true) {}` or infinite mathematical loops | Pegs CPU cores at 100% and completely locks up the UI thread, forcing the user to force-quit the application. |
+| **Memory Exhaustion (OOM Crash)** | `var list = new List<byte[]>(); while(true) list.Add(new byte[100_000_000]);` | Exhausts system RAM until the operating system or runtime terminates the process with an `OutOfMemoryException`. |
+| **Stack Overflow (Instant CLR Kill)** | `void Loop() => Loop(); Loop();` | Infinite call stack recursion triggers a fatal `StackOverflowException`, which terminates the entire host .NET runtime immediately with zero recovery. |
+| **Geometry / Mesh Bombs** | Nesting thousands of CSG boolean cuts or extruding a path with 1,000,000+ vertices | Overwhelms the 3D polygon triangulator and CSG engine, consuming gigabytes of memory and rendering the system unresponsive. |
+| **Crash & Unsaved Work Loss** | Any fatal exception in the shared process space | Because user scripts execute directly inside OpenSharpCAD's host process, a fatal failure crashes the entire IDE, discarding any unsaved work. |
+| **Obfuscated Reflection / Evasion** | Constructing type names dynamically via string concatenation or byte decoding | Advanced evasion techniques can attempt to circumvent static AST checks to access runtime internals. |
+
+> [!IMPORTANT]
+> **Core Security Principle**: The Roslyn whitelist and AST filters provide a valuable **defense-in-depth layer** that blocks accidental or obvious malicious calls. However, **the operating system process is the only true security boundary**. 
+> 
+> If you need to evaluate completely untrusted third-party CAD scripts in a web service, CI/CD pipeline, or public server, **always isolate OpenSharpCAD inside a locked-down Docker container or unprivileged VM** with hard memory/CPU limits and disabled networking.
+
+### 🛡️ Safe Usage Guidelines
+
+1. **Treat unknown `.cs` files with care**: Inspect unfamiliar scripts before opening or executing them.
+2. **Never run OpenSharpCAD with elevated privileges**: Avoid running the application as `root` (macOS/Linux) or Administrator (Windows).
+3. **Use containerized sandboxes for automated services**: Run automated batch evaluation in an isolated environment (`docker run --network none --memory 512m --cpus 1.0 ...`).
 
 ---
 
