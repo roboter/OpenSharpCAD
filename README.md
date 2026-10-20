@@ -24,7 +24,8 @@
   <a href="#-code-examples">💡 Examples</a> •
   <a href="#-interactive-documentation">🌐 Documentation</a> •
   <a href="#-getting-started">🚀 Quick Start</a> •
-  <a href="#️-build-instructions">🛠️ Build</a>
+  <a href="#️-build-instructions">🛠️ Build</a> •
+  <a href="#-security-considerations">🔒 Security</a>
 </p>
 
 </div>
@@ -238,8 +239,36 @@ dotnet run --project OpenSharpCAD/OpenSharpCAD.csproj
 
 ---
 
+## 🔒 Security Considerations
+
+> [!WARNING]
+> **OpenSharpCAD scripts (`.cs`) contain full, executable C# source code.**
+> Opening and running an untrusted `.cs` CAD script is equivalent to compiling and executing an arbitrary application on your machine. **Only open scripts from sources you know and trust.**
+
+### ⚠️ Can a malicious user do bad things with a `.cs` CAD file?
+
+**Yes.** Unlike passive 3D mesh formats (such as STL, STEP, or 3MF) or sandboxed domain-specific languages (such as classic OpenSCAD), OpenSharpCAD uses the **Microsoft Roslyn C# compiler** to compile user scripts into actual .NET assemblies that execute dynamically within the host process.
+
+Because scripts run with the privileges of the active user and have access to standard .NET runtime libraries, an untrusted or malicious `.cs` file could theoretically:
+
+| Threat Vector | Potential Malicious Impact |
+| :--- | :--- |
+| **Arbitrary File Access** | Reading sensitive files (SSH keys, config files, passwords) or modifying/deleting data via `System.IO`. |
+| **Process Execution** | Spawning external processes, shell scripts, or native binaries via `System.Diagnostics.Process`. |
+| **Network Communication** | Exfiltrating data or downloading external payloads via `System.Net.Http.HttpClient` or raw sockets. |
+| **Denial of Service (DoS)** | Freezing the application or exhausting CPU and memory via infinite loops, unconstrained recursion, or memory allocation bombs (`while(true)`, memory spikes). |
+
+### 🛡️ Best Practices & Safe Usage
+
+1. **Review untrusted code before execution**: Open unknown `.cs` scripts in a standard text editor (or review the source code in the OpenSharpCAD editor before triggering evaluation) to verify that the file only contains mathematical and CSG geometry logic.
+2. **Never run OpenSharpCAD with elevated privileges**: Do not run the application as `root` (macOS/Linux) or Administrator (Windows).
+3. **Isolate automated / cloud rendering**: If using OpenSharpCAD in automated workflows, CI/CD pipelines, or web-based preview services that evaluate user-submitted scripts, run the process inside a restricted, unprivileged container (e.g., Docker) with network access disabled and read-only filesystem mounts.
+
+---
+
 ## 🔗 Links & Credits
 
 - 🌟 **Inspiration**: [MatterCAD - Design Your 3D Parts In C#](https://www.matterhackers.com/news/mattercad-design-your-3d-parts-in-csharp) by MatterHackers.
 - 📺 **Video Demo**: [YouTube Demo](https://youtu.be/dlQ3HhHRtSU)
 - 📄 **License**: [BSD 2-Clause License](Submodules/agg-sharp/LICENSE)
+
