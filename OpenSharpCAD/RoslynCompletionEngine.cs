@@ -173,10 +173,15 @@ namespace Test
             AddAssembly(typeof(MatterHackers.RenderOpenGl.GLHelper).Assembly);
             AddAssembly(typeof(MatterHackers.PolygonMesh.Mesh).Assembly);
 
-            // Also load any referenced assembly in CurrentDomain
+            // Also load any referenced assembly in CurrentDomain (filtered by security whitelist)
             foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
             {
-                AddAssembly(asm);
+                if (asm.IsDynamic || string.IsNullOrEmpty(asm.Location)) continue;
+                var name = asm.GetName().Name;
+                if (name != null && DynCode.CodeHelper.IsAllowedAssembly(name))
+                {
+                    AddAssembly(asm);
+                }
             }
 
             return refs;
@@ -461,6 +466,8 @@ namespace Test
                 try
                 {
                     if (asm.IsDynamic) continue;
+                    var name = asm.GetName().Name;
+                    if (name == null || !DynCode.CodeHelper.IsAllowedAssembly(name)) continue;
                     var match = asm.GetTypes().FirstOrDefault(t => string.Equals(t.Name, typeName, StringComparison.OrdinalIgnoreCase));
                     if (match != null) return match;
                 }

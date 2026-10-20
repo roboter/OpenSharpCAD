@@ -597,5 +597,73 @@ Draw(ring2, Color.Indigo);
         }
         return null;
     }
+
+    [Test]
+    public void TestSecurityWhitelistBlocksSystemIO()
+    {
+        string maliciousScript = @"
+var path = ""test.txt"";
+var text = System.IO.File.ReadAllText(path);
+Draw(new Box(10, 10, 10));
+";
+        ICompilerService compiler = new CompilerService();
+        List<Diagnostic> errors;
+        var compiled = compiler.Compile(maliciousScript, out errors);
+
+        Assert.That(compiled, Is.Null, "Compilation of System.IO should fail because System.IO.FileSystem is not whitelisted");
+        Assert.That(errors, Is.Not.Empty, "Should report diagnostic error for System.IO");
+        Assert.That(errors.Any(e => e.Id == "CS0234" || e.GetMessage().Contains("System.IO")), Is.True);
+    }
+
+    [Test]
+    public void TestSecurityWhitelistBlocksProcessExecution()
+    {
+        string maliciousScript = @"
+System.Diagnostics.Process.Start(""calc.exe"");
+Draw(new Box(10, 10, 10));
+";
+        ICompilerService compiler = new CompilerService();
+        List<Diagnostic> errors;
+        var compiled = compiler.Compile(maliciousScript, out errors);
+
+        Assert.That(compiled, Is.Null, "Compilation of System.Diagnostics.Process should fail because Process assembly is not whitelisted");
+        Assert.That(errors, Is.Not.Empty, "Should report diagnostic error for Process");
+        Assert.That(errors.Any(e => e.Id == "CS0234" || e.GetMessage().Contains("Process")), Is.True);
+    }
+
+    [Test]
+    public void TestSecurityWhitelistBlocksNetworkHttpClient()
+    {
+        string maliciousScript = @"
+var client = new System.Net.Http.HttpClient();
+Draw(new Box(10, 10, 10));
+";
+        ICompilerService compiler = new CompilerService();
+        List<Diagnostic> errors;
+        var compiled = compiler.Compile(maliciousScript, out errors);
+
+        Assert.That(compiled, Is.Null, "Compilation of HttpClient should fail because System.Net.Http is not whitelisted");
+        Assert.That(errors, Is.Not.Empty, "Should report diagnostic error for HttpClient");
+        Assert.That(errors.Any(e => e.Id == "CS0234" || e.GetMessage().Contains("HttpClient") || e.GetMessage().Contains("System.Net")), Is.True);
+    }
+
+    [Test]
+    public void TestSecurityWhitelistAllowsPermittedAssemblies()
+    {
+        Assert.That(DynCode.CodeHelper.IsAllowedAssembly("System.Private.CoreLib"), Is.True);
+        Assert.That(DynCode.CodeHelper.IsAllowedAssembly("System.Runtime"), Is.True);
+        Assert.That(DynCode.CodeHelper.IsAllowedAssembly("System.Collections"), Is.True);
+        Assert.That(DynCode.CodeHelper.IsAllowedAssembly("System.Linq"), Is.True);
+        Assert.That(DynCode.CodeHelper.IsAllowedAssembly("MatterHackers.Csg"), Is.True);
+        Assert.That(DynCode.CodeHelper.IsAllowedAssembly("VectorMath"), Is.True);
+        Assert.That(DynCode.CodeHelper.IsAllowedAssembly("PolygonMesh"), Is.True);
+
+        Assert.That(DynCode.CodeHelper.IsAllowedAssembly("System.IO.FileSystem"), Is.False);
+        Assert.That(DynCode.CodeHelper.IsAllowedAssembly("System.Diagnostics.Process"), Is.False);
+        Assert.That(DynCode.CodeHelper.IsAllowedAssembly("System.Net.Http"), Is.False);
+        Assert.That(DynCode.CodeHelper.IsAllowedAssembly("System.Net.Sockets"), Is.False);
+        Assert.That(DynCode.CodeHelper.IsAllowedAssembly("Microsoft.CodeAnalysis"), Is.False);
+    }
 }
+
 

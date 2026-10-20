@@ -258,11 +258,30 @@ Because scripts run with the privileges of the active user and have access to st
 | **Network Communication** | Exfiltrating data or downloading external payloads via `System.Net.Http.HttpClient` or raw sockets. |
 | **Denial of Service (DoS)** | Freezing the application or exhausting CPU and memory via infinite loops, unconstrained recursion, or memory allocation bombs (`while(true)`, memory spikes). |
 
-### 🛡️ Best Practices & Safe Usage
+### 🛡️ Built-in Roslyn Security Whitelist & Guardrails
 
-1. **Review untrusted code before execution**: Open unknown `.cs` scripts in a standard text editor (or review the source code in the OpenSharpCAD editor before triggering evaluation) to verify that the file only contains mathematical and CSG geometry logic.
-2. **Never run OpenSharpCAD with elevated privileges**: Do not run the application as `root` (macOS/Linux) or Administrator (Windows).
-3. **Isolate automated / cloud rendering**: If using OpenSharpCAD in automated workflows, CI/CD pipelines, or web-based preview services that evaluate user-submitted scripts, run the process inside a restricted, unprivileged container (e.g., Docker) with network access disabled and read-only filesystem mounts.
+To prevent untrusted scripts from performing malicious system actions, OpenSharpCAD implements a strict **two-tier compiler security guardrail**:
+
+1. **Roslyn Metadata Reference Whitelist**:
+   - The dynamic compiler (`CodeHelper`) explicitly restricts referenced assemblies to an allowed whitelist (`System.Private.CoreLib`, `System.Runtime`, `System.Collections`, `System.Linq`, `MatterHackers.Csg`, `VectorMath`, etc.).
+   - Assemblies for process execution (`System.Diagnostics.Process`), raw networking (`System.Net.Http`, `System.Net.Sockets`), cryptography, and native interop are **completely excluded** from compilation references.
+   - Any script attempting to call excluded APIs fails at compile time (`CS0234: The type or namespace name does not exist`).
+
+2. **AST Pre-Compilation Syntax Inspection**:
+   - Before emitting code, the syntax tree is analyzed using Roslyn syntax analysis.
+   - Explicitly rejects:
+     - `unsafe` keyword and raw pointer operations (`OSCAD001`).
+     - Forbidden `using` directives such as `using System.IO;`, `using System.Diagnostics;`, `using System.Net;`, `using System.Reflection;` (`OSCAD002`).
+     - Qualified member calls to file I/O, process execution, or reflection (`System.IO.File`, `Directory`, `Process`, `Environment.Exit`) (`OSCAD003`).
+
+### ⚠️ Remaining Considerations: Resource Exhaustion (DoS)
+
+While filesystem and network access are blocked by the whitelist and AST inspection, pure C# language constructs (such as infinite loops `while(true) {}` or memory allocation loops) can still freeze the evaluation thread. 
+
+**Safe Usage Guidelines:**
+- **Inspect unknown scripts** before running them.
+- **Never run OpenSharpCAD with elevated privileges** (`root` or Administrator).
+- **Run automated batch/cloud pipelines inside containers** with CPU and memory quotas (`--memory 512m --cpus 1.0`).
 
 ---
 
