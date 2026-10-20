@@ -392,7 +392,7 @@ namespace Test
                             {
                                 if (sym is INamedTypeSymbol nts)
                                 {
-                                    foreach (var ctor in nts.InstanceConstructors.Where(c => c.DeclaredAccessibility == Accessibility.Public))
+                                    foreach (var ctor in nts.InstanceConstructors.Where(c => c.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Public))
                                     {
                                         string sig = $"{nts.Name}({string.Join(", ", ctor.Parameters.Select(FormatRoslynParameter))})";
                                         string insert = FormatRoslynInsertion(ctor.Parameters);
