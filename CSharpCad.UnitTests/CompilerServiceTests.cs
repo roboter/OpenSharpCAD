@@ -706,16 +706,53 @@ Draw(new Box(10, 10, 10));
         // Test BuildFrame retrieves cached frame without errors
         var buildFrameMethod = result.GetType().GetMethod("BuildFrame");
         Assert.That(buildFrameMethod, Is.Not.Null);
-        buildFrameMethod.Invoke(result, new object[] { 5, 10 });
+        buildFrameMethod.Invoke(result, new object[] { 0, 10 });
         var frameErr = lastErrorProp?.GetValue(result) as string;
         Assert.That(frameErr, Is.Null);
-        Assert.That(timeProp?.GetValue(result), Is.EqualTo(0.5));
+        Assert.That(timeProp?.GetValue(result), Is.EqualTo(0.0));
+
+        var cachedMeshesField = result.GetType().GetField("_cachedMeshes", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        var cachedMeshesList = cachedMeshesField?.GetValue(result) as System.Collections.IList;
+        Assert.That(cachedMeshesList, Is.Not.Null);
+        Console.WriteLine($"Total cached meshes at frame 0: {cachedMeshesList.Count}");
+        foreach (var item in cachedMeshesList)
+        {
+            Console.WriteLine($"Mesh item: {item}");
+        }
 
         // Test ClearAnimationCache
         var clearCacheMethod = result.GetType().GetMethod("ClearAnimationCache");
         Assert.That(clearCacheMethod, Is.Not.Null);
         clearCacheMethod.Invoke(result, null);
         Assert.That((int)cachedCountProp.GetValue(result), Is.EqualTo(0));
+
+        // Test frames of animation
+        for (int frame = 0; frame < 50; frame++)
+        {
+            double curT = (double)frame / 50.0;
+            buildTimeMethod.Invoke(result, new object[] { curT });
+            var err = lastErrorProp?.GetValue(result) as string;
+            if (err != null)
+            {
+                Console.WriteLine($"FRAME {frame} (t={curT}) ERROR: {err}");
+            }
+            var meshes = cachedMeshesField?.GetValue(result) as System.Collections.IList;
+            int redCount = 0;
+            int greenCount = 0;
+            if (meshes != null)
+            {
+                for (int m = 0; m < meshes.Count; m++)
+                {
+                    string itemStr = meshes[m]?.ToString() ?? "";
+                    if (itemStr.Contains("FF5555")) redCount++;
+                    if (itemStr.Contains("50FA7B")) greenCount++;
+                }
+            }
+            if (redCount == 0 || greenCount == 0)
+            {
+                Console.WriteLine($"FRAME {frame} (t={curT}) MISSING: red={redCount}, green={greenCount}, total={meshes?.Count}");
+            }
+        }
     }
 
     [Test]

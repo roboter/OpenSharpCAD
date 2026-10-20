@@ -89,23 +89,25 @@ var link2 = new Line(elbowPos, targetPos);
 
 // 6. Draw SCARA robotic arm links & joints using OpenSharpCAD's CylinderBetween
 // Base turret / shoulder pivot
-var basePivot = new Sphere(2.0 * r) + new Cylinder(radius: 2.0, height: 6.0 * r).Translate(0, 0, -3.0 * r);
-Draw(basePivot, RGB(180, 185, 205));
+Draw(new Sphere(2.0 * r), RGB(180, 185, 205));
+Draw(new Cylinder(radius: 2.0, height: 6.0 * r).Translate(0, 0, -3.0 * r), RGB(180, 185, 205));
 
 // Red arm (first link: base -> elbow)
-var arm1 = CylinderBetween(link1, r) + new Sphere(r);
-Draw(arm1, RGB(255, 85, 85));
+Draw(CylinderBetween(link1, r), RGB(255, 85, 85));
+Draw(new Sphere(r), RGB(255, 85, 85));
 
 // Elbow joint pivot
-var elbowPivot = new Sphere(2.0 * r).Translate(elbowPos) + new Cylinder(radius: 2.0, height: 4.0 * r).Translate(0, 0, -2.0 * r).Translate(elbowPos);
-Draw(elbowPivot, RGB(180, 185, 205));
+Draw(new Sphere(2.0 * r).Translate(elbowPos), RGB(180, 185, 205));
+Draw(new Cylinder(radius: 2.0, height: 4.0 * r).Translate(0, 0, -2.0 * r).Translate(elbowPos), RGB(180, 185, 205));
 
 // Green arm (second link: elbow -> target)
-var arm2 = CylinderBetween(link2, r) + new Sphere(r).Translate(elbowPos) + new Sphere(r).Translate(targetPos);
-Draw(arm2, RGB(80, 250, 123));
+Draw(CylinderBetween(link2, r), RGB(80, 250, 123));
+Draw(new Sphere(r).Translate(elbowPos), RGB(80, 250, 123));
+Draw(new Sphere(r).Translate(targetPos), RGB(80, 250, 123));
 
 // End effector stylus pointing down at current (x, y)
 var stylus = new Cylinder(radius1: 0.2, radius2: r, height: 4.0 * r)
     .Translate(0, 0, -2.0 * r)
     .Translate(targetPos.X, targetPos.Y, -r / 2.0);
 Draw(stylus, RGB(255, 184, 108));
+
