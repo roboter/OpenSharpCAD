@@ -46,7 +46,7 @@ Point Position(double timeVal)
 }
 
 // 3. Draw base plate & etched trajectory groove
-var plate = new Box(150, 150, 1).Translate(-75, 25 - 75, -3.0 * r - 1.0);
+var plate = new Box(150, 150, 1).Translate(0, 20, -3.0 * r - 1.0);
 Draw(plate, RGB(38, 42, 54));
 
 int curveSamples = 60;
