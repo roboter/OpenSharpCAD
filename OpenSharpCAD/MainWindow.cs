@@ -384,6 +384,7 @@ namespace CSharpCAD
 
         public void NewFile()
         {
+            Console.WriteLine("[MainWindow] NewFile invoked");
             string defaultCode = @"// New C# CAD Script
 var box = new Box(20, 20, 20, createCentered: true);
 var cylinder = new Cylinder(radius: 6, height: 30);
@@ -393,10 +394,12 @@ Draw(box - cylinder, RGB(80, 180, 255));
             _codeEditor.Text = defaultCode.Replace("\r\n", "\n");
             _isModified = false;
             UpdateTitleAndStatus();
+            Compile();
         }
 
         public void OpenFile()
         {
+            Console.WriteLine("[MainWindow] OpenFile invoked");
             string? selectedPath = NativeFileDialogService.ShowOpenFileDialog(
                 "Open C# CAD Script",
                 "C# CAD Files (*.cs;*.part)|*.cs;*.part|All Files (*.*)|*.*",
@@ -411,6 +414,8 @@ Draw(box - cylinder, RGB(80, 180, 255));
                     _codeEditor.Text = content.Replace("\r\n", "\n");
                     _isModified = false;
                     UpdateTitleAndStatus();
+                    Compile();
+                    Console.WriteLine($"[MainWindow] Successfully opened '{selectedPath}'");
                 }
                 catch (Exception ex)
                 {
@@ -421,6 +426,7 @@ Draw(box - cylinder, RGB(80, 180, 255));
 
         public void SaveFile()
         {
+            Console.WriteLine($"[MainWindow] SaveFile invoked (current path: '{_currentFilePath}')");
             if (string.IsNullOrEmpty(_currentFilePath))
             {
                 SaveFileAs();
@@ -432,6 +438,7 @@ Draw(box - cylinder, RGB(80, 180, 255));
                     File.WriteAllText(_currentFilePath, _codeEditor.Text);
                     _isModified = false;
                     UpdateTitleAndStatus();
+                    Console.WriteLine($"[MainWindow] Saved to '{_currentFilePath}'");
                 }
                 catch (Exception ex)
                 {
@@ -442,6 +449,7 @@ Draw(box - cylinder, RGB(80, 180, 255));
 
         public void SaveFileAs()
         {
+            Console.WriteLine("[MainWindow] SaveFileAs invoked");
             string defaultName = !string.IsNullOrEmpty(_currentFilePath)
                 ? System.IO.Path.GetFileName(_currentFilePath)
                 : "model.cs";
@@ -459,6 +467,7 @@ Draw(box - cylinder, RGB(80, 180, 255));
                     _currentFilePath = selectedPath;
                     _isModified = false;
                     UpdateTitleAndStatus();
+                    Console.WriteLine($"[MainWindow] Saved as '{selectedPath}'");
                 }
                 catch (Exception ex)
                 {

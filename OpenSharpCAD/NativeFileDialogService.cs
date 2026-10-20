@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -16,6 +17,7 @@ namespace CSharpCAD
         public static string? ShowOpenFileDialog(string title = "Open C# CAD Script", string filter = "C# CAD Files (*.cs;*.part)|*.cs;*.part|All Files (*.*)|*.*", string? initialDir = null)
         {
             initialDir = !string.IsNullOrEmpty(initialDir) && Directory.Exists(initialDir) ? initialDir : LastDirectoryUsed;
+            Console.WriteLine($"[NativeFileDialog] ShowOpenFileDialog: title='{title}', initialDir='{initialDir}'");
 
             string? selectedPath = null;
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
@@ -31,6 +33,8 @@ namespace CSharpCAD
                 selectedPath = ShowLinuxOpenDialog(title, initialDir);
             }
 
+            Console.WriteLine($"[NativeFileDialog] ShowOpenFileDialog result: '{selectedPath}'");
+
             if (!string.IsNullOrEmpty(selectedPath) && File.Exists(selectedPath))
             {
                 LastDirectoryUsed = Path.GetDirectoryName(selectedPath) ?? LastDirectoryUsed;
@@ -43,6 +47,7 @@ namespace CSharpCAD
         public static string? ShowSaveFileDialog(string title = "Save C# CAD Script", string defaultName = "model.cs", string? initialDir = null)
         {
             initialDir = !string.IsNullOrEmpty(initialDir) && Directory.Exists(initialDir) ? initialDir : LastDirectoryUsed;
+            Console.WriteLine($"[NativeFileDialog] ShowSaveFileDialog: title='{title}', defaultName='{defaultName}', initialDir='{initialDir}'");
 
             string? selectedPath = null;
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
@@ -57,6 +62,8 @@ namespace CSharpCAD
             {
                 selectedPath = ShowLinuxSaveDialog(title, defaultName, initialDir);
             }
+
+            Console.WriteLine($"[NativeFileDialog] ShowSaveFileDialog result: '{selectedPath}'");
 
             if (!string.IsNullOrEmpty(selectedPath))
             {
@@ -75,9 +82,20 @@ namespace CSharpCAD
         {
             try
             {
-                string locArg = Directory.Exists(initialDir) ? $" default location POSIX file \"{EscapeAppleScript(initialDir)}\"" : "";
-                string script = $"set f to choose file with prompt \"{EscapeAppleScript(title)}\" of type {{\"cs\", \"part\", \"txt\"}}{locArg}\nreturn POSIX path of f";
-                return RunProcessAndGetOutput("osascript", $"-e '{script.Replace("'", "'\\''")}'");
+                string locArg = Directory.Exists(initialDir)
+                    ? $" default location POSIX file \"{EscapeAppleScript(initialDir)}\""
+                    : "";
+
+                string script = $@"
+try
+    activate
+    set chosenFile to choose file with prompt ""{EscapeAppleScript(title)}""{locArg}
+    return POSIX path of chosenFile
+on error number -128
+    return """"
+end try";
+
+                return RunAppleScript(script);
             }
             catch (Exception ex)
             {
@@ -90,9 +108,20 @@ namespace CSharpCAD
         {
             try
             {
-                string locArg = Directory.Exists(initialDir) ? $" default location POSIX file \"{EscapeAppleScript(initialDir)}\"" : "";
-                string script = $"set f to choose file name with prompt \"{EscapeAppleScript(title)}\" default name \"{EscapeAppleScript(defaultName)}\"{locArg}\nreturn POSIX path of f";
-                return RunProcessAndGetOutput("osascript", $"-e '{script.Replace("'", "'\\''")}'");
+                string locArg = Directory.Exists(initialDir)
+                    ? $" default location POSIX file \"{EscapeAppleScript(initialDir)}\""
+                    : "";
+
+                string script = $@"
+try
+    activate
+    set chosenFile to choose file name with prompt ""{EscapeAppleScript(title)}"" default name ""{EscapeAppleScript(defaultName)}""{locArg}
+    return POSIX path of chosenFile
+on error number -128
+    return """"
+end try";
+
+                return RunAppleScript(script);
             }
             catch (Exception ex)
             {
@@ -101,12 +130,55 @@ namespace CSharpCAD
             }
         }
 
+        private static string? RunAppleScript(string script)
+        {
+            try
+            {
+                var psi = new ProcessStartInfo
+                {
+                    FileName = "osascript",
+                    RedirectStandardInput = true,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+
+                using var p = Process.Start(psi);
+                if (p == null) return null;
+
+                using (var sw = p.StandardInput)
+                {
+                    sw.Write(script);
+                }
+
+                string output = p.StandardOutput.ReadToEnd().Trim();
+                string err = p.StandardError.ReadToEnd().Trim();
+                p.WaitForExit();
+
+                if (p.ExitCode == 0 && !string.IsNullOrWhiteSpace(output))
+                {
+                    return output;
+                }
+                else if (!string.IsNullOrEmpty(err))
+                {
+                    Console.WriteLine($"[AppleScript Error] code {p.ExitCode}: {err}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[AppleScript Exception] {ex.Message}");
+            }
+
+            return null;
+        }
+
         private static string? ShowWindowsOpenDialog(string title, string filter, string initialDir)
         {
             try
             {
-                string ps = $"Add-Type -AssemblyName System.Windows.Forms; $d = New-Object System.Windows.Forms.OpenFileDialog; $d.Title = '{title}'; $d.Filter = '{filter}'; $d.InitialDirectory = '{initialDir}'; if ($d.ShowDialog() -eq 'OK') {{ Write-Output $d.FileName }}";
-                return RunProcessAndGetOutput("powershell", $"-NoProfile -Command \"{ps}\"");
+                string ps = $"Add-Type -AssemblyName System.Windows.Forms; $d = New-Object System.Windows.Forms.OpenFileDialog; $d.Title = '{title.Replace("'", "''")}'; $d.Filter = '{filter.Replace("'", "''")}'; $d.InitialDirectory = '{initialDir.Replace("'", "''")}'; if ($d.ShowDialog() -eq 'OK') {{ Write-Output $d.FileName }}";
+                return RunProcessWithArgs("powershell", "-NoProfile", "-Command", ps);
             }
             catch (Exception ex)
             {
@@ -119,8 +191,8 @@ namespace CSharpCAD
         {
             try
             {
-                string ps = $"Add-Type -AssemblyName System.Windows.Forms; $d = New-Object System.Windows.Forms.SaveFileDialog; $d.Title = '{title}'; $d.FileName = '{defaultName}'; $d.Filter = 'C# CAD Files (*.cs)|*.cs|All Files (*.*)|*.*'; $d.InitialDirectory = '{initialDir}'; if ($d.ShowDialog() -eq 'OK') {{ Write-Output $d.FileName }}";
-                return RunProcessAndGetOutput("powershell", $"-NoProfile -Command \"{ps}\"");
+                string ps = $"Add-Type -AssemblyName System.Windows.Forms; $d = New-Object System.Windows.Forms.SaveFileDialog; $d.Title = '{title.Replace("'", "''")}'; $d.FileName = '{defaultName.Replace("'", "''")}'; $d.Filter = 'C# CAD Files (*.cs)|*.cs|All Files (*.*)|*.*'; $d.InitialDirectory = '{initialDir.Replace("'", "''")}'; if ($d.ShowDialog() -eq 'OK') {{ Write-Output $d.FileName }}";
+                return RunProcessWithArgs("powershell", "-NoProfile", "-Command", ps);
             }
             catch (Exception ex)
             {
@@ -133,10 +205,10 @@ namespace CSharpCAD
         {
             try
             {
-                string res = RunProcessAndGetOutput("zenity", $"--file-selection --title=\"{title}\" --filename=\"{initialDir}/\" --file-filter=\"C# CAD Files (*.cs, *.part) | *.cs *.part\" --file-filter=\"All Files | *\"");
+                string? res = RunProcessWithArgs("zenity", "--file-selection", $"--title={title}", $"--filename={initialDir}/");
                 if (!string.IsNullOrEmpty(res)) return res;
 
-                return RunProcessAndGetOutput("kdialog", $"--getopenfilename \"{initialDir}\" \"*.cs *.part|C# CAD Files (*.cs, *.part)\" --title \"{title}\"");
+                return RunProcessWithArgs("kdialog", "--getopenfilename", initialDir, "*.cs *.part|C# CAD Files (*.cs, *.part)", "--title", title);
             }
             catch
             {
@@ -149,10 +221,10 @@ namespace CSharpCAD
             try
             {
                 string defaultPath = Path.Combine(initialDir, defaultName);
-                string res = RunProcessAndGetOutput("zenity", $"--file-selection --save --confirm-overwrite --title=\"{title}\" --filename=\"{defaultPath}\"");
+                string? res = RunProcessWithArgs("zenity", "--file-selection", "--save", "--confirm-overwrite", $"--title={title}", $"--filename={defaultPath}");
                 if (!string.IsNullOrEmpty(res)) return res;
 
-                return RunProcessAndGetOutput("kdialog", $"--getsavefilename \"{defaultPath}\" \"*.cs|C# CAD Files (*.cs)\" --title \"{title}\"");
+                return RunProcessWithArgs("kdialog", "--getsavefilename", defaultPath, "*.cs|C# CAD Files (*.cs)", "--title", title);
             }
             catch
             {
@@ -160,19 +232,23 @@ namespace CSharpCAD
             }
         }
 
-        private static string? RunProcessAndGetOutput(string fileName, string args)
+        private static string? RunProcessWithArgs(string fileName, params string[] args)
         {
             try
             {
                 var psi = new ProcessStartInfo
                 {
                     FileName = fileName,
-                    Arguments = args,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
                     CreateNoWindow = true
                 };
+
+                foreach (var arg in args)
+                {
+                    psi.ArgumentList.Add(arg);
+                }
 
                 using var p = Process.Start(psi);
                 if (p == null) return null;
