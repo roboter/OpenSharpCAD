@@ -648,6 +648,47 @@ Draw(new Box(10, 10, 10));
     }
 
     [Test]
+    public void TestOpenScadAnimationScriptCompilesAndExecutes()
+    {
+        string examplePath = Path.GetFullPath(Path.Combine(TestContext.CurrentContext.TestDirectory, "../../../../examples/openscad.cs"));
+        if (!File.Exists(examplePath))
+        {
+            examplePath = Path.GetFullPath(Path.Combine(TestContext.CurrentContext.TestDirectory, "../../../examples/openscad.cs"));
+        }
+        if (!File.Exists(examplePath))
+        {
+            examplePath = Path.Combine(Directory.GetCurrentDirectory(), "examples/openscad.cs");
+        }
+        Assert.That(File.Exists(examplePath), Is.True, $"examples/openscad.cs must exist at {examplePath}");
+        string script = File.ReadAllText(examplePath);
+
+        ICompilerService compiler = new CompilerService();
+        var result = compiler.Compile(script, out var errors);
+        Assert.That(errors, Is.Empty, $"openscad.cs should compile with 0 errors. Errors: {string.Join("; ", errors.Select(e => e.GetMessage()))}");
+        Assert.That(result, Is.Not.Null);
+
+        // Execute at t=0
+        var buildMethod = result.GetType().GetMethod("Build");
+        Assert.That(buildMethod, Is.Not.Null);
+        buildMethod.Invoke(result, null);
+
+        var lastErrorProp = result.GetType().GetProperty("LastError");
+        var lastError = lastErrorProp?.GetValue(result) as string;
+        Assert.That(lastError, Is.Null, $"Execution at t=0 had error: {lastError}");
+
+        // Execute animation at t=0.5
+        var buildTimeMethod = result.GetType().GetMethod("BuildTime");
+        Assert.That(buildTimeMethod, Is.Not.Null);
+        buildTimeMethod.Invoke(result, new object[] { 0.5 });
+
+        lastError = lastErrorProp?.GetValue(result) as string;
+        Assert.That(lastError, Is.Null, $"Execution at t=0.5 had error: {lastError}");
+
+        var timeProp = result.GetType().GetProperty("t");
+        Assert.That(timeProp?.GetValue(result), Is.EqualTo(0.5));
+    }
+
+    [Test]
     public void TestSecurityWhitelistAllowsPermittedAssemblies()
     {
         Assert.That(DynCode.CodeHelper.IsAllowedAssembly("System.Private.CoreLib"), Is.True);

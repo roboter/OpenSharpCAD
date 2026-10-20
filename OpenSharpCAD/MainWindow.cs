@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using MatterHackers.Agg;
@@ -125,6 +126,21 @@ namespace CSharpCAD
         private bool _isModified = false;
         private TextWidget _fileStatusWidget;
 
+        // Animation UI & State
+        private FlowLayoutWidget _animationBar;
+        private HelpWindow.StyledButton _playPauseBtn;
+        private TextEditWidget _timeInput;
+        private TextEditWidget _fpsInput;
+        private TextEditWidget _stepsInput;
+        private TextWidget _stepLabel;
+
+        private bool _isAnimating = false;
+        private int _currentStep = 0;
+        private int _totalSteps = 100;
+        private double _fps = 20.0;
+        private double _currentTime = 0.0;
+        private RunningInterval? _animationInterval;
+
         public MainWindow(bool renderRayTrace) : base(800, 600)
         {
             MatterHackers.Agg.Platform.AggContext.FileDialogs = new CrossPlatformFileDialogProvider();
@@ -214,6 +230,25 @@ namespace CSharpCAD
                 };
                 saveAsBtn.Click += (s, e) => SaveFileAs();
                 toolBar.AddChild(saveAsBtn);
+
+                var animateBtn = new HelpWindow.StyledButton("🎬 Animate", new Color(248, 248, 242), new Color(50, 54, 72), new Color(75, 82, 110), pointSize: 9.5, padding: new BorderDouble(8, 4))
+                {
+                    VAnchor = VAnchor.Center,
+                    Margin = new BorderDouble(2, 0),
+                    ToolTipText = "Toggle Animation Controls",
+                };
+                animateBtn.Click += (s, e) =>
+                {
+                    if (_animationBar != null)
+                    {
+                        _animationBar.Visible = !_animationBar.Visible;
+                        if (!_animationBar.Visible && _isAnimating)
+                        {
+                            StopAnimation();
+                        }
+                    }
+                };
+                toolBar.AddChild(animateBtn);
 
                 toolBar.AddChild(new GuiWidget { HAnchor = HAnchor.Stretch });
 
@@ -362,6 +397,99 @@ namespace CSharpCAD
 
             rightSplitter.Panel1.AddChild(viewportHud);
 
+            // Bottom Animation Control Bar (Time, FPS, Steps)
+            _animationBar = new FlowLayoutWidget(FlowDirection.LeftToRight)
+            {
+                HAnchor = HAnchor.Stretch,
+                VAnchor = VAnchor.Bottom,
+                Height = 38,
+                BackgroundColor = new Color(24, 26, 36, 235),
+                Padding = new BorderDouble(10, 4),
+            };
+
+            _playPauseBtn = new HelpWindow.StyledButton("▶ Play", new Color(20, 24, 32), new Color(80, 250, 123), new Color(100, 255, 140), pointSize: 9.5, padding: new BorderDouble(10, 4))
+            {
+                VAnchor = VAnchor.Center,
+                Margin = new BorderDouble(2, 0),
+                ToolTipText = "Play / Pause Animation",
+            };
+            _playPauseBtn.Click += (s, e) => TogglePlayPause();
+            _animationBar.AddChild(_playPauseBtn);
+
+            var resetAnimBtn = new HelpWindow.StyledButton("⏮", new Color(248, 248, 242), new Color(50, 54, 72), new Color(75, 82, 110), pointSize: 9.5, padding: new BorderDouble(8, 4))
+            {
+                VAnchor = VAnchor.Center,
+                Margin = new BorderDouble(2, 0),
+                ToolTipText = "Reset Animation (Time = 0.0)",
+            };
+            resetAnimBtn.Click += (s, e) => ResetAnimation();
+            _animationBar.AddChild(resetAnimBtn);
+
+            _animationBar.AddChild(new GuiWidget(8, 1));
+
+            var timeLbl = new TextWidget("Time:", pointSize: 9.5, textColor: new Color(139, 233, 253), bold: true)
+            {
+                VAnchor = VAnchor.Center,
+                Margin = new BorderDouble(0, 0, 4, 0),
+            };
+            _animationBar.AddChild(timeLbl);
+
+            _timeInput = new TextEditWidget("0.000", pointSize: 9.5, pixelWidth: 55)
+            {
+                VAnchor = VAnchor.Center,
+                Margin = new BorderDouble(0, 0, 12, 0),
+                BackgroundColor = new Color(40, 44, 58),
+            };
+            _timeInput.TextColor = Color.White;
+            _timeInput.EditComplete += (s, e) => OnTimeInputChanged();
+            _timeInput.EnterPressed += (s, e) => OnTimeInputChanged();
+            _animationBar.AddChild(_timeInput);
+
+            var fpsLbl = new TextWidget("FPS:", pointSize: 9.5, textColor: new Color(248, 248, 242), bold: true)
+            {
+                VAnchor = VAnchor.Center,
+                Margin = new BorderDouble(0, 0, 4, 0),
+            };
+            _animationBar.AddChild(fpsLbl);
+
+            _fpsInput = new TextEditWidget("20", pointSize: 9.5, pixelWidth: 40)
+            {
+                VAnchor = VAnchor.Center,
+                Margin = new BorderDouble(0, 0, 12, 0),
+                BackgroundColor = new Color(40, 44, 58),
+            };
+            _fpsInput.TextColor = Color.White;
+            _fpsInput.EditComplete += (s, e) => OnFpsInputChanged();
+            _fpsInput.EnterPressed += (s, e) => OnFpsInputChanged();
+            _animationBar.AddChild(_fpsInput);
+
+            var stepsLbl = new TextWidget("Steps:", pointSize: 9.5, textColor: new Color(248, 248, 242), bold: true)
+            {
+                VAnchor = VAnchor.Center,
+                Margin = new BorderDouble(0, 0, 4, 0),
+            };
+            _animationBar.AddChild(stepsLbl);
+
+            _stepsInput = new TextEditWidget("100", pointSize: 9.5, pixelWidth: 50)
+            {
+                VAnchor = VAnchor.Center,
+                Margin = new BorderDouble(0, 0, 12, 0),
+                BackgroundColor = new Color(40, 44, 58),
+            };
+            _stepsInput.TextColor = Color.White;
+            _stepsInput.EditComplete += (s, e) => OnStepsInputChanged();
+            _stepsInput.EnterPressed += (s, e) => OnStepsInputChanged();
+            _animationBar.AddChild(_stepsInput);
+
+            _stepLabel = new TextWidget("Step 0 / 100", pointSize: 9, textColor: new Color(160, 165, 185))
+            {
+                VAnchor = VAnchor.Center,
+                Margin = new BorderDouble(4, 0, 0, 0),
+            };
+            _animationBar.AddChild(_stepLabel);
+
+            rightSplitter.Panel1.AddChild(_animationBar);
+
             // Refresh gizmo on every camera rotation
             trackBallWidget.ViewChanged += () => axisWidget?.Invalidate();
 
@@ -492,6 +620,138 @@ Draw(box - cylinder, RGB(80, 180, 255));
             this.Title = $"OpenSharpCAD - {fileName}{modIndicator}";
         }
 
+        public void TogglePlayPause()
+        {
+            if (_isAnimating)
+            {
+                StopAnimation();
+            }
+            else
+            {
+                StartAnimation();
+            }
+        }
+
+        public void StartAnimation()
+        {
+            if (_isAnimating) return;
+            _isAnimating = true;
+            if (_playPauseBtn != null)
+            {
+                _playPauseBtn.SetText("⏸ Pause");
+                _playPauseBtn.SetColors(new Color(255, 184, 108), new Color(255, 200, 130), new Color(20, 24, 32));
+            }
+
+            double intervalSeconds = Math.Max(0.01, 1.0 / Math.Max(1.0, _fps));
+            _animationInterval = UiThread.SetInterval(OnAnimationTick, intervalSeconds);
+        }
+
+        public void StopAnimation()
+        {
+            if (!_isAnimating && _animationInterval == null) return;
+            _isAnimating = false;
+            if (_animationInterval != null)
+            {
+                UiThread.ClearInterval(_animationInterval);
+                _animationInterval = null;
+            }
+            if (_playPauseBtn != null)
+            {
+                _playPauseBtn.SetText("▶ Play");
+                _playPauseBtn.SetColors(new Color(80, 250, 123), new Color(100, 255, 140), new Color(20, 24, 32));
+            }
+        }
+
+        public void ResetAnimation()
+        {
+            StopAnimation();
+            _currentStep = 0;
+            _currentTime = 0.0;
+            UpdateAnimationUi();
+            RebuildCurrentFrame();
+        }
+
+        private void OnAnimationTick()
+        {
+            if (!_isAnimating || classRef == null) return;
+
+            _currentStep = (_currentStep + 1) % _totalSteps;
+            _currentTime = (double)_currentStep / _totalSteps;
+
+            UpdateAnimationUi();
+            RebuildCurrentFrame();
+        }
+
+        private void UpdateAnimationUi()
+        {
+            if (_timeInput != null && !_timeInput.ContainsFocus)
+            {
+                _timeInput.Text = _currentTime.ToString("0.000", System.Globalization.CultureInfo.InvariantCulture);
+            }
+            if (_stepLabel != null)
+            {
+                _stepLabel.Text = $"Step {_currentStep} / {_totalSteps}";
+            }
+        }
+
+        private void RebuildCurrentFrame()
+        {
+            if (classRef == null) return;
+            try
+            {
+                classRef.BuildTime(_currentTime);
+                trackBallWidget?.Invalidate();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[Animation Error] {ex.Message}");
+            }
+        }
+
+        private void OnTimeInputChanged()
+        {
+            if (_timeInput != null && double.TryParse(_timeInput.Text, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out double parsedT))
+            {
+                _currentTime = Math.Clamp(parsedT, 0.0, 1.0);
+                _currentStep = (int)Math.Round(_currentTime * _totalSteps) % _totalSteps;
+                if (_stepLabel != null)
+                {
+                    _stepLabel.Text = $"Step {_currentStep} / {_totalSteps}";
+                }
+                RebuildCurrentFrame();
+            }
+        }
+
+        private void OnFpsInputChanged()
+        {
+            if (_fpsInput != null && double.TryParse(_fpsInput.Text, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out double parsedFps))
+            {
+                _fps = Math.Clamp(parsedFps, 1.0, 60.0);
+                if (_isAnimating)
+                {
+                    if (_animationInterval != null)
+                    {
+                        UiThread.ClearInterval(_animationInterval);
+                    }
+                    double intervalSeconds = Math.Max(0.01, 1.0 / _fps);
+                    _animationInterval = UiThread.SetInterval(OnAnimationTick, intervalSeconds);
+                }
+            }
+        }
+
+        private void OnStepsInputChanged()
+        {
+            if (_stepsInput != null && int.TryParse(_stepsInput.Text, out int parsedSteps))
+            {
+                _totalSteps = Math.Max(1, parsedSteps);
+                _currentStep = (int)Math.Round(_currentTime * _totalSteps) % _totalSteps;
+                if (_stepLabel != null)
+                {
+                    _stepLabel.Text = $"Step {_currentStep} / {_totalSteps}";
+                }
+            }
+        }
+
         private System.Threading.Timer _compileDebounceTimer;
 
         private void Hello_TextChanged(object sender, EventArgs e)
@@ -594,6 +854,7 @@ Draw(box - cylinder, RGB(80, 180, 255));
 
         public override void OnClosed(EventArgs e)
         {
+            StopAnimation();
             var hw = _helpWindow;
             _helpWindow = null;
             if (hw != null && !hw.HasBeenClosed)
@@ -667,8 +928,8 @@ Draw(box - cylinder, RGB(80, 180, 255));
             bool buildSuccess = false;
             try
             {
-                // Pre-compute & cache meshes once during compile so 3D camera tumbling runs at 60+ FPS
-                newClassRef?.Build();
+                // Pre-compute & cache meshes once during compile at current animation time
+                newClassRef?.BuildTime(_currentTime);
                 if (newClassRef != null && !string.IsNullOrEmpty((string)newClassRef.LastError))
                 {
                     int rtLine = 0;

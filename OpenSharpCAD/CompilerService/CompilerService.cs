@@ -12,6 +12,9 @@ namespace CSharpCAD
             errors = [];
             StringBuilder sb = new();
 
+            // Support OpenSCAD $t animation variable by mapping to C# t
+            string sanitizedScript = System.Text.RegularExpressions.Regex.Replace(scriptSource ?? "", @"(?<![\$@\w])\$t\b", "t");
+
             //-----------------
             // Create the class code wrapper
             sb.AppendLine("using System;");
@@ -41,15 +44,24 @@ namespace CSharpCAD
             sb.AppendLine("            private bool _isBuilt = false;");
             sb.AppendLine("            public string LastError { get; set; }");
             sb.AppendLine("            public int LastErrorLine { get; set; } = -1;");
+            sb.AppendLine("            public double t { get; set; } = 0.0;");
+            sb.AppendLine("            public double Time { get => t; set => t = value; }");
+            sb.AppendLine("            public double time { get => t; set => t = value; }");
             sb.AppendLine();
             sb.AppendLine("            public void Build()");
             sb.AppendLine("            {");
+            sb.AppendLine("                BuildTime(t);");
+            sb.AppendLine("            }");
+            sb.AppendLine();
+            sb.AppendLine("            public void BuildTime(double animationTime)");
+            sb.AppendLine("            {");
+            sb.AppendLine("                t = animationTime;");
             sb.AppendLine("                _cachedMeshes.Clear();");
             sb.AppendLine("                LastError = null;");
             sb.AppendLine("                LastErrorLine = -1;");
             sb.AppendLine("                try {");
             sb.AppendLine("#line 1 \"script\"");
-            sb.AppendLine(scriptSource);
+            sb.AppendLine(sanitizedScript);
             sb.AppendLine("                } catch (Exception ex) {");
             sb.AppendLine("                    LastError = ex.Message;");
             sb.AppendLine("                    try {");
