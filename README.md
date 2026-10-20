@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <a href="#-ide-preview">📸 Preview</a> •
+  <a href="#-screenshots">📸 Screenshots</a> •
   <a href="#-video-demo">📺 Video</a> •
   <a href="#-key-features">⚡ Features</a> •
   <a href="#-code-examples">💡 Examples</a> •
@@ -31,11 +31,22 @@
 
 ---
 
-## 📸 IDE Preview
+## 📸 Screenshots
+
+### 💻 Main IDE & Live 3D Viewport
 
 <div align="center">
-  <img src="Screenshot.png" alt="OpenSharpCAD IDE" width="100%" style="border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.4);" />
+  <img src="Screenshot.png" alt="OpenSharpCAD Main IDE" width="100%" style="border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.4);" />
   <p><i>The OpenSharpCAD IDE: Live C# scripting with Roslyn compilation on the left, real-time OpenGL 3D viewport with interactive trackball camera and axis gizmo on the right.</i></p>
+</div>
+
+<br>
+
+### 📚 Interactive In-App Cheat Sheet & Reference (`F1`)
+
+<div align="center">
+  <img src="Screenshot_Help.png" alt="OpenSharpCAD In-App Cheat Sheet & Reference" width="100%" style="border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.4);" />
+  <p><i>The in-app Cheat Sheet & Reference window (press <code>F1</code>): Category tabs, method signatures, live 3D preview viewports, and one-click code insertion.</i></p>
 </div>
 
 ---
