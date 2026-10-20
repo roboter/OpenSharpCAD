@@ -646,4 +646,72 @@ Draw(cube, Color.Gray);
         Assert.That(bounds, Is.Not.Null);
         Assert.That(bounds.XSize, Is.GreaterThan(0));
     }
+
+    [Test]
+    public void TestCadQueryGearScriptConversion()
+    {
+        string script = @"
+// Define the generating functions
+Vector2 Hypocycloid(double t, double r1, double r2)
+{
+    return new Vector2(
+        (r1 - r2) * Math.Cos(t) + r2 * Math.Cos((r1 / r2) * t - t),
+        (r1 - r2) * Math.Sin(t) + r2 * Math.Sin(-((r1 / r2) * t - t))
+    );
 }
+
+Vector2 Epicycloid(double t, double r1, double r2)
+{
+    return new Vector2(
+        (r1 + r2) * Math.Cos(t) - r2 * Math.Cos((r1 / r2) * t + t),
+        (r1 + r2) * Math.Sin(t) - r2 * Math.Sin((r1 / r2) * t + t)
+    );
+}
+
+Vector2 Gear(double t, double r1 = 4, double r2 = 1)
+{
+    if (Math.Pow(-1, 1 + Math.Floor(t / (2 * Math.PI) * (r1 / r2))) < 0)
+        return Epicycloid(t, r1, r2);
+    else
+        return Hypocycloid(t, r1, r2);
+}
+
+// Create the gear profile and extrude it
+int steps = 180;
+var gearProfile = new Path();
+for (int i = 0; i < steps; i++)
+{
+    double t = (double)i / steps * 2.0 * Math.PI;
+    var pt = Gear(t, 6, 1);
+    gearProfile.AddPoint(pt.X, pt.Y);
+}
+gearProfile.Close();
+
+// TwistExtrude: height 15, twist 90 degrees
+var twistedGear = TwistExtrude(gearProfile, height: 15, twistDegrees: 90, slices: 30);
+
+// Cut through hole of radius 2
+var centerHole = new Cylinder(radius: 2, height: 25).Translate(0, 0, 7.5);
+var result = twistedGear - centerHole;
+
+Draw(result, RGB(255, 121, 198));
+";
+
+        ICompilerService compiler = new CompilerService();
+        List<Diagnostic> errors;
+        var compiled = compiler.Compile(script, out errors);
+
+        Assert.That(errors, Is.Empty, "Script should compile with 0 errors");
+        Assert.That(compiled, Is.Not.Null);
+
+        dynamic dyn = compiled;
+        dyn.Build();
+        Assert.That((string)dyn.LastError, Is.Null.Or.Empty, "Gear script should execute with no runtime error");
+
+        var bounds = dyn.GetBounds();
+        Assert.That(bounds, Is.Not.Null);
+        Assert.That(bounds.XSize, Is.GreaterThan(0));
+        Assert.That(bounds.ZSize, Is.GreaterThan(0));
+    }
+}
+
