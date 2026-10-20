@@ -72,6 +72,7 @@
 - 🎯 **Topology & Anchor Queries**: Access `.TopCenter`, `.BottomCenter`, `.Corners`, `.BoundingEdges`, and `.GetUniqueVertices()` to attach secondary parts parametrically without manual coordinate calculation.
 - 🎨 **RGB & RGBA Color Styling**: Render custom colors with `Draw(shape, RGB(r, g, b))` or `RGBA(...)`.
 - ⚡ **Instant Live Recompilation**: Automatic compilation and 3D preview updates powered by Microsoft Roslyn upon code modifications.
+- 📁 **File Management**: Create new files, open existing scripts, save, and save as with native system dialogs and keyboard shortcuts (`Ctrl/Cmd+N`, `Ctrl/Cmd+O`, `Ctrl/Cmd+S`, `Ctrl/Cmd+Shift+S`).
 - 📚 **Interactive 3D Documentation**:
   - In-app reference cheat sheet (press `F1` or click Help).
   - Standalone Three.js WebGL documentation viewer with side-by-side 3D models and Dracula-themed C# snippets.

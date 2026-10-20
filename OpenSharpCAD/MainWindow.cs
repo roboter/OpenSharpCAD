@@ -121,9 +121,14 @@ namespace CSharpCAD
         private List<int> errorLines = new List<int>();
 
         private HelpWindow _helpWindow;
+        private string? _currentFilePath = null;
+        private bool _isModified = false;
+        private TextWidget _fileStatusWidget;
 
         public MainWindow(bool renderRayTrace) : base(800, 600)
         {
+            MatterHackers.Agg.Platform.AggContext.FileDialogs = new CrossPlatformFileDialogProvider();
+
             var testUnion = new Translate(new Box(10, 10, 20) - new Box(8, 20, 10), 5, 5, 5);
 
             rootUnion.Box(8, 20, 40);
@@ -160,11 +165,55 @@ namespace CSharpCAD
                     Padding = new BorderDouble(10, 4),
                 };
 
-                var editorTitle = new TextWidget("C# CAD Script", pointSize: 11, textColor: new Color(180, 185, 205), bold: true)
+                var editorTitle = new TextWidget("C# CAD", pointSize: 11, textColor: new Color(180, 185, 205), bold: true)
                 {
                     VAnchor = VAnchor.Center,
+                    Margin = new BorderDouble(0, 0, 6, 0),
                 };
                 toolBar.AddChild(editorTitle);
+
+                _fileStatusWidget = new TextWidget("Untitled.cs", pointSize: 10, textColor: new Color(139, 233, 253))
+                {
+                    VAnchor = VAnchor.Center,
+                    Margin = new BorderDouble(0, 0, 10, 0),
+                };
+                toolBar.AddChild(_fileStatusWidget);
+
+                var newBtn = new HelpWindow.StyledButton("📄 New", new Color(248, 248, 242), new Color(50, 54, 72), new Color(75, 82, 110), pointSize: 9.5, padding: new BorderDouble(8, 4))
+                {
+                    VAnchor = VAnchor.Center,
+                    Margin = new BorderDouble(2, 0),
+                    ToolTipText = "New C# CAD Script [Ctrl+N / Cmd+N]",
+                };
+                newBtn.Click += (s, e) => NewFile();
+                toolBar.AddChild(newBtn);
+
+                var openBtn = new HelpWindow.StyledButton("📂 Open", new Color(248, 248, 242), new Color(50, 54, 72), new Color(75, 82, 110), pointSize: 9.5, padding: new BorderDouble(8, 4))
+                {
+                    VAnchor = VAnchor.Center,
+                    Margin = new BorderDouble(2, 0),
+                    ToolTipText = "Open CAD Script [Ctrl+O / Cmd+O]",
+                };
+                openBtn.Click += (s, e) => OpenFile();
+                toolBar.AddChild(openBtn);
+
+                var saveBtn = new HelpWindow.StyledButton("💾 Save", new Color(248, 248, 242), new Color(50, 54, 72), new Color(75, 82, 110), pointSize: 9.5, padding: new BorderDouble(8, 4))
+                {
+                    VAnchor = VAnchor.Center,
+                    Margin = new BorderDouble(2, 0),
+                    ToolTipText = "Save Script [Ctrl+S / Cmd+S]",
+                };
+                saveBtn.Click += (s, e) => SaveFile();
+                toolBar.AddChild(saveBtn);
+
+                var saveAsBtn = new HelpWindow.StyledButton("💾 Save As...", new Color(248, 248, 242), new Color(50, 54, 72), new Color(75, 82, 110), pointSize: 9.5, padding: new BorderDouble(8, 4))
+                {
+                    VAnchor = VAnchor.Center,
+                    Margin = new BorderDouble(2, 0),
+                    ToolTipText = "Save Script As [Ctrl+Shift+S / Cmd+Shift+S]",
+                };
+                saveAsBtn.Click += (s, e) => SaveFileAs();
+                toolBar.AddChild(saveAsBtn);
 
                 toolBar.AddChild(new GuiWidget { HAnchor = HAnchor.Stretch });
 
@@ -216,7 +265,29 @@ namespace CSharpCAD
                         ToggleHelp();
                         e.Handled = true;
                     }
+                    else if (e.Control && e.KeyCode == Keys.N)
+                    {
+                        NewFile();
+                        e.Handled = true;
+                    }
+                    else if (e.Control && e.KeyCode == Keys.O)
+                    {
+                        OpenFile();
+                        e.Handled = true;
+                    }
+                    else if (e.Control && e.Shift && e.KeyCode == Keys.S)
+                    {
+                        SaveFileAs();
+                        e.Handled = true;
+                    }
+                    else if (e.Control && e.KeyCode == Keys.S)
+                    {
+                        SaveFile();
+                        e.Handled = true;
+                    }
                 };
+                _isModified = false;
+                UpdateTitleAndStatus();
                 textSide.AddChild(_codeEditor);
                 verticalSplitter.Panel1.AddChild(textSide);
             }
@@ -311,10 +382,114 @@ namespace CSharpCAD
             Compile();
         }
 
+        public void NewFile()
+        {
+            string defaultCode = @"// New C# CAD Script
+var box = new Box(20, 20, 20, createCentered: true);
+var cylinder = new Cylinder(radius: 6, height: 30);
+Draw(box - cylinder, RGB(80, 180, 255));
+";
+            _currentFilePath = null;
+            _codeEditor.Text = defaultCode.Replace("\r\n", "\n");
+            _isModified = false;
+            UpdateTitleAndStatus();
+        }
+
+        public void OpenFile()
+        {
+            string? selectedPath = NativeFileDialogService.ShowOpenFileDialog(
+                "Open C# CAD Script",
+                "C# CAD Files (*.cs;*.part)|*.cs;*.part|All Files (*.*)|*.*",
+                _currentFilePath != null ? System.IO.Path.GetDirectoryName(_currentFilePath) : null);
+
+            if (!string.IsNullOrEmpty(selectedPath) && File.Exists(selectedPath))
+            {
+                try
+                {
+                    string content = File.ReadAllText(selectedPath);
+                    _currentFilePath = selectedPath;
+                    _codeEditor.Text = content.Replace("\r\n", "\n");
+                    _isModified = false;
+                    UpdateTitleAndStatus();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error opening file '{selectedPath}': {ex.Message}");
+                }
+            }
+        }
+
+        public void SaveFile()
+        {
+            if (string.IsNullOrEmpty(_currentFilePath))
+            {
+                SaveFileAs();
+            }
+            else
+            {
+                try
+                {
+                    File.WriteAllText(_currentFilePath, _codeEditor.Text);
+                    _isModified = false;
+                    UpdateTitleAndStatus();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error saving file '{_currentFilePath}': {ex.Message}");
+                }
+            }
+        }
+
+        public void SaveFileAs()
+        {
+            string defaultName = !string.IsNullOrEmpty(_currentFilePath)
+                ? System.IO.Path.GetFileName(_currentFilePath)
+                : "model.cs";
+
+            string? selectedPath = NativeFileDialogService.ShowSaveFileDialog(
+                "Save C# CAD Script",
+                defaultName,
+                _currentFilePath != null ? System.IO.Path.GetDirectoryName(_currentFilePath) : null);
+
+            if (!string.IsNullOrEmpty(selectedPath))
+            {
+                try
+                {
+                    File.WriteAllText(selectedPath, _codeEditor.Text);
+                    _currentFilePath = selectedPath;
+                    _isModified = false;
+                    UpdateTitleAndStatus();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error saving file '{selectedPath}': {ex.Message}");
+                }
+            }
+        }
+
+        public void UpdateTitleAndStatus()
+        {
+            string fileName = !string.IsNullOrEmpty(_currentFilePath)
+                ? System.IO.Path.GetFileName(_currentFilePath)
+                : "Untitled.cs";
+
+            string modIndicator = _isModified ? " *" : "";
+
+            if (_fileStatusWidget != null)
+            {
+                _fileStatusWidget.Text = $"{fileName}{modIndicator}";
+            }
+
+            this.Title = $"OpenSharpCAD - {fileName}{modIndicator}";
+        }
+
         private System.Threading.Timer _compileDebounceTimer;
 
         private void Hello_TextChanged(object sender, EventArgs e)
         {
+            _isModified = true;
+            UpdateTitleAndStatus();
+
             // Clear error lines tracking
             errorLines.Clear();
             _compileDebounceTimer?.Dispose();
@@ -377,6 +552,30 @@ namespace CSharpCAD
             if (keyEvent.KeyCode == Keys.F1)
             {
                 ToggleHelp();
+                keyEvent.Handled = true;
+                return;
+            }
+            if (keyEvent.Control && keyEvent.KeyCode == Keys.N)
+            {
+                NewFile();
+                keyEvent.Handled = true;
+                return;
+            }
+            if (keyEvent.Control && keyEvent.KeyCode == Keys.O)
+            {
+                OpenFile();
+                keyEvent.Handled = true;
+                return;
+            }
+            if (keyEvent.Control && keyEvent.Shift && keyEvent.KeyCode == Keys.S)
+            {
+                SaveFileAs();
+                keyEvent.Handled = true;
+                return;
+            }
+            if (keyEvent.Control && keyEvent.KeyCode == Keys.S)
+            {
+                SaveFile();
                 keyEvent.Handled = true;
                 return;
             }
