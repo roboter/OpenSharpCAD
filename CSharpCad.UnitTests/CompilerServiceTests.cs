@@ -690,6 +690,32 @@ Draw(new Box(10, 10, 10));
 
         var timeProp = result.GetType().GetProperty("t");
         Assert.That(timeProp?.GetValue(result), Is.EqualTo(1.0));
+
+        // Test PrecalculateAnimation for whole-animation calculation
+        var precalcMethod = result.GetType().GetMethod("PrecalculateAnimation");
+        Assert.That(precalcMethod, Is.Not.Null);
+        int progressCalls = 0;
+        Action<int, int> onProgress = (step, total) => progressCalls++;
+        precalcMethod.Invoke(result, new object[] { 10, onProgress });
+        Assert.That(progressCalls, Is.EqualTo(10));
+
+        var cachedCountProp = result.GetType().GetProperty("CachedFrameCount");
+        Assert.That(cachedCountProp, Is.Not.Null);
+        Assert.That((int)cachedCountProp.GetValue(result), Is.EqualTo(10));
+
+        // Test BuildFrame retrieves cached frame without errors
+        var buildFrameMethod = result.GetType().GetMethod("BuildFrame");
+        Assert.That(buildFrameMethod, Is.Not.Null);
+        buildFrameMethod.Invoke(result, new object[] { 5, 10 });
+        var frameErr = lastErrorProp?.GetValue(result) as string;
+        Assert.That(frameErr, Is.Null);
+        Assert.That(timeProp?.GetValue(result), Is.EqualTo(0.5));
+
+        // Test ClearAnimationCache
+        var clearCacheMethod = result.GetType().GetMethod("ClearAnimationCache");
+        Assert.That(clearCacheMethod, Is.Not.Null);
+        clearCacheMethod.Invoke(result, null);
+        Assert.That((int)cachedCountProp.GetValue(result), Is.EqualTo(0));
     }
 
     [Test]

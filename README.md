@@ -160,7 +160,7 @@ void Logo(double size = 50, int fn = 100) {
 | **Code Structure** | Modules (`module`) and functions (`function`) | Standard C# methods, classes, records, extension methods, and namespaces |
 | **Ecosystem & Libraries** | Proprietary `.scad` script includes | Full .NET ecosystem, NuGet packages, math libraries, and LINQ queries |
 | **Animation Variable** | `$t` (0.0 to 1.0) | `$t` (transparently supported for OpenSCAD parity), `t`, or `Time` |
-| **Animation UI** | Time, FPS, and Steps inputs | Integrated bottom bar with Play/Pause, Reset, Time, FPS, Steps, and frame counter |
+| **Animation Engine** | Sequential CPU rendering per frame | Whole-animation precalculation & caching with instant 60 FPS playback + bottom controls (Play/Pause, Precalculate, Time, FPS, Steps) |
 | **Rendering Architecture** | CGAL-based CPU CSG mesh generation | Roslyn compiled assemblies + hardware-accelerated OpenGL / WebGL rendering |
 | **Unit Testing** | External community test harnesses | Native integration with NUnit, xUnit, and `dotnet test` |
 

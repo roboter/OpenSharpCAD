@@ -49,7 +49,7 @@ Point Position(double timeVal)
 var plate = new Box(150, 150, 1).Translate(-75, 25 - 75, -3.0 * r - 1.0);
 Draw(plate, RGB(38, 42, 54));
 
-int curveSamples = 150;
+int curveSamples = 60;
 for (int i = 0; i < curveSamples; i++)
 {
     double t0 = (double)i / curveSamples;

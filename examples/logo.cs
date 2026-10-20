@@ -19,7 +19,7 @@
 // }
 // ==============================================================================
 
-void Logo(double size = 50.0, int fn = 100)
+CsgObject Logo(double size = 50.0, int fn = 100)
 {
     double holeRadius = (size / 2.0) / 2.0;
     double cylinderHeight = size * 1.25;
@@ -28,16 +28,13 @@ void Logo(double size = 50.0, int fn = 100)
     var sphere = new Sphere(radius: size / 2.0);
 
     // 2. Three orthogonal cutting cylinders along Z, X, and Y axes
-    var cylZ = new Cylinder(radius: holeRadius, height: cylinderHeight, sides: fn).Translate(0, 0, -cylinderHeight / 2.0);
+    var cylZ = new Cylinder(radius: holeRadius, height: cylinderHeight, sides: fn);
     var cylX = new Rotate(cylZ, y: MathHelper.DegreesToRadians(90));
     var cylY = new Rotate(cylZ, x: MathHelper.DegreesToRadians(90));
 
     // 3. Perform boolean subtraction using natural C# operator overloading (-)
-    var logo = sphere - cylZ - cylX - cylY;
-
-    // 4. Render with custom RGB color (classic OpenSCAD warm orange)
-    Draw(logo, RGB(255, 170, 50));
+    return sphere - cylZ - cylX - cylY;
 }
 
 // Generate the 50 mm logo
-Logo(50);
+Draw(Logo(50), RGB(255, 170, 50));

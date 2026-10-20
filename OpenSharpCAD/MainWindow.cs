@@ -14,6 +14,7 @@ using MatterHackers.RenderOpenGl;
 using MatterHackers.RenderOpenGl.OpenGl;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 
 namespace CSharpCAD
@@ -129,12 +130,14 @@ namespace CSharpCAD
         // Animation UI & State
         private FlowLayoutWidget _animationBar;
         private HelpWindow.StyledButton _playPauseBtn;
+        private HelpWindow.StyledButton _bakeBtn;
         private TextEditWidget _timeInput;
         private TextEditWidget _fpsInput;
         private TextEditWidget _stepsInput;
         private TextWidget _stepLabel;
 
         private bool _isAnimating = false;
+        private bool _isBakingAnimation = false;
         private int _currentStep = 0;
         private int _totalSteps = 100;
         private double _fps = 20.0;
@@ -425,6 +428,15 @@ namespace CSharpCAD
             resetAnimBtn.Click += (s, e) => ResetAnimation();
             _animationBar.AddChild(resetAnimBtn);
 
+            _bakeBtn = new HelpWindow.StyledButton("⚡ Precalculate", new Color(248, 248, 242), new Color(50, 54, 72), new Color(75, 82, 110), pointSize: 9.5, padding: new BorderDouble(8, 4))
+            {
+                VAnchor = VAnchor.Center,
+                Margin = new BorderDouble(2, 0),
+                ToolTipText = "Precalculate whole animation for butter-smooth 60 FPS playback",
+            };
+            _bakeBtn.Click += async (s, e) => await PrecalculateAnimationAsync();
+            _animationBar.AddChild(_bakeBtn);
+
             _animationBar.AddChild(new GuiWidget(8, 1));
 
             var timeLbl = new TextWidget("Time:", pointSize: 9.5, textColor: new Color(139, 233, 253), bold: true)
@@ -620,7 +632,7 @@ Draw(box - cylinder, RGB(80, 180, 255));
             this.Title = $"OpenSharpCAD - {fileName}{modIndicator}";
         }
 
-        public void TogglePlayPause()
+        public async void TogglePlayPause()
         {
             if (_isAnimating)
             {
@@ -628,7 +640,85 @@ Draw(box - cylinder, RGB(80, 180, 255));
             }
             else
             {
+                // If animation has not been precalculated yet, calculate whole animation first for instant 60 FPS!
+                if (classRef != null)
+                {
+                    int cached = 0;
+                    try { cached = (int)classRef.CachedFrameCount; } catch { }
+                    if (cached < _totalSteps)
+                    {
+                        await PrecalculateAnimationAsync();
+                    }
+                }
                 StartAnimation();
+            }
+        }
+
+        public async Task PrecalculateAnimationAsync()
+        {
+            if (classRef == null || _isBakingAnimation) return;
+            _isBakingAnimation = true;
+            if (_bakeBtn != null)
+            {
+                _bakeBtn.SetText("⏳ Precalculating...");
+                _bakeBtn.SetColors(new Color(255, 184, 108), new Color(255, 200, 130), new Color(20, 24, 32));
+            }
+
+            int total = _totalSteps;
+            var targetRef = classRef;
+
+            await Task.Run(() =>
+            {
+                try
+                {
+                    targetRef.PrecalculateAnimation(total, new Action<int, int>((step, count) =>
+                    {
+                        UiThread.RunOnIdle(() =>
+                        {
+                            if (_stepLabel != null)
+                            {
+                                _stepLabel.Text = $"Precalculating {step}/{count}...";
+                            }
+                            if (_bakeBtn != null && (step % 5 == 0 || step == count))
+                            {
+                                _bakeBtn.SetText($"⏳ {step}/{count}");
+                            }
+                        });
+                    }));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[Precalculate Error] {ex.Message}");
+                }
+            });
+
+            _isBakingAnimation = false;
+            UpdateBakeButtonState();
+            UpdateAnimationUi();
+            RebuildCurrentFrame();
+        }
+
+        public void UpdateBakeButtonState()
+        {
+            if (_bakeBtn == null) return;
+            try
+            {
+                int cached = classRef != null ? (int)classRef.CachedFrameCount : 0;
+                if (cached >= _totalSteps && _totalSteps > 0)
+                {
+                    _bakeBtn.SetText("⚡ Cached");
+                    _bakeBtn.SetColors(new Color(139, 233, 253), new Color(170, 245, 255), new Color(20, 24, 32));
+                }
+                else
+                {
+                    _bakeBtn.SetText("⚡ Precalculate");
+                    _bakeBtn.SetColors(new Color(248, 248, 242), new Color(50, 54, 72), new Color(75, 82, 110));
+                }
+            }
+            catch
+            {
+                _bakeBtn.SetText("⚡ Precalculate");
+                _bakeBtn.SetColors(new Color(248, 248, 242), new Color(50, 54, 72), new Color(75, 82, 110));
             }
         }
 
@@ -690,7 +780,10 @@ Draw(box - cylinder, RGB(80, 180, 255));
             }
             if (_stepLabel != null)
             {
-                _stepLabel.Text = $"Step {_currentStep} / {_totalSteps}";
+                int cached = 0;
+                try { cached = classRef != null ? (int)classRef.CachedFrameCount : 0; } catch { }
+                string cachedStatus = (cached >= _totalSteps && _totalSteps > 0) ? " (Cached)" : "";
+                _stepLabel.Text = $"Step {_currentStep} / {_totalSteps}{cachedStatus}";
             }
         }
 
@@ -699,12 +792,20 @@ Draw(box - cylinder, RGB(80, 180, 255));
             if (classRef == null) return;
             try
             {
-                classRef.BuildTime(_currentTime);
+                classRef.BuildFrame(_currentStep, _totalSteps);
                 trackBallWidget?.Invalidate();
             }
-            catch (Exception ex)
+            catch
             {
-                Console.WriteLine($"[Animation Error] {ex.Message}");
+                try
+                {
+                    classRef.BuildTime(_currentTime);
+                    trackBallWidget?.Invalidate();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[Animation Error] {ex.Message}");
+                }
             }
         }
 
@@ -714,10 +815,7 @@ Draw(box - cylinder, RGB(80, 180, 255));
             {
                 _currentTime = Math.Clamp(parsedT, 0.0, 1.0);
                 _currentStep = (int)Math.Round(_currentTime * _totalSteps) % _totalSteps;
-                if (_stepLabel != null)
-                {
-                    _stepLabel.Text = $"Step {_currentStep} / {_totalSteps}";
-                }
+                UpdateAnimationUi();
                 RebuildCurrentFrame();
             }
         }
@@ -743,12 +841,12 @@ Draw(box - cylinder, RGB(80, 180, 255));
         {
             if (_stepsInput != null && int.TryParse(_stepsInput.Text, out int parsedSteps))
             {
-                _totalSteps = Math.Max(1, parsedSteps);
+                _totalSteps = Math.Clamp(parsedSteps, 2, 1000);
                 _currentStep = (int)Math.Round(_currentTime * _totalSteps) % _totalSteps;
-                if (_stepLabel != null)
-                {
-                    _stepLabel.Text = $"Step {_currentStep} / {_totalSteps}";
-                }
+                try { classRef?.ClearAnimationCache(); } catch { }
+                UpdateBakeButtonState();
+                UpdateAnimationUi();
+                RebuildCurrentFrame();
             }
         }
 
@@ -981,6 +1079,7 @@ Draw(box - cylinder, RGB(80, 180, 255));
             if (buildSuccess)
             {
                 classRef = newClassRef;
+                UpdateBakeButtonState();
             }
 
             _codeEditor.SetDiagnostics(editorDiagnostics);
